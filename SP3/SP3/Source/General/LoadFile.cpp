@@ -141,7 +141,7 @@ void LoadLevelGenerationData(std::ifstream& fileStream)
         }
 
         // push into map
-        Scene::AddToMap(tempTileCount, AssignMeshType(tempTileCount - 48), tempComponents);
+        Scene::AddToMap(tempTileCount, AssignMeshType(tempTileCount - 65), tempComponents);
         //MonsterFactory::AddToMap(tempName, stats);
         //std::map<int, std::pair<GraphicsLoader::GEOMETRY_TYPE, std::vector<COMPONENTS>> > m_levelGenerationData;
     }
@@ -156,7 +156,7 @@ GraphicsLoader::GEOMETRY_TYPE AssignMeshType(int num)
         GraphicsLoader::GEO_TREE2,
     };
 
-    return list[num - 1];
+    return list[num];
 
     //if (line == "bush")
     //    return GraphicsLoader::GEO_GRASS1;

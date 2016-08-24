@@ -155,7 +155,7 @@ void Application::Init()
 void Application::Run()
 {
 
-	sceneManager->ChangeScene(2);
+	sceneManager->ChangeScene(1);
 
     //Main Loop
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame

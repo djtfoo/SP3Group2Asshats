@@ -6,6 +6,7 @@
 //#include "../../Graphics/LoadOBJ/LoadTGA.h"
 //#include "../../Graphics/Mesh/MeshBuilder.h"
 #include "../../General/SharedData.h"
+#include "../../GameObject/MonsterFactory.h"
 
 #include <sstream>
 
@@ -40,23 +41,52 @@ void SceneGrass::Init()
     {
         for (int cols = 0; cols < Scene::m_cols; ++cols)
         {
-            if (m_levelMap[rows][cols] == '0')
+            char tile = m_levelMap[rows][cols];
+
+            if (tile == '0')
                 continue;
 
-            LevelGenerationMap::iterator it = Scene::m_levelGenerationData.find(m_levelMap[rows][cols]);
+            LevelGenerationMap::iterator it = Scene::m_levelGenerationData.find(tile);
 
             // it->first is tileCount
             // first in it->second is mesh
             // second in it->second is vector of components
             //std::cout << m_levelMap[rows][cols] << " ";
-
-            GameObject go = createGO(&grass);
-            grass.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
-            grass.position[go].Set(-100.f + cols * Scene::tileSize, 0.f, -100.f + rows * Scene::tileSize);
-            grass.hitbox[go].m_origin = grass.position[go];
-            grass.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
-            grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
-            grass.appearance[go].scale.Set(1, 1, 1);
+            if (tile >= 'A' && tile <= 'Z')
+            {
+                GameObject go = createGO(&grass);
+                grass.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
+                grass.position[go].Set(-100.f + cols * Scene::tileSize, 0.f, -100.f + rows * Scene::tileSize);
+                grass.hitbox[go].m_origin = grass.position[go];
+                grass.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
+                grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
+                grass.appearance[go].scale.Set(1, 1, 1);
+            }
+            else if (tile >= '1' && tile <= '9')
+            {
+                GameObject go = createGO(&grass);
+                grass.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
+                grass.velocity[go].Set(Math::RandFloatMinMax(0.f, 1.f), 0, Math::RandFloatMinMax(0.f, 1.f));
+                grass.position[go].Set(-100.f + cols * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f), 0.f, -100.f + rows * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f));
+                grass.hitbox[go].m_origin = grass.position[go];
+                grass.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
+                switch (tile)
+                {
+                case '1':
+                    grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_RABBIT);
+                    grass.monster[go] = MonsterFactory::CreateMonster("Rabbit");
+                    break;
+                
+                case '2':
+                    grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BIRD);
+                    grass.monster[go] = MonsterFactory::CreateMonster("Bird");
+                    break;
+                
+                case '3':
+                    break;
+                }
+                grass.appearance[go].scale.Set(1, 1, 1);
+            }
         }
     }
 
@@ -111,12 +141,22 @@ void SceneGrass::Update(double dt)
 	//Movement update for Gameobjects
 	UpdateGameObjects(&grass, dt);
 
-	//Camera Update
-	camera.Update(dt);
-
 	//Player Update
 	SharedData::GetInstance()->player->Update(dt);
 	SharedData::GetInstance()->inputManager->Update();
+
+    //Monster Update
+    for (GameObject ai = 0; ai < grass.GAMEOBJECT_COUNT; ++ai)
+    {
+        if (grass.monster[ai])
+        {
+            grass.monster[ai]->m_position = grass.position[ai];
+            grass.monster[ai]->Update(dt);
+        }
+    }
+
+    //Camera Update
+    camera.Update(dt);
 
 	//===============================================================================================================================//
 	//                                                            Checks                                                             //
@@ -249,8 +289,9 @@ void SceneGrass::Update(double dt)
 							destroyGO(&grass, bait);
 							std::cout << "Done Eatting" << std::endl;
 							//PUT WHATEVER THE RABBIT DO NORMALLY HERE :D (DONE EATTING BAIT)
-							grass.velocity[ai] = 2;
-							grass.velocity[ai].y = 0;
+                            grass.velocity[ai] = grass.monster[ai]->m_velocity;
+                            //grass.velocity[ai] = 2;
+							//grass.velocity[ai].y = 0;
 						}
 					}
 				}
@@ -274,7 +315,8 @@ void SceneGrass::Update(double dt)
 							grass.trap[trap].caughtMonsterVel = grass.velocity[ai];
 							grass.trap[trap].caughtMonster = ai;
 							grass.trap[trap].activated = true;
-							grass.velocity[ai].SetZero();
+							//grass.velocity[ai].SetZero();
+                            grass.velocity[ai] = grass.velocity[ai].Normalized() * 0.01f;
 						}
 					}
 				}
@@ -350,11 +392,10 @@ void SceneGrass::Update(double dt)
 				Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
 				Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
 				500,
-				50,
+				1000 * dt,
 				10
 				));
 
-			counter = 0;
 		}
 	}
 	if (b_Nets)
@@ -366,7 +407,7 @@ void SceneGrass::Update(double dt)
 				Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
 				Vector3(SharedData::GetInstance()->player->GetViewVector().x, 0.5, SharedData::GetInstance()->player->GetViewVector().z),
 				500,
-				15,
+				500 * dt,
 				10
 				));
 
@@ -382,10 +423,10 @@ void SceneGrass::Update(double dt)
 				Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
 				Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
 				500,
-				50,
+				1000 * dt,
 				10
 				));
-			counter = 0;
+
 		}
 	}
     //Spawn monster at origin
@@ -535,12 +576,12 @@ void SceneGrass::Render()
 void SceneGrass::RenderGrassScene()
 {
     //Ground mesh
-	modelStack.PushMatrix();
-	modelStack.Translate(0, 0, 0);
-	modelStack.Rotate(-90, 1, 0, 0);
-	modelStack.Scale(200, 200, 100);
-	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS), true);
-	modelStack.PopMatrix();
+    modelStack.PushMatrix();
+    modelStack.Translate(0, 0, 0);
+    modelStack.Rotate(-90, 1, 0, 0);
+    modelStack.Scale(250, 250, 100);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS), true);
+    modelStack.PopMatrix();
 
     RenderGameObjects(&grass);
 
@@ -573,7 +614,13 @@ bool SceneGrass::ViewCheckPosition(Vector3 pos, float degree)
 
 void SceneGrass::Exit()
 {
-
+    for (unsigned GO = 0; GO < grass.GAMEOBJECT_COUNT; ++GO)
+    {
+        if (grass.monster[GO])
+        {
+            delete grass.monster[GO];
+        }
+    }
 }
 
 //========================

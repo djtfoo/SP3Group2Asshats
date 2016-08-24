@@ -18,7 +18,7 @@ Player::Player()
     m_velocity.SetZero();
     m_view.Set(1, 0, 0);
     m_up.Set(0, 1, 0);
-    
+
     m_eyeLevel = 5.f;
     m_speed = 0.f;
     m_jumpSpeed = 0.f;
@@ -28,8 +28,8 @@ Player::Player()
     m_noiseFactor = 0.5f;
     m_bHiding = false;
 
-	PlayerHitBox.m_origin.SetZero();
-	PlayerHitBox.m_scale = Vector3(10, 0.1, 10);
+    PlayerHitBox.m_origin.SetZero();
+    PlayerHitBox.m_scale = Vector3(10, 0.1, 10);
 
     m_movementState = MOVEMENT_STATE_IDLE;
     m_heightState = HEIGHT_STATE_STANDING;
@@ -217,7 +217,7 @@ void Player::Update(double dt)
         }
         break;
     }
-	PlayerHitBox.m_origin = m_position;
+    PlayerHitBox.m_origin = m_position;
     move(dt);
 
     //Move(dt); // move by Vector3 velocity
@@ -299,12 +299,12 @@ void Player::move(const double dt)
 
 void Player::crouch()
 {
-    if (m_heightState != HEIGHT_STATE_CROUCH && m_eyeLevel == 5.f) 
+    if (m_heightState != HEIGHT_STATE_CROUCH && m_eyeLevel == 5.f)
     {
         m_heightState = HEIGHT_STATE_CROUCH;
     }
 
-    if (m_heightState == HEIGHT_STATE_CROUCH && m_eyeLevel == 2.5f) 
+    if (m_heightState == HEIGHT_STATE_CROUCH && m_eyeLevel == 2.5f)
     {
         m_heightState = HEIGHT_STATE_STANDING;
     }
@@ -312,7 +312,7 @@ void Player::crouch()
 
 void Player::prone()
 {
-    if (m_heightState != HEIGHT_STATE_PRONE && m_eyeLevel == 5.f) 
+    if (m_heightState != HEIGHT_STATE_PRONE && m_eyeLevel == 5.f)
     {
         m_heightState = HEIGHT_STATE_PRONE;
     }
@@ -322,7 +322,7 @@ void Player::prone()
         m_heightState = HEIGHT_STATE_PRONE;
     }
 
-    if (m_heightState == HEIGHT_STATE_PRONE && m_eyeLevel == 1.f) 
+    if (m_heightState == HEIGHT_STATE_PRONE && m_eyeLevel == 1.f)
     {
         m_heightState = HEIGHT_STATE_STANDING;
     }
@@ -347,12 +347,12 @@ void Player::jump()
 
 void Player::updateStandUp(const double dt)
 {
-    if (m_eyeLevel < 25.f) 
+    if (m_eyeLevel < 25.f)
     {
         m_eyeLevel += (float)(20.f * dt);
         m_eyeLevel = Math::Min(5.f, m_eyeLevel);
     }
-   // m_noiseFactor = 0.5f;
+    // m_noiseFactor = 0.5f;
 }
 
 void Player::updateCrouch(const double dt)

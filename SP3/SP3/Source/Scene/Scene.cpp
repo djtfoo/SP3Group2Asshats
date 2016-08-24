@@ -12,6 +12,7 @@ Abstract class for scenes in gameplay
 #include "../../Source/Scene/Scene.h"
 #include "../General/SharedData.h"
 #include "../General/LoadFile.h"
+#include "MyMath.h"
 
 Scene::LevelGenerationMap Scene::m_levelGenerationData = {};
 char** Scene::m_levelMap = 0;
@@ -246,7 +247,8 @@ void Scene::RenderGameObjects(World* world)
             modelStack.PushMatrix();
             modelStack.Translate(world->position[GO].x, world->position[GO].y, world->position[GO].z);
             modelStack.Scale(world->appearance[GO].scale.x, world->appearance[GO].scale.y, world->appearance[GO].scale.z);
-            //modelStack.Rotate(0, 0, 0, 0);
+            if (world->velocity[GO].LengthSquared() > Math::EPSILON)
+                modelStack.Rotate(Math::RadianToDegree(atan2(world->velocity[GO].x, world->velocity[GO].z)), 0, 1, 0);
             RenderMesh(world->appearance[GO].mesh, true);
             modelStack.PopMatrix();
         }

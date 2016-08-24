@@ -30,6 +30,8 @@ public:
     Pathfinding();
     ~Pathfinding();
 
+    void Update(double dt);
+
     bool hasFinishedMovement();
     void ReceiveCurrentPos(const Vector3& pos);
     void ReceiveDestination(const Vector3& pos);    // when movementNodes is empty or state changes, receive new destination

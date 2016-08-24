@@ -3,6 +3,7 @@
 #include "Vector3.h"
 #include "../Graphics/Mesh/Mesh.h"
 #include "AABB.h"
+#include "Monster.h"
 #include <iostream>
 
 //GO is just an int with reference to the World componenets
@@ -91,7 +92,7 @@ struct World
     Trap_Script trap[GAMEOBJECT_COUNT];
 	Capture_Script capture[GAMEOBJECT_COUNT];
 	Bait_Script bait[GAMEOBJECT_COUNT];
-    //Monster[GAMEOBJECT_COUNT];
+    Monster* monster[GAMEOBJECT_COUNT];
 };
 
 //"FetchGO"

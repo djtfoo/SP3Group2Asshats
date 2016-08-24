@@ -1,6 +1,6 @@
 #tileName(ignore),tileCount,components...<--components can be a vector
 empty,0,
-bush,1,displacement
-long bush,2,displacement
-tree2,3,displacement
-tree4,4,displacement
+bush,A,displacement
+long bush,B,displacement
+tree2,C,displacement
+tree4,D,displacement

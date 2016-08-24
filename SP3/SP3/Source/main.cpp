@@ -1,4 +1,5 @@
 #include "General/Application.h"
+#include "General/CheckMemoryLeak.h"
 
 int main( void )
 {
@@ -6,4 +7,6 @@ int main( void )
 	app.Init();
 	app.Run();
 	app.Exit();
+
+    CheckMemoryLeaks();
 }
