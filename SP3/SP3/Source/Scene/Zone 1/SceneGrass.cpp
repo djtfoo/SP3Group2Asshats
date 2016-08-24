@@ -74,12 +74,12 @@ void SceneGrass::Init()
                 switch (tile)
                 {
                 case '1':
-                    grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_RABBIT);
+                    grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
                     grass.monster[go] = MonsterFactory::CreateMonster("Rabbit");
                     break;
                 
                 case '2':
-                    grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BIRD);
+                    grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_BIRD);
                     grass.monster[go] = MonsterFactory::CreateMonster("Bird");
                     break;
                 
@@ -439,7 +439,7 @@ void SceneGrass::Update(double dt)
         grass.velocity[monster].Set(0, 0, 1);
         grass.hitbox[monster].m_origin = grass.position[monster] + Vector3(0, 0.75f, -0.3f);
         grass.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
-        grass.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_RABBIT);
+        grass.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
         grass.appearance[monster].scale.Set(1, 1, 1);
 
         counter = 0;
@@ -581,7 +581,7 @@ void SceneGrass::RenderGrassScene()
     modelStack.Translate(0, 0, 0);
     modelStack.Rotate(-90, 1, 0, 0);
     modelStack.Scale(250, 250, 100);
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS), true);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_TERRAIN), true);
     modelStack.PopMatrix();
 
     RenderGameObjects(&grass);
@@ -590,7 +590,7 @@ void SceneGrass::RenderGrassScene()
 	modelStack.PushMatrix();
 	modelStack.Translate(500, 2800, -500);
 	//modelStack.Rotate(0, 0,0,0);
-	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASSZONESKYPLANE), false);
+	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_SKYPLANE), false);
 	modelStack.PopMatrix();
 }
 
