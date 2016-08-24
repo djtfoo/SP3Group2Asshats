@@ -35,7 +35,7 @@ public:
 
     //AABB HITBOX;
 
-    World grass;
+    World rockWorld;
 
     AABB HITBOX;
     double counter;

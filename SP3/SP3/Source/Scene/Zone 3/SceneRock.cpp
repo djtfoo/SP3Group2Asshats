@@ -32,7 +32,7 @@ void SceneRock::Init()
 
     bLButtonState = false;
     //Set heap(?)
-    //memset(&grass, 0, sizeof(grass));
+    memset(&rockWorld, 0, sizeof(rockWorld));
 
     // Load map
     Scene::LoadLevelMap("GameData/GrassScene.csv");
@@ -50,36 +50,37 @@ void SceneRock::Init()
             // second in it->second is vector of components
             //std::cout << m_levelMap[rows][cols] << " ";
 
-            GameObject go = createGO(&grass);
-            grass.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
-            grass.position[go].Set(-100.f + cols * Scene::tileSize, 0.f, -100.f + rows * Scene::tileSize);
-            grass.hitbox[go].m_origin = grass.position[go] + Vector3(0, 2.5, 0);
-            grass.hitbox[go].m_scale.Set(5.f, 5.f, 5.f);
-            grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
-            grass.appearance[go].scale.Set(1, 1, 1);
+            GameObject go = createGO(&rockWorld);
+            rockWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
+            rockWorld.position[go].Set(-100.f + cols * Scene::tileSize, 0.f, -100.f + rows * Scene::tileSize);
+            rockWorld.hitbox[go].m_origin = rockWorld.position[go] + Vector3(0, 2.5, 0);
+            rockWorld.hitbox[go].m_scale.Set(5.f, 5.f, 5.f);
+            rockWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
+            rockWorld.appearance[go].scale.Set(1, Math::RandFloatMinMax(0.75f, 1.25f), 1);
         }
     }
 
-    monster = createGO(&grass);
-    grass.mask[monster] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
-    grass.position[monster].SetZero();
-    grass.velocity[monster].Set(0, 0, 1);
-    grass.hitbox[monster].m_origin = grass.position[monster] + Vector3(0, 0.75f, -0.3);
-    grass.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
-    grass.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_RABBIT);
-    grass.appearance[monster].scale.Set(1, 1, 1);
+    //Test monster
+    monster = createGO(&rockWorld);
+    rockWorld.mask[monster] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
+    rockWorld.position[monster].Set(0, 0, 25);//Zero();
+    rockWorld.velocity[monster].SetZero();//(0, 0, 1);
+    rockWorld.hitbox[monster].m_origin = rockWorld.position[monster] + Vector3(0, 0.75f, -0.3f);
+    rockWorld.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
+    rockWorld.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_RABBIT);
+    rockWorld.appearance[monster].scale.Set(1, 1, 1);
 
-    rock = createGO(&grass);
-    grass.mask[rock] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
-    grass.position[rock].Set(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z);
-    grass.appearance[rock].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
-    grass.appearance[rock].scale.Set(1, 1, 1);
+    rock = createGO(&rockWorld);
+    rockWorld.mask[rock] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
+    rockWorld.position[rock].Set(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z);
+    rockWorld.appearance[rock].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
+    rockWorld.appearance[rock].scale.Set(1, 1, 1);
 
-    net = createGO(&grass);
-    grass.mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE;
-    grass.position[net].SetZero();
-    grass.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
-    grass.appearance[net].scale.Set(2, 2, 2);
+    net = createGO(&rockWorld);
+    rockWorld.mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE;
+    rockWorld.position[net].SetZero();
+    rockWorld.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
+    rockWorld.appearance[net].scale.Set(2, 2, 2);
     //HITBOX.m_origin = Vector3(0, 5, 0);
     //HITBOX.m_scale = Vector3(10, 10, 10);
 
@@ -87,12 +88,14 @@ void SceneRock::Init()
     b_captured = false;
     captureCounter = 0;
     counter = 0;
+
 }
 static double counter = 0;
 
 void SceneRock::Update(double dt)
 {
     fps = (float)(1.f / dt);
+    //glEnable(GL_CULL_FACE);
 
     //===============================================================================================================================//
     //                                                            Updates                                                            //
@@ -102,7 +105,7 @@ void SceneRock::Update(double dt)
     itemProjectile->UpdateProjectile(dt);
 
     //Movement update for Gameobjects
-    UpdateGameObjects(&grass, dt);
+    UpdateGameObjects(&rockWorld, dt);
 
     //Camera Update
     camera.Update(dt);
@@ -122,11 +125,11 @@ void SceneRock::Update(double dt)
     {
         for (unsigned i = 0; i < ItemProjectile::ItemProjectileList.size(); ++i)
         {
-            if (grass.hitbox[monster].CheckCollision(ItemProjectile::ItemProjectileList[i]->position))
+            if (rockWorld.hitbox[monster].CheckCollision(ItemProjectile::ItemProjectileList[i]->position))
             {
                 b_capturing = true;
                 ItemProjectile::ItemProjectileList[i]->deleteBullet;
-                grass.position[net] = grass.position[monster];
+                rockWorld.position[net] = rockWorld.position[monster];
             }
             if (b_capturing == true)
             {
@@ -137,12 +140,12 @@ void SceneRock::Update(double dt)
                     b_captured = true;
                 }
                 b_capturing = false;//fail capture
-                grass.position[net] = 0;//set net to false
+                rockWorld.position[net] = 0;//set net to false
             }
             if (b_captured == true)
             {
-                grass.velocity[monster] = 0;
-                grass.position[net] = grass.position[monster];
+                rockWorld.velocity[monster] = 0;
+                rockWorld.position[net] = rockWorld.position[monster];
                 break;
             }
         }
@@ -166,35 +169,35 @@ void SceneRock::Update(double dt)
     {
         for (unsigned i = 0; i < ItemProjectile::ItemProjectileList.size(); ++i)
         {
-            for (GameObject ai = 0; ai < grass.GAMEOBJECT_COUNT; ++ai)
+            for (GameObject ai = 0; ai < rockWorld.GAMEOBJECT_COUNT; ++ai)
             {
-                if ((grass.mask[ai] & COMPONENT_AI) == COMPONENT_AI)
+                if ((rockWorld.mask[ai] & COMPONENT_AI) == COMPONENT_AI)
                 {
-                    if (grass.hitbox[ai].CheckCollision(ItemProjectile::ItemProjectileList[i]->position))
+                    if (rockWorld.hitbox[ai].CheckCollision(ItemProjectile::ItemProjectileList[i]->position))
                     {
                         ItemProjectile::ItemProjectileList[i]->deleteBullet;
-                        net = createGO(&grass);
-                        grass.mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE;
-                        grass.capture[net].capturingMonster = true;
-                        grass.capture[net].capturedMonster = false;
-                        grass.capture[net].timeBeforeCapture = 3;
-                        grass.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
-                        grass.appearance[net].scale.Set(2, 2, 2);
-                        if (grass.capture[net].capturingMonster == true)
+                        net = createGO(&rockWorld);
+                        rockWorld.mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE;
+                        rockWorld.capture[net].capturingMonster = true;
+                        rockWorld.capture[net].capturedMonster = false;
+                        rockWorld.capture[net].timeBeforeCapture = 3;
+                        rockWorld.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
+                        rockWorld.appearance[net].scale.Set(2, 2, 2);
+                        if (rockWorld.capture[net].capturingMonster == true)
                         {
-                            grass.position[net] = grass.position[ai];
+                            rockWorld.position[net] = rockWorld.position[ai];
                             int v1 = rand() % 100;
                             std::cout << v1 << std::endl;
                             if (v1 < 20)
                             {
-                                grass.capture[net].capturedMonster = true;//Captured!
+                                rockWorld.capture[net].capturedMonster = true;//Captured!
                             }
-                            grass.capture[net].capturingMonster = false;//fail capture
+                            rockWorld.capture[net].capturingMonster = false;//fail capture
                         }
-                        if (grass.capture[net].capturedMonster == true)
+                        if (rockWorld.capture[net].capturedMonster == true)
                         {
-                            grass.velocity[ai] = 0;
-                            grass.position[net] = grass.position[ai];
+                            rockWorld.velocity[ai] = 0;
+                            rockWorld.position[net] = rockWorld.position[ai];
                         }
                     }
                 }
@@ -275,49 +278,67 @@ void SceneRock::Update(double dt)
 
 
     //Trap check (radius)
-    for (GameObject trap = 0; trap < grass.GAMEOBJECT_COUNT; ++trap)
+    for (GameObject trap = 0; trap < rockWorld.GAMEOBJECT_COUNT; ++trap)
     {
-        if ((grass.mask[trap] & COMPONENT_TRAP) == COMPONENT_TRAP)
+        if ((rockWorld.mask[trap] & COMPONENT_TRAP) == COMPONENT_TRAP)
         {
-            if (!grass.trap[trap].activated)
+            if (!rockWorld.trap[trap].activated)
             {
-                for (GameObject ai = 0; ai < grass.GAMEOBJECT_COUNT; ++ai)
+                for (GameObject ai = 0; ai < rockWorld.GAMEOBJECT_COUNT; ++ai)
                 {
-                    if ((grass.mask[ai] & COMPONENT_AI) == COMPONENT_AI)
+                    if ((rockWorld.mask[ai] & COMPONENT_AI) == COMPONENT_AI)
                     {
-                        if ((grass.position[trap] - grass.position[ai]).LengthSquared() < grass.trap[trap].radius)
+                        if ((rockWorld.position[trap] - rockWorld.position[ai]).LengthSquared() < rockWorld.trap[trap].radius)
                         {
-                            grass.trap[trap].caughtMonsterVel = grass.velocity[ai];
-                            grass.trap[trap].caughtMonster = ai;
-                            grass.trap[trap].activated = true;
-                            grass.velocity[ai].SetZero();
+                            rockWorld.trap[trap].caughtMonsterVel = rockWorld.velocity[ai];
+                            rockWorld.trap[trap].caughtMonster = ai;
+                            rockWorld.trap[trap].activated = true;
+                            rockWorld.velocity[ai].SetZero();
                         }
                     }
                 }
             }
             else
             {
-                if (grass.trap[trap].triggerTimer < grass.trap[trap].triggerDuration)
+                if (rockWorld.trap[trap].triggerTimer < rockWorld.trap[trap].triggerDuration)
                 {
-                    grass.trap[trap].triggerTimer += dt;
+                    rockWorld.trap[trap].triggerTimer += dt;
                 }
                 else
                 {
-                    grass.velocity[grass.trap[trap].caughtMonster] = grass.trap[trap].caughtMonsterVel;
-                    destroyGO(&grass, trap);
+                    rockWorld.velocity[rockWorld.trap[trap].caughtMonster] = rockWorld.trap[trap].caughtMonsterVel;
+                    destroyGO(&rockWorld, trap);
                 }
             }
         }
     }
 
-    for (GameObject tallGrass = 0; tallGrass < grass.GAMEOBJECT_COUNT; ++tallGrass)
+    //
+    for (GameObject ai = 0; ai < rockWorld.GAMEOBJECT_COUNT; ++ai)
     {
-        if ((grass.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
+        if ((rockWorld.mask[ai] & COMPONENT_AI) == COMPONENT_AI)
         {
-            if (grass.hitbox[tallGrass].CheckCollision(SharedData::GetInstance()->player->GetPositionVector()))
+            if ((SharedData::GetInstance()->player->GetPositionVector() - rockWorld.position[ai]).LengthSquared() < 750.0f * SharedData::GetInstance()->player->m_noiseFactor)
+            {
+                rockWorld.velocity[ai] = (rockWorld.position[ai] - SharedData::GetInstance()->player->GetPositionVector()).Normalized() * 5;
+                rockWorld.velocity[ai].y = 0;
+            }
+        }
+
+    }
+
+    //If player is hidden
+    for (GameObject tallGrass = 0; tallGrass < rockWorld.GAMEOBJECT_COUNT; ++tallGrass)
+    {
+        if ((rockWorld.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
+        {
+            if (rockWorld.hitbox[tallGrass].CheckCollision(SharedData::GetInstance()->player->GetPositionVector()))
             {
                 SharedData::GetInstance()->player->m_bHiding = true;
+                break;
             }
+            else
+                SharedData::GetInstance()->player->m_bHiding = false;
         }
     }
 
@@ -328,20 +349,20 @@ void SceneRock::Update(double dt)
     //Place trap
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP_ONE].Use())
     {
-        GameObject trap = createGO(&grass);
+        GameObject trap = createGO(&rockWorld);
 
-        grass.mask[trap] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_TRAP;
+        rockWorld.mask[trap] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_TRAP;
 
-        grass.position[trap].Set(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
-        grass.appearance[trap].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP);
-        grass.appearance[trap].scale.Set(3, 3, 3);
-
-        grass.trap[trap].triggerDuration = 3.0f;
-        grass.trap[trap].triggerTimer = 0.f;
-        grass.trap[trap].radius = 2.5f;
-        grass.trap[trap].activated = false;
-        grass.trap[trap].caughtMonster = 0;
-        grass.trap[trap].caughtMonsterVel.SetZero();
+        rockWorld.position[trap].Set(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
+        rockWorld.appearance[trap].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP);
+        rockWorld.appearance[trap].scale.Set(3, 3, 3);
+        
+        rockWorld.trap[trap].triggerDuration = 3.0f;
+        rockWorld.trap[trap].triggerTimer = 0.f;
+        rockWorld.trap[trap].radius = 2.5f;
+        rockWorld.trap[trap].activated = false;
+        rockWorld.trap[trap].caughtMonster = 0;
+        rockWorld.trap[trap].caughtMonsterVel.SetZero();
 
         counter = 0;
     }
@@ -363,14 +384,14 @@ void SceneRock::Update(double dt)
     //Spawn monster at origin
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_E].isPressed)
     {
-        monster = createGO(&grass);
-        grass.mask[monster] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
-        grass.position[monster].SetZero();
-        grass.velocity[monster].Set(0, 0, 1);
-        grass.hitbox[monster].m_origin = grass.position[monster] + Vector3(0, 0.75f, -0.3f);
-        grass.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
-        grass.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_RABBIT);
-        grass.appearance[monster].scale.Set(1, 1, 1);
+        monster = createGO(&rockWorld);
+        rockWorld.mask[monster] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
+        rockWorld.position[monster].SetZero();
+        rockWorld.velocity[monster].Set(0, 0, 1);
+        rockWorld.hitbox[monster].m_origin = rockWorld.position[monster] + Vector3(0, 0.75f, -0.3f);
+        rockWorld.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
+        rockWorld.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_RABBIT);
+        rockWorld.appearance[monster].scale.Set(1, 1, 1);
 
         counter = 0;
     }
@@ -456,6 +477,14 @@ void SceneRock::Render()
     std::stringstream ss1;
     ss1 << "Noise: " << SharedData::GetInstance()->player->GetNoiseFactor();
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss1.str(), Color(1, 1, 0), 3, 0, 6);
+    
+    std::stringstream ss2;
+    ss2 << "Distance Squared: " << (SharedData::GetInstance()->player->GetPositionVector() - rockWorld.position[monster]).LengthSquared();
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(1, 1, 0), 3, 0, 9);
+
+    std::stringstream ss3;
+    ss3 << "Distance Treshold: " << 750.0f * SharedData::GetInstance()->player->m_noiseFactor;
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 3, 0, 12);
 }
 
 void SceneRock::RenderRockScene()
@@ -465,12 +494,12 @@ void SceneRock::RenderRockScene()
     modelStack.Translate(0, 0, 0);
     modelStack.Rotate(-90, 1, 0, 0);
     modelStack.Scale(200, 200, 100);
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS), true);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCK_TERRAIN), true);
     modelStack.PopMatrix();
 
     //Gameobjects
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isHeldDown)
-        RenderGameObjects(&grass);
+    //if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isHeldDown)
+        RenderGameObjects(&rockWorld);
 
     //Skyplane
     modelStack.PushMatrix();
@@ -479,14 +508,16 @@ void SceneRock::RenderRockScene()
     RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASSZONESKYPLANE), false);
     modelStack.PopMatrix();
 
-    for (GameObject tallGrass = 0; tallGrass < grass.GAMEOBJECT_COUNT; ++tallGrass)
+    //Render hitboxes
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isHeldDown)
+    for (GameObject tallGrass = 0; tallGrass < rockWorld.GAMEOBJECT_COUNT; ++tallGrass)
     {
-        if ((grass.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
+        if ((rockWorld.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
         {
 
             modelStack.PushMatrix();
-            modelStack.Translate(grass.hitbox[tallGrass].m_origin.x, grass.hitbox[tallGrass].m_origin.y, grass.hitbox[tallGrass].m_origin.z);
-            modelStack.Scale(grass.hitbox[tallGrass].m_scale.x, grass.hitbox[tallGrass].m_scale.y, grass.hitbox[tallGrass].m_scale.z);
+            modelStack.Translate(rockWorld.hitbox[tallGrass].m_origin.x, rockWorld.hitbox[tallGrass].m_origin.y, rockWorld.hitbox[tallGrass].m_origin.z);
+            modelStack.Scale(rockWorld.hitbox[tallGrass].m_scale.x, rockWorld.hitbox[tallGrass].m_scale.y, rockWorld.hitbox[tallGrass].m_scale.z);
             //modelStack.Rotate(0, 0, 0, 0);
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
