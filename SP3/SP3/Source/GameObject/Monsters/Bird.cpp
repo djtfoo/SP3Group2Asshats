@@ -3,12 +3,13 @@
 
 Monster_Bird::Monster_Bird(std::string name, int stats[]) : Monster(name, stats)
 {
-    m_strategy = NULL;
+    m_strategy = new AI_Strategy();
+    m_strategy->Init(this);
 }
 
 Monster_Bird::~Monster_Bird()
 {
-    if (m_strategy != NULL)
+    if (m_strategy)
     {
         delete m_strategy;
         m_strategy = NULL;
@@ -17,6 +18,7 @@ Monster_Bird::~Monster_Bird()
 
 void Monster_Bird::Update(double dt)
 {
+    std::cout << " BIRD UPDATE ";
 	if ((GetPosition() - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > 24)
 	{
 		//reInit AggressionStat && FearStat
@@ -24,8 +26,10 @@ void Monster_Bird::Update(double dt)
 		ResetFear();
 	}
 	//If near Player, increase aggro
-    if ((GetPosition() - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < 16)
+    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < 10)
     {
+        std::cout << m_position << std::endl;
+        std::cout << "increasing aggression...";
         AggressionLevel = 10;
         changeAggressionStat(m_aggressionStat + AggressionLevel);
         if (AggressionLevel >= 100)
@@ -33,7 +37,7 @@ void Monster_Bird::Update(double dt)
             AggressionLevel = 100;
         }
     }
-	//If health < 25, decrease aggro, increase fear 
+	//If health < 25, decrease aggro, increase fear
     if (GetHealthStat() < 25)
     {
         AggressionLevel = -20;
@@ -55,5 +59,5 @@ void Monster_Bird::Update(double dt)
     GetFearStat();
 
 	//Update Strategy accordingly
-	m_strategy->Update();
+    m_strategy->Update();
 }

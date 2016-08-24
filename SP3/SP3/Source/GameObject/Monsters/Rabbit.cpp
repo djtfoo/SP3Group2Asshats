@@ -3,12 +3,13 @@
 
 Monster_Rabbit::Monster_Rabbit(std::string name, int stats[]) : Monster(name, stats)
 {
-    m_strategy = NULL;
+    m_strategy = new AI_Strategy();
+    m_strategy->Init(this);
 }
 
 Monster_Rabbit::~Monster_Rabbit()
 {
-    if (m_strategy != NULL)
+    if (m_strategy)
     {
         delete m_strategy;
         m_strategy = NULL;

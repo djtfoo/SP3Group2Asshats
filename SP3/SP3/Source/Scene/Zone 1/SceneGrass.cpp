@@ -66,7 +66,8 @@ void SceneGrass::Init()
             {
                 GameObject go = createGO(&grass);
                 grass.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
-                grass.velocity[go].Set(Math::RandFloatMinMax(0.f, 1.f), 0, Math::RandFloatMinMax(0.f, 1.f));
+                //grass.velocity[go].Set(Math::RandFloatMinMax(0.f, 1.f), 0, Math::RandFloatMinMax(0.f, 1.f));
+                grass.velocity[go].SetZero();
                 grass.position[go].Set(-100.f + cols * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f), 0.f, -100.f + rows * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f));
                 grass.hitbox[go].m_origin = grass.position[go];
                 grass.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
@@ -392,7 +393,7 @@ void SceneGrass::Update(double dt)
 				Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
 				Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
 				500,
-				1000 * dt,
+				50,
 				10
 				));
 
@@ -407,7 +408,7 @@ void SceneGrass::Update(double dt)
 				Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
 				Vector3(SharedData::GetInstance()->player->GetViewVector().x, 0.5, SharedData::GetInstance()->player->GetViewVector().z),
 				500,
-				500 * dt,
+				15,
 				10
 				));
 
@@ -423,7 +424,7 @@ void SceneGrass::Update(double dt)
 				Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
 				Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
 				500,
-				1000 * dt,
+				50,
 				10
 				));
 

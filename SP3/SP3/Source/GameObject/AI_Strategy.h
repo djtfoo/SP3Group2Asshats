@@ -34,6 +34,7 @@ public:
 	void SetState(STRATEGY_MODE currentState);
 	STRATEGY_MODE GetState();
 
+    void Init(Monster* monster);
 	void Update();
 	//virtual void SetDestination(Vector3 Destination) = 0;
 	//virtual Vector3 GetPosition(Vector3 monsterPos) = 0;

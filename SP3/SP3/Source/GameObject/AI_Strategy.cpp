@@ -17,6 +17,11 @@ AI_Strategy::~AI_Strategy()
 {
 }
 
+void AI_Strategy::Init(Monster* monster)
+{
+    this->monster = monster;
+}
+
 AI_Strategy::STRATEGY_MODE AI_Strategy::GetCurrentStrategy()
 {
 	return currentState;
@@ -36,13 +41,15 @@ void AI_Strategy::Update()
 	float m_aggressionLevel = monster->GetAggressionStat();
 	float m_fearLevel = monster->GetFearStat();
     
-	if (m_aggressionLevel > 60 && m_fearLevel < 50)
+	if (currentState != STATE_ATTACK && m_aggressionLevel > 60 && m_fearLevel < 50)
 	{
 		SetState(STATE_ATTACK);
+        std::cout << "ATTACK!";
 	}
-	else if (m_aggressionLevel < 40 && m_fearLevel > 50)
+    else if (currentState != STATE_RUN && m_aggressionLevel < 40 && m_fearLevel > 50)
 	{
 		SetState(STATE_RUN);
+        std::cout << "RUN!";
 	}
 	//if (monster collide with trap)
 	//{
@@ -53,5 +60,6 @@ void AI_Strategy::Update()
 	else
 	{
 		SetState(STATE_IDLE);
+        //std::cout << "IDLE";
 	}
 }
