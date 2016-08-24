@@ -8,8 +8,9 @@ Class that defines a monster's variables and statistics
 */
 /******************************************************************************/
 #include "Monster.h"
+#include "MonsterFactory.h"
 
-Monster::Monster(std::string name, int stats[]) : m_name(name)
+Monster::Monster(std::string name, int stats[]) : m_name(name), m_originalAggression(stats[2]), m_originalFear(stats[3])
 {
     // idea: Monster(std::string name);
     // based on name, retrieve stats from a struct/array that already initialised with the stats from the text files
@@ -88,4 +89,14 @@ void Monster::changeFearStat(const int newFear)
 void Monster::changeCaptureRateStat(const int newCaptureRate)
 {
     m_captureRateStat = newCaptureRate;
+}
+
+void Monster::ResetAggression()
+{
+	m_aggressionStat = m_originalAggression;
+}
+
+void Monster::ResetFear()
+{
+	m_fearStat = m_originalFear;
 }

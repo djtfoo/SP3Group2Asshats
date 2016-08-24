@@ -6,12 +6,15 @@
 
 class Monster_Rabbit : public Monster
 {
-public:
-    Monster_Rabbit(std::string name, int stats[]);
-    virtual ~Monster_Rabbit();
+private:
+	int AggressionLevel = 0;
+	int FearLevel = 0;
 
-    //Monster Movement update
-    virtual void Update(double dt);
+public:
+	Monster_Rabbit(std::string name, int stats[]);
+	virtual ~Monster_Rabbit();
+	//Monster Movement update
+	virtual void Update(double dt);
 };
 
 #endif

@@ -6,12 +6,16 @@
 
 class Monster_Fossil : public Monster
 {
+private:
+	int AggressionLevel = 0;
+	int FearLevel = 0;
+
 public:
-    Monster_Fossil(std::string name, int stats[]);
-    virtual ~Monster_Fossil();
+	Monster_Fossil(std::string name, int stats[]);
+	virtual ~Monster_Fossil();
 
 	//Monster Movement update
-    virtual void Update(double dt);
+	virtual void Update(double dt);
 };
 
 #endif

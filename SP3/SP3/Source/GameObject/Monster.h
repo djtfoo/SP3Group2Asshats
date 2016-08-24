@@ -34,10 +34,8 @@ public:
 	void SetPosition(Vector3 m_position);
 	Vector3 GetPosition();
 
-    Vector3 m_position;
-    Vector3 m_velocity;
-    Vector3 m_destination;
-    Vector3 m_scale;  // for rendering
+	void ResetAggression();
+	void ResetFear();
 
 	virtual void Update(double dt) = 0;
 
@@ -52,9 +50,16 @@ protected:
     int m_aggressionStat;
     int m_fearStat;
 
+	int m_originalAggression;
+	int m_originalFear;
+
 	AI_Strategy* m_strategy;
 
     Pathfinding* m_pathfinder;
+
+    Vector3 m_position;
+    Vector3 m_velocity;
+    Vector3 m_scale;  // for rendering
 
     void move();
     void changeHealthStat(const int newHealth);

@@ -6,12 +6,16 @@
 
 class Boss_MukBoss : public Monster
 {
+private:
+	int AggressionLevel = 0;
+	int FearLevel = 0;
+
 public:
-    Boss_MukBoss(std::string name, int stats[]);
-    virtual ~Boss_MukBoss();
+	Boss_MukBoss(std::string name, int stats[]);
+	virtual ~Boss_MukBoss();
 
 	//Monster Movement update
-    virtual void Update(double dt);
+	virtual void Update(double dt);
 };
 
 #endif

@@ -6,12 +6,16 @@
 
 class Boss_MagmaBerzeker : public Monster
 {
+private:
+	int AggressionLevel = 0;
+	int FearLevel = 0;
+
 public:
-    Boss_MagmaBerzeker(std::string name, int stats[]);
-    virtual ~Boss_MagmaBerzeker();
+	Boss_MagmaBerzeker(std::string name, int stats[]);
+	virtual ~Boss_MagmaBerzeker();
 
 	//Monster Movement update
-    virtual void Update(double dt);
+	virtual void Update(double dt);
 };
 
 #endif
