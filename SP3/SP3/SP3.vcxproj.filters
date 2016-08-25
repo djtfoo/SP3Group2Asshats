@@ -320,6 +320,15 @@
     <ClCompile Include="Source\Scene\Zone 4\SceneLava.cpp">
       <Filter>Source Files\Scene\Zone 4</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene\Zoo\SceneZoo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\General\ZooCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\General\MousePicker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\shader.hpp">
@@ -471,6 +480,15 @@
     </ClInclude>
     <ClInclude Include="Source\Graphics\Lighting\Fog.h">
       <Filter>Header Files\Graphics\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Zoo\SceneZoo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\General\ZooCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\General\MousePicker.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

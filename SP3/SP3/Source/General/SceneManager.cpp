@@ -15,6 +15,7 @@ A Class that handles the different scenes
 #include "../Scene/Zone 2/SceneSwamp.h"
 #include "../Scene/Zone 3/SceneRock.h"
 #include "../Scene/Zone 4/SceneLava.h"
+#include "../Scene/Zoo/SceneZoo.h"
 
 SceneManager::SceneManager() : m_scene(0)
 {
@@ -51,6 +52,10 @@ void SceneManager::ChangeScene(short id)
     else if (id == 4)
     {
         m_scene = new SceneLava();
+    }
+    else if (id == 5)
+    {
+        m_scene = new SceneZoo();
     }
 
 	if (m_scene)

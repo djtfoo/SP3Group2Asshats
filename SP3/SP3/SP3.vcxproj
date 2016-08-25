@@ -62,8 +62,10 @@
     <ClCompile Include="Source\General\Camera.cpp" />
     <ClCompile Include="Source\General\InputManager.cpp" />
     <ClCompile Include="Source\General\LoadFile.cpp" />
+    <ClCompile Include="Source\General\MousePicker.cpp" />
     <ClCompile Include="Source\General\SceneManager.cpp" />
     <ClCompile Include="Source\General\SharedData.cpp" />
+    <ClCompile Include="Source\General\ZooCamera.cpp" />
     <ClCompile Include="Source\Graphics\GraphicsLoader\GraphicsLoader.cpp" />
     <ClCompile Include="Source\Graphics\Lighting\DepthFBO.cpp" />
     <ClCompile Include="Source\Graphics\LoadOBJ\LoadOBJ.cpp" />
@@ -81,6 +83,7 @@
     <ClCompile Include="Source\Scene\Zone 2\SceneSwamp.cpp" />
     <ClCompile Include="Source\Scene\Zone 3\SceneRock.cpp" />
     <ClCompile Include="Source\Scene\Zone 4\SceneLava.cpp" />
+    <ClCompile Include="Source\Scene\Zoo\SceneZoo.cpp" />
     <ClCompile Include="Source\shader.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -111,8 +114,10 @@
     <ClInclude Include="Source\General\CheckMemoryLeak.h" />
     <ClInclude Include="Source\General\InputManager.h" />
     <ClInclude Include="Source\General\LoadFile.h" />
+    <ClInclude Include="Source\General\MousePicker.h" />
     <ClInclude Include="Source\General\SceneManager.h" />
     <ClInclude Include="Source\General\SharedData.h" />
+    <ClInclude Include="Source\General\ZooCamera.h" />
     <ClInclude Include="Source\Graphics\GraphicsLoader\GraphicsLoader.h" />
     <ClInclude Include="Source\Graphics\Lighting\DepthFBO.h" />
     <ClInclude Include="Source\Graphics\Lighting\Fog.h" />
@@ -133,6 +138,7 @@
     <ClInclude Include="Source\Scene\Zone 2\SceneSwamp.h" />
     <ClInclude Include="Source\Scene\Zone 3\SceneRock.h" />
     <ClInclude Include="Source\Scene\Zone 4\SceneLava.h" />
+    <ClInclude Include="Source\Scene\Zoo\SceneZoo.h" />
     <ClInclude Include="Source\shader.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

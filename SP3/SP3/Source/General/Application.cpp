@@ -22,6 +22,8 @@ int Application::m_width = 0;
 int Application::m_height = 0;
 double Application::cursorXPos = 0;
 double Application::cursorYPos = 0;
+double Application::mouseWheelX = 0;
+double Application::mouseWheelY = 0;
 
 //Define an error callback
 static void error_callback(int error, const char* description)
@@ -43,6 +45,13 @@ void resize_callback(GLFWwindow* window, int w, int h)
 	Application::m_width = w;
 	Application::m_height = h;
 	glViewport(0, 0, w, h);
+}
+
+//Define callback for GLFW scroll wheel
+void mouseWheel_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    Application::mouseWheelX = xoffset;
+    Application::mouseWheelY = yoffset;
 }
 
 bool Application::IsKeyPressed(unsigned short key)
@@ -129,6 +138,7 @@ void Application::Init()
 	//Sets the key callback
 	//glfwSetKeyCallback(m_window, key_callback);
 	glfwSetWindowSizeCallback(m_window, resize_callback);
+    glfwSetScrollCallback(m_window, mouseWheel_callback);
 
 	glewExperimental = true; // Needed for core profile
 	//Initialize GLEW
@@ -148,14 +158,14 @@ void Application::Init()
 	sceneManager = new SceneManager();
 
     GetCursorPos(&cursorXPos, &cursorYPos);
-	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 }
 
 void Application::Run()
 {
 
-	sceneManager->ChangeScene(1);
+	sceneManager->ChangeScene(5);
 
     //Main Loop
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame

@@ -33,6 +33,9 @@ public:
     static double cursorXPos;
     static double cursorYPos;
 
+    static double mouseWheelX;
+    static double mouseWheelY;
+
     // Game Scenes
     SceneManager *sceneManager;
 
