@@ -231,6 +231,172 @@ void Scene::RenderMesh(Mesh *mesh, bool enableLight)
 	mesh->Render();
 }
 
+void Scene::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size, float x, float y)
+{
+	viewStack.PushMatrix();
+	viewStack.LoadIdentity();
+	modelStack.PushMatrix();
+	modelStack.LoadIdentity();
+	modelStack.Translate(x, y, 0);
+	modelStack.Scale(size, size, size);
+
+	Mtx44 MVP, modelView, modelView_inverse_transpose;
+
+	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
+	glUniformMatrix4fv(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_MVP), 1, GL_FALSE, &MVP.a[0]);
+
+	glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_LIGHTENABLED), 0);
+	if (mesh->textureID > 0)
+	{
+		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_COLOR_TEXTURE_ENABLED), 1);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_COLOR_TEXTURE), 0);
+	}
+	else
+	{
+		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_COLOR_TEXTURE_ENABLED), 0);
+	}
+	mesh->Render();
+	if (mesh->textureID > 0)
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+
+	//for (int i = 0; i < Mesh::MAX_TEXTURES; ++i) {
+	//	if (mesh->textureArray[i] > 0) {
+	//		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(static_cast<GraphicsLoader::UNIFORM_TYPE>(GraphicsLoader::U_COLOR_TEXTURE_ENABLED + i)), 1);  //MUST BE IN SEQUENCE
+	//		glActiveTexture(GL_TEXTURE0 + i);
+	//		glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
+	//		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(static_cast<GraphicsLoader::UNIFORM_TYPE>(GraphicsLoader::U_COLOR_TEXTURE + i)), i);
+	//	}
+	//	else {
+	//		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(static_cast<GraphicsLoader::UNIFORM_TYPE>(GraphicsLoader::U_COLOR_TEXTURE_ENABLED + i)), 0);
+	//	}
+	//}
+	//
+	//mesh->Render();
+	//if (mesh->textureArray[0] > 0)
+	//{
+	//	glBindTexture(GL_TEXTURE_2D, 0);
+	//}
+
+	modelStack.PopMatrix();
+	viewStack.PopMatrix();
+}
+
+void Scene::RenderUI(Mesh* mesh, float size, float x, float y, float rotatex, float rotatey, float rotatez, bool enableLight)
+{
+	glDisable(GL_DEPTH_TEST);
+	Mtx44 ortho;
+	ortho.SetToOrtho(0, 80, 0, 60, -100, 100); //size of screen UI
+	projectionStack.PushMatrix();
+	projectionStack.LoadMatrix(ortho);
+	viewStack.PushMatrix();
+	viewStack.LoadIdentity(); //No need camera for ortho mode
+	modelStack.PushMatrix();
+	modelStack.LoadIdentity(); //Reset modelStack
+	modelStack.Translate(x, y, 97);
+	modelStack.Rotate(rotatex, 1, 0, 0);
+	modelStack.Rotate(rotatey, 0, 1, 0);
+	modelStack.Rotate(rotatez, 0, 0, 1);
+	modelStack.Scale(size, size, size);
+	if (enableLight)
+	{
+		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_LIGHTENABLED), 1);
+	}
+	else
+	{
+		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_LIGHTENABLED), 0);
+	}
+	if (mesh->textureArray[0] > 0)
+	{
+		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_COLOR_TEXTURE_ENABLED), 1);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, mesh->textureArray[0]);
+		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_COLOR_TEXTURE), 0);
+	}
+	else
+	{
+		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_COLOR_TEXTURE_ENABLED), 0);
+	}
+
+	Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
+	glUniformMatrix4fv(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_MVP), 1, GL_FALSE, &MVP.a[0]);
+
+	mesh->Render();
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	projectionStack.PopMatrix();
+	viewStack.PopMatrix();
+	modelStack.PopMatrix();
+	glEnable(GL_DEPTH_TEST);
+}
+//
+//void Scene::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size, float x, float y, bool rotate, float angle)
+//{
+//
+//	viewStack.PushMatrix();
+//	viewStack.LoadIdentity();
+//	modelStack.PushMatrix();
+//	modelStack.LoadIdentity();
+//	modelStack.Translate(x, y, 0);
+//	modelStack.Rotate(angle, 0, 0, 1);
+//	modelStack.Scale(size, size, size);
+//	//if (rotate)
+//	//	modelStack.Rotate(rotateAngle, 0, 0, 1);
+//
+//
+//	Mtx44 MVP, modelView, modelView_inverse_transpose;
+//
+//	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
+//	glUniformMatrix4fv(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_MVP), 1, GL_FALSE, &MVP.a[0]);
+//	if (mesh->textureID > 0)
+//	{
+//		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_COLOR_TEXTURE_ENABLED), 1);
+//		glActiveTexture(GL_TEXTURE0);
+//		glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+//		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_COLOR_TEXTURE), 0);
+//	}
+//	else
+//	{
+//		glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_COLOR_TEXTURE_ENABLED), 0);
+//	}
+//	mesh->Render();
+//	if (mesh->textureID > 0)
+//	{
+//		glBindTexture(GL_TEXTURE_2D, 0);
+//	}
+//
+//	modelStack.PopMatrix();
+//	viewStack.PopMatrix();
+//
+//}
+
+bool Scene::SetHUD(const bool m_bHUDmode)
+{
+	if (m_bHUDmode)
+	{
+		if (m_bIsInOrthogonalMode == true)
+			return false;
+
+		Mtx44 ortho;
+		ortho.SetToOrtho(-80, 80, -60, 60, -10, 10);
+		projectionStack.PushMatrix();
+		projectionStack.LoadMatrix(ortho);
+		m_bIsInOrthogonalMode = true;
+	}
+	else
+	{
+		if (m_bIsInOrthogonalMode == false)
+			return false;
+		projectionStack.PopMatrix();
+		m_bIsInOrthogonalMode = false;
+	}
+	return true;
+}
+
 #define RENDER_MASK (COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE)
 void Scene::RenderGameObjects(World* world)
 {

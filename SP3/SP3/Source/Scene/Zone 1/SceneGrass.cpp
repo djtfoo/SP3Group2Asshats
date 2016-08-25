@@ -119,6 +119,10 @@ void SceneGrass::Init()
 	b_Rocks = true;
 	b_Nets = false;
 	b_Baits = false;
+
+	f_RotateRock = 0;
+	f_RotateNet = 0;
+	f_RotateBait = 0;
 }
 static double counter = 0;
 
@@ -179,6 +183,7 @@ void SceneGrass::Update(double dt)
 					{
 						grass.velocity[ai] = (grass.position[ai] - camera.position).Normalized();
 						grass.velocity[ai].y = 0;
+						break;
 					}
 				}
 			}
@@ -195,35 +200,33 @@ void SceneGrass::Update(double dt)
 		{
 			for (GameObject ai = 0; ai < grass.GAMEOBJECT_COUNT; ++ai)
 			{
-				if ((grass.mask[ai] & COMPONENT_AI) == COMPONENT_AI)
+				if ((grass.mask[ai] & COMPONENT_AI) == COMPONENT_AI && grass.hitbox[ai].CheckCollision(ItemProjectile::NetProjectileList[i]->position))
 				{
-					if (grass.hitbox[ai].CheckCollision(ItemProjectile::NetProjectileList[i]->position))
+					ItemProjectile::NetProjectileList[i]->deleteBullet = true;
+					net = createGO(&grass);
+					grass.mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE;
+					grass.capture[net].capturingMonster = true;
+					grass.capture[net].capturedMonster = false;
+					grass.capture[net].timeBeforeCapture = 3;
+					grass.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
+					grass.appearance[net].scale.Set(2, 2, 2);
+					if (grass.capture[net].capturingMonster == true)
 					{
-						ItemProjectile::NetProjectileList[i]->deleteBullet;
-						net = createGO(&grass);
-						grass.mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE;
-						grass.capture[net].capturingMonster = true;
-						grass.capture[net].capturedMonster = false;
-						grass.capture[net].timeBeforeCapture = 3;
-						grass.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
-						grass.appearance[net].scale.Set(2, 2, 2);
-						if (grass.capture[net].capturingMonster == true)
+						grass.position[net] = grass.position[ai];
+						int v1 = rand() % 100;
+						std::cout << v1 << std::endl;
+						if (v1 < 20)
 						{
-							grass.position[net] = grass.position[ai];
-							int v1 = rand() % 100;
-							std::cout << v1 << std::endl;
-							if (v1 < 20)
-							{
-								grass.capture[net].capturedMonster = true;//Captured!
-							}
-							grass.capture[net].capturingMonster = false;//fail capture
+							grass.capture[net].capturedMonster = true;//Captured!
 						}
-						if (grass.capture[net].capturedMonster == true)
-						{
-							grass.velocity[ai] = 0;
-							grass.position[net] = grass.position[ai];
-						}
+						grass.capture[net].capturingMonster = false;//fail capture
 					}
+					if (grass.capture[net].capturedMonster == true)
+					{
+						grass.velocity[ai] = 0;
+						grass.position[net] = grass.position[ai];
+					}
+					break;
 				}
 			}
 		}
@@ -388,8 +391,10 @@ void SceneGrass::Update(double dt)
 	}
 
 	if (b_Rocks)
-	{	
+	{
 		//Rock projectile
+		f_RotateRock += dt * 50;
+		std::cout << "ROCKROTATION : " <<  f_RotateRock << std::endl;
 		if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Use())
 		{
 			ItemProjectile::RockProjectileList.push_back(new ItemProjectile(
@@ -405,6 +410,7 @@ void SceneGrass::Update(double dt)
 	if (b_Nets)
 	{
 		//Net projectile
+		f_RotateNet += dt * 50;
 		if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_NET].Use() && counter > 3)
 		{
 			ItemProjectile::NetProjectileList.push_back(new ItemProjectile(
@@ -421,6 +427,7 @@ void SceneGrass::Update(double dt)
 	if (b_Baits)
 	{
 		//Bait Projectile
+		f_RotateBait += dt * 50;
 		if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].Use())
 		{
 			ItemProjectile::BaitProjectileList.push_back(new ItemProjectile(
@@ -572,12 +579,13 @@ void SceneGrass::Render()
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isPressed)
         std::cout << "asd" << std::endl;
 
-    //=============
-    // RENDER FPS
-    //=============
     std::stringstream ss;
     ss << "FPS: " << fps;
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 3);
+
+	SetHUD(true);
+	RenderHUD();
+	SetHUD(false);
 }
 
 void SceneGrass::RenderGrassScene()
@@ -598,6 +606,17 @@ void SceneGrass::RenderGrassScene()
 	//modelStack.Rotate(0, 0,0,0);
 	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_SKYPLANE), false);
 	modelStack.PopMatrix();
+}
+
+void SceneGrass::RenderHUD()
+{
+	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_TERRAIN), false, 10.0f, 25, -48);
+	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 10.0f, 68, -48);
+	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2, 25, 10, f_RotateRock, f_RotateRock, 0, false);
+	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 2, 32, 9, 0, f_RotateNet, 0, false);
+	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2, 39, 10, f_RotateBait, f_RotateBait, 0, false);
+	//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), false, 30.f, 10, -30, false);
+	//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), true, 10.0f, 40, -48);
 }
 
 bool SceneGrass::ViewCheckPosition(Vector3 pos, float degree)

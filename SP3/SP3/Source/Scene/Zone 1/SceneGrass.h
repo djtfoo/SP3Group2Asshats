@@ -20,6 +20,7 @@ public:
 	virtual void Update(double dt);
 	virtual void Render();
 	virtual void RenderGrassScene();
+	virtual void RenderHUD();
 	virtual void Exit();
 	bool ViewCheckPosition(Vector3 pos, float degree);
     //Test stuff
@@ -35,6 +36,10 @@ public:
 	bool b_Rocks;
 	bool b_Nets;
 	bool b_Baits;
+
+	float f_RotateRock;
+	float f_RotateNet;
+	float f_RotateBait;
 
     std::vector<Vector3> placedTraps;
 
