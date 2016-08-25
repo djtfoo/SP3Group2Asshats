@@ -6,10 +6,6 @@
 
 class Monster_Magma : public Monster
 {
-private:
-	int AggressionLevel = 0;
-	int FearLevel = 0;
-
 public:
     Monster_Magma(std::string name, const std::vector<int>& stats);
 	virtual ~Monster_Magma();

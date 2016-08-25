@@ -6,10 +6,6 @@
 
 class Boss_MukBoss : public Monster
 {
-private:
-	int AggressionLevel = 0;
-	int FearLevel = 0;
-
 public:
     Boss_MukBoss(std::string name, const std::vector<int>& stats);
 	virtual ~Boss_MukBoss();

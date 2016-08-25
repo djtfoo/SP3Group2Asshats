@@ -17,14 +17,14 @@ Boss_MukBoss::~Boss_MukBoss()
 
 void Boss_MukBoss::Update(double dt)
 {
-	if ((GetPosition() - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > 24)
+    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > 24)
 	{
 		//reInit AggressionStat && FearStat
 		ResetAggression();
 		ResetFear();
 	}
 	//If near Player, increase aggro
-	if ((GetPosition() - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < 16)
+    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < 16)
 	{
 		AggressionLevel = 20;
 		changeAggressionStat(m_aggressionStat + AggressionLevel);

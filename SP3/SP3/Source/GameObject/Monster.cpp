@@ -12,8 +12,8 @@ Class that defines a monster's variables and statistics
 
 Monster::Monster(std::string name, const std::vector<int>& stats) : m_name(name), m_originalAggression(stats[2]), m_originalFear(stats[3])
 {
-    // idea: Monster(std::string name);
-    // based on name, retrieve stats from a struct/array that already initialised with the stats from the text files
+    AggressionLevel = 0.f;
+    FearLevel = 0.f;
 
     this->m_healthStat = stats[0];
     this->m_captureRateStat = stats[1];
@@ -36,17 +36,17 @@ int Monster::GetHealthStat()
     return m_healthStat;
 }
 
-int Monster::GetCaptureRateStat()
+float Monster::GetCaptureRateStat()
 {
     return m_captureRateStat;
 }
 
-int Monster::GetAggressionStat()
+float Monster::GetAggressionStat()
 {
     return m_aggressionStat;
 }
 
-int Monster::GetFearStat()
+float Monster::GetFearStat()
 {
     return m_fearStat;
 }
@@ -54,16 +54,6 @@ int Monster::GetFearStat()
 bool Monster::CheckCapture()
 {
     return false;
-}
-
-void Monster::SetPosition(Vector3 m_position)
-{
-	this->m_position = m_position;
-}
-
-Vector3 Monster::GetPosition()
-{
-	return m_position;
 }
 
 void Monster::move()
@@ -74,21 +64,25 @@ void Monster::move()
 void Monster::changeHealthStat(const int newHealth)
 {
     m_healthStat = newHealth;
+    m_healthStat = Math::Clamp(m_healthStat, 0, 100);
 }
 
-void Monster::changeAggressionStat(const int newAggression)
+void Monster::changeAggressionStat(const float newAggression)
 {
     m_aggressionStat = newAggression;
+    m_aggressionStat = Math::Clamp(m_aggressionStat, 0.f, 100.f);
 }
 
-void Monster::changeFearStat(const int newFear)
+void Monster::changeFearStat(const float newFear)
 {
     m_fearStat = newFear;
+    m_fearStat = Math::Clamp(m_fearStat, 0.f, 100.f);
 }
 
-void Monster::changeCaptureRateStat(const int newCaptureRate)
+void Monster::changeCaptureRateStat(const float newCaptureRate)
 {
     m_captureRateStat = newCaptureRate;
+    m_captureRateStat = Math::Clamp(m_captureRateStat, 0.f, 100.f);
 }
 
 void Monster::ResetAggression()

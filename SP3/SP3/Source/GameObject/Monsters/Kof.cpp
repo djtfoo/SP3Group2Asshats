@@ -17,14 +17,14 @@ Monster_Kof::~Monster_Kof()
 
 void Monster_Kof::Update(double dt)
 {
-	if ((GetPosition() - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > 24)
+    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > 24)
 	{
 		//reInit AggressionStat && FearStat
 		ResetAggression();
 		ResetFear();
 	}
 	//If near Player, increase aggro
-	if ((GetPosition() - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < 16)
+    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < 16)
 	{
 		AggressionLevel = 10;
 		changeAggressionStat(m_aggressionStat + AggressionLevel);

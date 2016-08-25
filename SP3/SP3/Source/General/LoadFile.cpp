@@ -177,8 +177,16 @@ COMPONENTS ConvertStringToComponent(std::string line)
     std::string list[10] = {
         "displacement",
         "velocity",
+        "appearance",
+        "hitbox",
     };
 
+    //for (int i = 0; i < 10; ++i)
+    //{
+    //    if (line == list[i])
+    //        return (COMPONENT_NONE + 1 << i);
+    //}
+    
     return COMPONENT_DISPLACEMENT;
 }
 

@@ -231,14 +231,14 @@ void Scene::RenderMesh(Mesh *mesh, bool enableLight)
 	mesh->Render();
 }
 
-void Scene::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size, float x, float y)
+void Scene::RenderMeshIn2D(Mesh *mesh, bool enableLight, float sizeX, float sizeY, float x, float y)
 {
 	viewStack.PushMatrix();
 	viewStack.LoadIdentity();
 	modelStack.PushMatrix();
 	modelStack.LoadIdentity();
 	modelStack.Translate(x, y, 0);
-	modelStack.Scale(size, size, size);
+	modelStack.Scale(sizeX, sizeY, 1);
 
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 

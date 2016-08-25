@@ -122,10 +122,10 @@ void GraphicsLoader::Init()
 
 	m_meshList[GEO_PLAYERBOX] = MeshBuilder::GenerateCube("Cube", Color(1, 0, 0), 1.0f);
 
-	m_meshList[GEO_HUD] = MeshBuilder::GenerateQuad("HUD", Color(1, 1, 1), 1.f, 100);
+	m_meshList[GEO_HUD] = MeshBuilder::GenerateQuad("HUD", Color(1, 1, 1), 1.f);
 	m_meshList[GEO_HUD]->textureID = LoadTGA("Image//HUD//HUD.tga");
 
-	m_meshList[GEO_HUDHIGHLIGHT] = MeshBuilder::GenerateQuad("HUDHIGHLIGHT", Color(0, 1, 0), 1.f, 100);
+	m_meshList[GEO_HUDHIGHLIGHT] = MeshBuilder::GenerateQuad("HUDHIGHLIGHT", Color(0, 1, 0), 1.f);
 	m_meshList[GEO_HUDHIGHLIGHT]->textureID = LoadTGA("Image//HUD//HudHighlights.tga");
 
 	m_meshList[GEO_GRASS_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw",m_heightMap);

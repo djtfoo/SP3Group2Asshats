@@ -27,19 +27,20 @@ public:
     
     std::string GetName();
     int GetHealthStat();
-    int GetCaptureRateStat();
-    int GetAggressionStat();
-    int GetFearStat();
+    float GetCaptureRateStat();
+    float GetAggressionStat();
+    float GetFearStat();
     bool CheckCapture();
-	void SetPosition(Vector3 m_position);
-	Vector3 GetPosition();
 
     Vector3 m_position;
+    Vector3 m_destination;
     Vector3 m_velocity;
     Vector3 m_scale;  // for rendering
 
 	void ResetAggression();
 	void ResetFear();
+
+    AI_Strategy* m_strategy;
 
 	virtual void Update(double dt) = 0;
 
@@ -49,23 +50,25 @@ protected:
 
     std::string m_name;
 
+    // amount to increase stat by
+    float AggressionLevel;
+    float FearLevel;
+
     int m_healthStat;
-    int m_captureRateStat;
-    int m_aggressionStat;
-    int m_fearStat;
+    float m_captureRateStat;
+    float m_aggressionStat;
+    float m_fearStat;
 
-	int m_originalAggression;
-	int m_originalFear;
-
-	AI_Strategy* m_strategy;
+	float m_originalAggression;
+	float m_originalFear;
 
     Pathfinding* m_pathfinder;
 
     void move();
     void changeHealthStat(const int newHealth);
-    void changeAggressionStat(const int newAggression);
-    void changeFearStat(const int newFear);
-    void changeCaptureRateStat(const int newCaptureRate);
+    void changeAggressionStat(const float newAggression);
+    void changeFearStat(const float newFear);
+    void changeCaptureRateStat(const float newCaptureRate);
 };
 
 #endif

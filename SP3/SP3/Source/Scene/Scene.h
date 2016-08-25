@@ -52,7 +52,7 @@ public:
 	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
 	void RenderMesh(Mesh *mesh, bool enableLight);
 	//void RenderMeshIn2D(Mesh *mesh, bool enableLight, float size = 1.0f, float x = 0.0f, float y = 0.0f, bool rotate = false, float angle = 0.0f);
-	void RenderMeshIn2D(Mesh *mesh, bool enableLight, float size, float x, float y);
+    void RenderMeshIn2D(Mesh *mesh, bool enableLight, float sizeX, float sizeY, float x, float y);
 	void RenderUI(Mesh* mesh, float size, float x, float y, float rotatex = 0, float rotatey = 0, float rotatez = 0, bool enableLight = false);
 
 	bool m_bIsInOrthogonalMode;

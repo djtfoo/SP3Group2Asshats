@@ -259,7 +259,7 @@ void SceneSwamp::Render()
 void SceneSwamp::RenderSwampScene()
 {
 	modelStack.PushMatrix();
-	modelStack.Translate(0, -7, 0);
+	modelStack.Translate(100, -7, 100);
 	modelStack.Scale(300.0f, 30.0f, 300.0f);
 	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SWAMP_TERRAIN), true);
 	modelStack.PopMatrix();

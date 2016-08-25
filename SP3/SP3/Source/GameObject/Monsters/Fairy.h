@@ -6,10 +6,6 @@
 
 class Boss_Fairy : public Monster
 {
-private:
-	int AggressionLevel = 0;
-	int FearLevel = 0;
-
 public:
     Boss_Fairy(std::string name, const std::vector<int>& stats);
 	virtual ~Boss_Fairy();
@@ -17,6 +13,5 @@ public:
 	//Monster Movement update
 	virtual void Update(double dt);
 };
-
 
 #endif 

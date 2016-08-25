@@ -26,13 +26,17 @@ public:
 		STATE_IDLE,
 		STATE_ATTACK,
 		STATE_RUN,
-		STATE_TRAPPED,	//stun
+		STATE_TRAPPED,	//inside trap
+        STATE_BAITED,
+        STATE_CAPTURED,
 		TOTAL_AI_STATE,
 	};
 
-	STRATEGY_MODE GetCurrentStrategy();
 	void SetState(STRATEGY_MODE currentState);
 	STRATEGY_MODE GetState();
+
+    bool CheckDestinationReached();
+    void SetDestination(const Vector3& destination);
 
     void Init(Monster* monster);
 	void Update();
@@ -41,7 +45,7 @@ public:
 
 	int CalculateDistance(const Vector3& MonsterPos, const Vector3& Destination);
 
-	//Vector3 Destination;
+    void SetIdleDestination();
 
 private:
 	Monster* monster;

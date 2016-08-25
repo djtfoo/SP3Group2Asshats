@@ -17,14 +17,14 @@ Monster_Magma::~Monster_Magma()
 
 void Monster_Magma::Update(double dt)
 {
-	if ((GetPosition() - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > 24)
+    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > 24)
 	{
 		//reInit AggressionStat && FearStat
 		ResetAggression();
 		ResetFear();
 	}
 	//If near Player, increase aggro
-	if ((GetPosition() - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < 16)
+    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < 16)
 	{
 		AggressionLevel = 35;
 		changeAggressionStat(m_aggressionStat + AggressionLevel);

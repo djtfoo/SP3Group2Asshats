@@ -128,7 +128,9 @@ void Player::Update(double dt)
 
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_SHIFT].isHeldDown && m_heightState == HEIGHT_STATE_STANDING)
     {
-        m_movementState = MOVEMENT_STATE_RUN;
+        if (m_movementState != MOVEMENT_STATE_IDLE) {
+            m_movementState = MOVEMENT_STATE_RUN;
+        }
     }
 
     if (m_heightState == HEIGHT_STATE_CROUCH)
@@ -205,13 +207,13 @@ void Player::Update(double dt)
         //speed = 60.f;
         if (m_speed > 60.f)
         {
-            m_speed -= 50.f * (float)(dt);
+            m_speed -= 60.f * (float)(dt);
             if (m_speed < 60.f)
                 m_speed = 60.f;
         }
         else if (m_speed < 60.f)
         {
-            m_speed += 50.f * (float)(dt);
+            m_speed += 60.f * (float)(dt);
             if (m_speed > 60.f)
                 m_speed = 60.f;
         }

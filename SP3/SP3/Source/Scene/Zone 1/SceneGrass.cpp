@@ -36,7 +36,7 @@ void SceneGrass::Init()
     memset(&grass, 0, sizeof(grass));
 
     // Load map
-    Scene::LoadLevelMap("GameData/GrassScene.csv");
+    Scene::LoadLevelMap("GameData/originalGrassScene.csv");
     for (int rows = 0; rows < Scene::m_rows; ++rows)
     {
         for (int cols = 0; cols < Scene::m_cols; ++cols)
@@ -51,12 +51,12 @@ void SceneGrass::Init()
             // it->first is tileCount
             // first in it->second is mesh
             // second in it->second is vector of components
-            //std::cout << m_levelMap[rows][cols] << " ";
+
             if (tile >= 'A' && tile <= 'Z')
             {
                 GameObject go = createGO(&grass);
                 grass.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
-                grass.position[go].Set(-100.f + cols * Scene::tileSize, 0.f, -100.f + rows * Scene::tileSize);
+                grass.position[go].Set(cols * Scene::tileSize, 0.f, rows * Scene::tileSize);
                 grass.hitbox[go].m_origin = grass.position[go];
                 grass.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
                 grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
@@ -68,8 +68,8 @@ void SceneGrass::Init()
                 GameObject go = createGO(&grass);
                 grass.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
                 //grass.velocity[go].Set(Math::RandFloatMinMax(0.f, 1.f), 0, Math::RandFloatMinMax(0.f, 1.f));
-                grass.velocity[go].SetZero();
-                grass.position[go].Set(-100.f + cols * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f), 0.f, -100.f + rows * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f));
+                //grass.velocity[go].SetZero();
+                grass.position[go].Set(cols * tileSize + Math::RandFloatMinMax(0.f, 1.f), 0.f, rows * tileSize + Math::RandFloatMinMax(0.f, 1.f));
                 grass.hitbox[go].m_origin = grass.position[go];
                 grass.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
                 switch (tile)
@@ -87,7 +87,24 @@ void SceneGrass::Init()
                 case '3':
                     break;
                 }
+                grass.monster[go]->m_position = grass.position[go];
+
+                int randCol = cols + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+                int randRow = rows + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+                while (randCol < 0 || randCol >= 40 || randRow < 0 || randRow >= 40 || Scene::m_levelMap[randRow][randCol] != '0')
+                {
+                    randCol = cols + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+                    randRow = rows + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+                }
+
+                Vector3 RNGdestination(randCol * Scene::tileSize + Scene::tileSize * 0.5f, 0, randRow * Scene::tileSize + Scene::tileSize * 0.5f);
+
+                grass.monster[go]->m_destination = RNGdestination;
+                grass.velocity[go] = (RNGdestination - grass.position[go]).Normalized() * 2.f;
+                grass.monster[go]->m_velocity = grass.velocity[go];
                 grass.appearance[go].scale.Set(1, 1, 1);
+                std::cout << grass.monster[go]->m_position << grass.monster[go]->m_destination << std::endl;
+
             }
         }
     }
@@ -158,6 +175,7 @@ void SceneGrass::Update(double dt)
         {
             grass.monster[ai]->m_position = grass.position[ai];
             grass.monster[ai]->Update(dt);
+            grass.velocity[ai] = grass.monster[ai]->m_velocity;
         }
     }
 
@@ -394,7 +412,6 @@ void SceneGrass::Update(double dt)
 	{
 		//Rock projectile
 		f_RotateRock += dt * 50;
-		std::cout << "ROCKROTATION : " <<  f_RotateRock << std::endl;
 		if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Use())
 		{
 			ItemProjectile::RockProjectileList.push_back(new ItemProjectile(
@@ -595,7 +612,7 @@ void SceneGrass::RenderGrassScene()
 {
     //Ground mesh
 	modelStack.PushMatrix();
-	modelStack.Translate(0, -7, 0);
+    modelStack.Translate(100, -7, 100);
 	modelStack.Scale(300.0f, 30.0f, 300.0f);
 	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_TERRAIN), true);
 	modelStack.PopMatrix();
@@ -617,8 +634,9 @@ void SceneGrass::RenderHUD()
 	ss2 << "Nets: " << SharedData::GetInstance()->player->inventory[Item::TYPE_NET].GetCount();
 	ss3 << "Baits: " << SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].GetCount();
 	ss4 << "Traps: " << SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP_ONE].GetCount();
-	//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_TERRAIN), false, 10.0f, 25, -48);
-	//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 10.0f, 68, -48);
+
+	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 80.f, 12.f, 0, -48);
+
 	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2, 25, 10, f_RotateRock, f_RotateRock, 0, false);
 	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 1, 23, 7);
 	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 2, 32, 9, 0, f_RotateNet, 0, false);
