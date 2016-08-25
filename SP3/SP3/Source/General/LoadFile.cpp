@@ -94,11 +94,11 @@ void LoadMonsterData(std::ifstream& fileStream)
         // first content is name of monster
         std::string tempName = data;
 
-        int stats[4] = {};
+        std::vector<int> stats;
         for (int i = 0; i < 4; ++i)
         {
             std::getline(dataStream, data, ',');
-            stats[i] = std::stoi(data);
+            stats.push_back(std::stoi(data));
         }
 
         // push into map
@@ -154,6 +154,8 @@ GraphicsLoader::GEOMETRY_TYPE AssignMeshType(int num)
         GraphicsLoader::GEO_GRASS2,
         GraphicsLoader::GEO_TREE1,
         GraphicsLoader::GEO_TREE2,
+        GraphicsLoader::GEO_SWAMP_PLANT,
+        GraphicsLoader::GEO_SWAMP_ROOT,
     };
 
     return list[num];
@@ -187,10 +189,7 @@ void LoadLevelMapData(std::ifstream& fileStream)
     {
         for (int i = 0; i < Scene::m_rows; ++i)
         {
-            for (int j = 0; i < Scene::m_cols; ++j)
-            {
-                delete Scene::m_levelMap[i];
-            }
+			delete Scene::m_levelMap[i];
         }
         delete Scene::m_levelMap;
     }

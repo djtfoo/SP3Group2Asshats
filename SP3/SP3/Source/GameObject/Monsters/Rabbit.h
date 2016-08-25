@@ -11,7 +11,7 @@ private:
 	int FearLevel = 0;
 
 public:
-	Monster_Rabbit(std::string name, int stats[]);
+    Monster_Rabbit(std::string name, const std::vector<int>& stats);
 	virtual ~Monster_Rabbit();
 	//Monster Movement update
 	virtual void Update(double dt);

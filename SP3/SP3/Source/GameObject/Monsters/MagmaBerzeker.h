@@ -11,7 +11,7 @@ private:
 	int FearLevel = 0;
 
 public:
-	Boss_MagmaBerzeker(std::string name, int stats[]);
+    Boss_MagmaBerzeker(std::string name, const std::vector<int>& stats);
 	virtual ~Boss_MagmaBerzeker();
 
 	//Monster Movement update

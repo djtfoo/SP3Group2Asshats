@@ -1,7 +1,7 @@
 #include "Fairy.h"
 #include "../AI_Strategy.h"
 
-Boss_Fairy::Boss_Fairy(std::string name, int stats[]) : Monster(name, stats)
+Boss_Fairy::Boss_Fairy(std::string name, const std::vector<int>& stats) : Monster(name, stats)
 {
     m_strategy = NULL;
 }

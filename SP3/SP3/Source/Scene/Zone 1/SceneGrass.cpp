@@ -60,7 +60,8 @@ void SceneGrass::Init()
                 grass.hitbox[go].m_origin = grass.position[go];
                 grass.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
                 grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
-                grass.appearance[go].scale.Set(1, 1, 1);
+                grass.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(0.5f, 1.f), Math::RandFloatMinMax(0.8f, 1.f));
+                //grass.appearance[go].scale.Set(1, 1, 1);
             }
             else if (tile >= '1' && tile <= '9')
             {
@@ -97,7 +98,7 @@ void SceneGrass::Init()
     grass.velocity[monster].Set(0, 0, 1);
     grass.hitbox[monster].m_origin = grass.position[monster] + Vector3(0, 0.75f, -0.3);
     grass.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
-    grass.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_RABBIT);
+    grass.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
     grass.appearance[monster].scale.Set(1, 1, 1);
 
 	rock = createGO(&grass);
@@ -317,7 +318,9 @@ void SceneGrass::Update(double dt)
 							grass.trap[trap].caughtMonster = ai;
 							grass.trap[trap].activated = true;
 							//grass.velocity[ai].SetZero();
-                            grass.velocity[ai] = grass.velocity[ai].Normalized() * 0.01f;
+                            if (grass.velocity[ai].LengthSquared() > Math::EPSILON) {
+                                grass.velocity[ai] = grass.velocity[ai].Normalized() * 0.01f;
+                            }
 						}
 					}
 				}
@@ -569,6 +572,9 @@ void SceneGrass::Render()
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isPressed)
         std::cout << "asd" << std::endl;
 
+    //=============
+    // RENDER FPS
+    //=============
     std::stringstream ss;
     ss << "FPS: " << fps;
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 3);

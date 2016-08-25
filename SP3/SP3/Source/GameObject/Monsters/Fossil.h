@@ -11,7 +11,7 @@ private:
 	int FearLevel = 0;
 
 public:
-	Monster_Fossil(std::string name, int stats[]);
+    Monster_Fossil(std::string name, const std::vector<int>& stats);
 	virtual ~Monster_Fossil();
 
 	//Monster Movement update

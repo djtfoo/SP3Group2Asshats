@@ -6,6 +6,7 @@
 //#include "../../Graphics/LoadOBJ/LoadTGA.h"
 //#include "../../Graphics/Mesh/MeshBuilder.h"
 #include "../../General/SharedData.h"
+#include "../../GameObject/MonsterFactory.h"
 
 #include <sstream>
 
@@ -32,34 +33,64 @@ void SceneSwamp::Init()
 
     bLButtonState = false;
     //Set heap(?)
-    //memset(&grass, 0, sizeof(grass));
+    memset(&swamp, 0, sizeof(swamp));
 
-    // Load map
-    //Scene::LoadLevelMap("GameData/GrassScene.csv");
-    //for (int rows = 0; rows < Scene::m_rows; ++rows)
-    //{
-    //    for (int cols = 0; cols < Scene::m_cols; ++cols)
-    //    {
-    //        if (m_levelMap[rows][cols] == '0')
-    //            continue;
-    //
-    //        LevelGenerationMap::iterator it = Scene::m_levelGenerationData.find(m_levelMap[rows][cols]);
-    //
-    //        // it->first is tileCount
-    //        // first in it->second is mesh
-    //        // second in it->second is vector of components
-    //        //std::cout << m_levelMap[rows][cols] << " ";
-    //
-    //        GameObject go = createGO(&grass);
-    //        grass.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
-    //        grass.position[go].Set(-100.f + cols * Scene::tileSize, 0.f, -100.f + rows * Scene::tileSize);
-    //        grass.hitbox[go].m_origin = grass.position[go];
-    //        grass.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
-    //        grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
-    //        grass.appearance[go].scale.Set(1, 1, 1);
-    //    }
-    //}
-    //
+    //Load map
+    Scene::LoadLevelMap("GameData/SwampScene.csv");
+	for (int rows = 0; rows < Scene::m_rows; ++rows)
+	{
+		for (int cols = 0; cols < Scene::m_cols; ++cols)
+		{
+			char tile = m_levelMap[rows][cols];
+	
+			if (tile == '0')
+				continue;
+	
+			LevelGenerationMap::iterator it = Scene::m_levelGenerationData.find(tile);
+	
+			// it->first is tileCount
+			// first in it->second is mesh
+			// second in it->second is vector of components
+			//std::cout << m_levelMap[rows][cols] << " ";
+			if (tile >= 'A' && tile <= 'Z')
+			{
+				GameObject go = createGO(&swamp);
+				swamp.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
+				swamp.position[go].Set(-100.f + cols * Scene::tileSize, 0.f, -100.f + rows * Scene::tileSize);
+				swamp.hitbox[go].m_origin = swamp.position[go];
+				swamp.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
+				swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
+				swamp.appearance[go].scale.Set(1, 1, 1);
+			}
+			else if (tile >= '1' && tile <= '9')
+			{
+				GameObject go = createGO(&swamp);
+				swamp.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
+				//swamp.velocity[go].Set(Math::RandFloatMinMax(0.f, 1.f), 0, Math::RandFloatMinMax(0.f, 1.f));
+				swamp.velocity[go].SetZero();
+				swamp.position[go].Set(-100.f + cols * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f), 0.f, -100.f + rows * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f));
+				swamp.hitbox[go].m_origin = swamp.position[go];
+				swamp.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
+				switch (tile)
+				{
+				case '1':
+					swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
+					swamp.monster[go] = MonsterFactory::CreateMonster("Rabbit");
+					break;
+	
+				case '2':
+					swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_BIRD);
+					swamp.monster[go] = MonsterFactory::CreateMonster("Bird");
+					break;
+	
+				case '3':
+					break;
+				}
+				swamp.appearance[go].scale.Set(1, 1, 1);
+			}
+		}
+	}
+    
     //monster = createGO(&grass);
     //grass.mask[monster] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
     //grass.position[monster].SetZero();
@@ -82,6 +113,21 @@ void SceneSwamp::Init()
     //grass.appearance[net].scale.Set(2, 2, 2);
     ////HITBOX.m_origin = Vector3(0, 5, 0);
     ////HITBOX.m_scale = Vector3(10, 10, 10);
+	
+	// Fog
+	fog.color.Set(0.3f, 0.6f, 0.3f);
+	fog.start = 10;
+	fog.end = 1000;
+	fog.density = 0.008f;
+	fog.type = Fog::FOG_EXPONENTIAL;
+	fog.enabled = true;
+	glUniform3fv(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_COLOR), 1, &fog.color.r);
+
+	glUniform1f(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_START), fog.start);
+	glUniform1f(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_END), fog.end);
+	glUniform1f(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_DENSITY), fog.density);
+	glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_TYPE), fog.type);
+	glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), fog.enabled);
 
     b_capturing = false;
     b_captured = false;
@@ -90,17 +136,31 @@ void SceneSwamp::Init()
 }
 static double counter = 0;
 
+void SceneSwamp::UpdateFog(double dt)
+{
+	fog.density += 0.0005f * dt * fog.fog_change;
+	if (fog.density <= 0.001f || fog.density >= 0.009f) {
+		fog.fog_change *= -1;
+	}
+	glUniform1f(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_DENSITY), fog.density);
+
+}
+
 void SceneSwamp::Update(double dt)
 {
+    fps = (float)(1.f / dt);
+
     //===============================================================================================================================//
     //                                                            Updates                                                            //
     //===============================================================================================================================//
+
+	UpdateFog(dt);
 
     //Update Projectiles
     itemProjectile->UpdateProjectile(dt);
 
     //Movement update for Gameobjects
-    UpdateGameObjects(&grass, dt);
+    UpdateGameObjects(&swamp, dt);
 
     //Camera Update
     camera.Update(dt);
@@ -143,7 +203,7 @@ void SceneSwamp::Render()
         Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
         glUniform3fv(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_LIGHT0_POSITION), 1, &lightDirection_cameraspace.x);
     }
-
+	
     RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_AXES), false);
 
     for (vector<ItemProjectile*>::iterator it = ItemProjectile::ItemProjectileList.begin(); it != ItemProjectile::ItemProjectileList.end(); ++it){
@@ -158,7 +218,7 @@ void SceneSwamp::Render()
         modelStack.PopMatrix();
     }
 
-    RenderLavaScene();
+    RenderSwampScene();
 
     //visable hitbox
     /*modelStack.PushMatrix();
@@ -186,25 +246,33 @@ void SceneSwamp::Render()
 
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isPressed)
         std::cout << "asd" << std::endl;
+
+
+    //=============
+    // RENDER FPS
+    //=============
+    std::stringstream ss;
+    ss << "FPS: " << fps;
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 3);
 }
 
-void SceneSwamp::RenderLavaScene()
+void SceneSwamp::RenderSwampScene()
 {
     //Ground mesh
     modelStack.PushMatrix();
     modelStack.Translate(0, 0, 0);
     modelStack.Rotate(-90, 1, 0, 0);
-    modelStack.Scale(200, 200, 100);
-    //RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS), true);
+    modelStack.Scale(250, 250, 100);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SWAMP_TERRAIN), true);
     modelStack.PopMatrix();
 
-    //RenderGameObjects(&grass);
+    RenderGameObjects(&swamp);
 
     //Skyplane
     modelStack.PushMatrix();
     modelStack.Translate(500, 2800, -500);
     //modelStack.Rotate(0, 0,0,0);
-    //RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASSZONESKYPLANE), false);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SWAMP_SKYPLANE), false);
     modelStack.PopMatrix();
 }
 

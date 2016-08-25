@@ -10,7 +10,7 @@ Class that defines a monster's variables and statistics
 #include "Monster.h"
 #include "MonsterFactory.h"
 
-Monster::Monster(std::string name, int stats[]) : m_name(name), m_originalAggression(stats[2]), m_originalFear(stats[3])
+Monster::Monster(std::string name, const std::vector<int>& stats) : m_name(name), m_originalAggression(stats[2]), m_originalFear(stats[3])
 {
     // idea: Monster(std::string name);
     // based on name, retrieve stats from a struct/array that already initialised with the stats from the text files

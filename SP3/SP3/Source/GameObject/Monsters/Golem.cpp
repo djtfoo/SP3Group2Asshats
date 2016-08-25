@@ -1,7 +1,7 @@
 #include "Golem.h"
 #include "../AI_Strategy.h"
 
-Monster_Golem::Monster_Golem(std::string name, int stats[]) : Monster(name, stats)
+Monster_Golem::Monster_Golem(std::string name, const std::vector<int>& stats) : Monster(name, stats)
 {
     m_strategy = NULL;
 }

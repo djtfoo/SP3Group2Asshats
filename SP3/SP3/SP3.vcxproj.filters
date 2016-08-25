@@ -469,5 +469,8 @@
     <ClInclude Include="Source\Scene\Zone 4\SceneLava.h">
       <Filter>Header Files\Scene\Zone 4</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\Lighting\Fog.h">
+      <Filter>Header Files\Graphics\Lighting</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

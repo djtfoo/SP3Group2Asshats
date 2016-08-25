@@ -10,7 +10,7 @@ Class that Updates the strategy of monster
 #include "AI_Strategy.h"
 #include "Monster.h"
 
-AI_Strategy::AI_Strategy()
+AI_Strategy::AI_Strategy() : currentState(STATE_IDLE)
 {
 }
 AI_Strategy::~AI_Strategy()
@@ -38,6 +38,7 @@ int AI_Strategy::CalculateDistance(const Vector3& MonsterPos, const Vector3& Des
 
 void AI_Strategy::Update()
 {
+    //std::cout << " AI UPDATE ";
 	float m_aggressionLevel = monster->GetAggressionStat();
 	float m_fearLevel = monster->GetFearStat();
     
@@ -57,9 +58,9 @@ void AI_Strategy::Update()
 	//	if(timer > 5)
 	//	SetState(Prev State);
 	//}
-	else
+    else if (currentState != STATE_IDLE)
 	{
 		SetState(STATE_IDLE);
-        //std::cout << "IDLE";
+        std::cout << "IDLE";
 	}
 }

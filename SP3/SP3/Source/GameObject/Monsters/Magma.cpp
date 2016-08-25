@@ -1,7 +1,7 @@
 #include "Magma.h"
 #include "../AI_Strategy.h"
 
-Monster_Magma::Monster_Magma(std::string name, int stats[]) : Monster(name, stats)
+Monster_Magma::Monster_Magma(std::string name, const std::vector<int>& stats) : Monster(name, stats)
 {
     m_strategy = NULL;
 }

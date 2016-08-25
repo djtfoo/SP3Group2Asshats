@@ -67,7 +67,7 @@ void SceneRock::Init()
     rockWorld.velocity[monster].SetZero();//(0, 0, 1);
     rockWorld.hitbox[monster].m_origin = rockWorld.position[monster] + Vector3(0, 0.75f, -0.3f);
     rockWorld.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
-    rockWorld.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_RABBIT);
+    rockWorld.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
     rockWorld.appearance[monster].scale.Set(1, 1, 1);
 
     rock = createGO(&rockWorld);
@@ -390,7 +390,7 @@ void SceneRock::Update(double dt)
         rockWorld.velocity[monster].Set(0, 0, 1);
         rockWorld.hitbox[monster].m_origin = rockWorld.position[monster] + Vector3(0, 0.75f, -0.3f);
         rockWorld.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
-        rockWorld.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_RABBIT);
+        rockWorld.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
         rockWorld.appearance[monster].scale.Set(1, 1, 1);
 
         counter = 0;
@@ -505,7 +505,7 @@ void SceneRock::RenderRockScene()
     modelStack.PushMatrix();
     modelStack.Translate(500, 2800, -500);
     //modelStack.Rotate(0, 0,0,0);
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASSZONESKYPLANE), false);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_SKYPLANE), false);
     modelStack.PopMatrix();
 
     //Render hitboxes

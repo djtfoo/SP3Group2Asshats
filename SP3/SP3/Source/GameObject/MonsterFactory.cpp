@@ -38,47 +38,41 @@ Monster* MonsterFactory::CreateMonster(const std::string name)
 
     // Grass Zone
     if (name == "Bird")
-        createdMonster = new Monster_Bird(name, *it->second);
+        createdMonster = new Monster_Bird(name, it->second);
     else if (name == "Rabbit")
-        createdMonster = new Monster_Rabbit(name, *it->second);
+        createdMonster = new Monster_Rabbit(name, it->second);
     else if (name == "Fairy")
-        createdMonster = new Boss_Fairy(name, *it->second);
-
-    // Fire Zone
-    else if (name == "FireBug")
-        createdMonster = new Monster_FireBugs(name, *it->second);
-    else if (name == "Magma")
-        createdMonster = new Monster_Magma(name, *it->second);
-    else if (name == "MagmaBerzeker")
-        createdMonster = new Boss_MagmaBerzeker(name, *it->second);
-
-    // Rock Zone
-    else if (name == "Fossil")
-        createdMonster = new Monster_Fossil(name, *it->second);
-    else if (name == "Golem")
-        createdMonster = new Monster_Golem(name, *it->second);
-    else if (name == "RockSnake")
-        createdMonster = new Boss_RockSnake(name, *it->second);
+        createdMonster = new Boss_Fairy(name, it->second);
 
     // Water Zone
     else if (name == "Grimejam")
-        createdMonster = new Monster_Grimejam(name, *it->second);
+        createdMonster = new Monster_Grimejam(name, it->second);
     else if (name == "Kof")
-        createdMonster = new Monster_Kof(name, *it->second);
+        createdMonster = new Monster_Kof(name, it->second);
     else if (name == "MukBoss")
-        createdMonster = new Boss_MukBoss(name, *it->second);
+        createdMonster = new Boss_MukBoss(name, it->second);
+
+    // Rock Zone
+    else if (name == "Fossil")
+        createdMonster = new Monster_Fossil(name, it->second);
+    else if (name == "Golem")
+        createdMonster = new Monster_Golem(name, it->second);
+    else if (name == "RockSnake")
+        createdMonster = new Boss_RockSnake(name, it->second);
+
+    // Fire Zone
+    else if (name == "FireBug")
+        createdMonster = new Monster_FireBugs(name, it->second);
+    else if (name == "Magma")
+        createdMonster = new Monster_Magma(name, it->second);
+    else if (name == "MagmaBerzeker")
+        createdMonster = new Boss_MagmaBerzeker(name, it->second);
+
 
     return createdMonster;
 }
 
-void MonsterFactory::AddToMap(std::string name, int stats[])
+void MonsterFactory::AddToMap(std::string name, const std::vector<int>& stats)
 {
-    size_t size = sizeof(stats) / sizeof(int);
-
-    int tempArray[4];
-    for (int i = 0; i < 4; ++i)
-    {
-        tempArray[i] = stats[i];
-    }
-    m_monsterStatsList.insert(std::pair<std::string, int(*)[4]>(name, &tempArray));
+    m_monsterStatsList.insert(std::pair<std::string, std::vector<int>>(name, stats));
 }

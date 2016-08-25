@@ -1,7 +1,7 @@
 #include "Bird.h"
 #include "../AI_Strategy.h"
 
-Monster_Bird::Monster_Bird(std::string name, int stats[]) : Monster(name, stats)
+Monster_Bird::Monster_Bird(std::string name, const std::vector<int>& stats) : Monster(name, stats)
 {
     m_strategy = new AI_Strategy();
     m_strategy->Init(this);
@@ -18,27 +18,26 @@ Monster_Bird::~Monster_Bird()
 
 void Monster_Bird::Update(double dt)
 {
-    std::cout << " BIRD UPDATE ";
-	if ((GetPosition() - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > 24)
+	if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > 24 * 24)
 	{
 		//reInit AggressionStat && FearStat
 		ResetAggression();
 		ResetFear();
 	}
 	//If near Player, increase aggro
-    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < 10)
+    else if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < 10 * 10)
     {
-        std::cout << m_position << std::endl;
-        std::cout << "increasing aggression...";
+        //std::cout << "increasing aggression...";
         AggressionLevel = 10;
         changeAggressionStat(m_aggressionStat + AggressionLevel);
         if (AggressionLevel >= 100)
         {
             AggressionLevel = 100;
         }
+        std::cout << "KEK";
     }
 	//If health < 25, decrease aggro, increase fear
-    if (GetHealthStat() < 25)
+    else if (GetHealthStat() < 25)
     {
         AggressionLevel = -20;
         FearLevel = 50;
@@ -53,11 +52,12 @@ void Monster_Bird::Update(double dt)
             FearLevel = 100;
         }
     }
-    
-	//Get Aggression Stat and Fear Stat
-    GetAggressionStat();
-    GetFearStat();
 
 	//Update Strategy accordingly
     m_strategy->Update();
+
+    std::cout << "Health:" << m_healthStat << " ";
+    std::cout << "CapRate:" << m_captureRateStat << " ";
+    std::cout << "Aggro:" << m_aggressionStat << " ";
+    std::cout << "Fear:" << m_fearStat << std::endl;
 }

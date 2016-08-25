@@ -77,19 +77,19 @@ void GraphicsLoader::Init()
 	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
 
 	m_parameters[U_FOG_COLOR] = glGetUniformLocation(m_programID, "fogParam.color");
-	m_parameters[U_FOG_START] = glGetUniformLocation(m_programID, "fogParam.startpoint");
-	m_parameters[U_FOG_END] = glGetUniformLocation(m_programID, "fogParam.endpoint");
+	m_parameters[U_FOG_START] = glGetUniformLocation(m_programID, "fogParam.start");
+	m_parameters[U_FOG_END] = glGetUniformLocation(m_programID, "fogParam.end");
 	m_parameters[U_FOG_DENSITY] = glGetUniformLocation(m_programID, "fogParam.density");
-	m_parameters[U_FOG_TYPE] = glGetUniformLocation(m_programID, "fogParam.Type");
-	m_parameters[U_FOG_ENABLE] = glGetUniformLocation(m_programID, "fogParam.enable");
+	m_parameters[U_FOG_TYPE] = glGetUniformLocation(m_programID, "fogParam.type");
+	m_parameters[U_FOG_ENABLED] = glGetUniformLocation(m_programID, "fogParam.enabled");
 
 	// Use our shader
 	glUseProgram(m_programID);
 
 	m_lights.type = Light::LIGHT_DIRECTIONAL;
-	m_lights.position.Set(0, 20, 10);
+	m_lights.position.Set(0, 100, 10);
 	m_lights.color.Set(1, 1, 1);
-	m_lights.power = 5.f;
+	m_lights.power = 1.f;
 	m_lights.kC = 1.f;
 	m_lights.kL = 0.01f;
 	m_lights.kQ = 0.001f;
@@ -176,8 +176,19 @@ void GraphicsLoader::Init()
 	//m_meshList[GEO_ROCKS5] = MeshBuilder::GenerateOBJ("Bird", "OBJ//stone_5.obj");
 	//m_meshList[GEO_ROCKS5]->textureArray[0] = LoadTGA("Image//Rock5.tga");
 
-	m_meshList[GEO_SWAMP_TERRAIN] = MeshBuilder::GenerateQuad("Swamp Terrain", Color(1, 1, 1), 1.f, 100);
-	//m_meshList[GEO_SWAMP_TERRAIN]->textureArray[0] = LoadTGA();
+	m_meshList[GEO_SWAMP_TERRAIN] = MeshBuilder::GenerateQuad("Swamp Terrain", Color(1, 1, 1), 1.f, 20);
+	m_meshList[GEO_SWAMP_TERRAIN]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_terrain.tga");
+	
+	m_meshList[GEO_SWAMP_SKYPLANE] = MeshBuilder::GenerateSkyPlane("skyplane", Color(1, 1, 1), 128, 400.0f, 3000.0f, 1.0f, 1.0f);
+	m_meshList[GEO_SWAMP_SKYPLANE]->textureArray[0] = LoadTGA("Image//SwampZone//swamp_skyplane.tga");
+
+    m_meshList[GEO_SWAMP_PLANT] = MeshBuilder::GenerateOBJ("swamp plant", "OBJ//SwampZone/swamp_plant.obj");
+    //m_meshList[GEO_SWAMP_PLANT] = MeshBuilder::GenerateCone("cone", Color(1, 1, 1), 36, 1.f, 1.f);
+    m_meshList[GEO_SWAMP_PLANT]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_plant.tga");
+
+    m_meshList[GEO_SWAMP_ROOT] = MeshBuilder::GenerateOBJ("swamp root", "OBJ//SwampZone/swamp_root.obj");
+    //m_meshList[GEO_SWAMP_ROOT] = MeshBuilder::GenerateCube("cube", Color(1, 1, 0), 1.f);
+    m_meshList[GEO_SWAMP_ROOT]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_root.tga");
 
 	m_meshList[GEO_ROCK_TERRAIN] = MeshBuilder::GenerateQuad("Rock Terrain", Color(1, 1, 1), 1.f, 100);
 	//m_meshList[GEO_ROCK_TERRAIN]->textureArray[0] = LoadTGA();

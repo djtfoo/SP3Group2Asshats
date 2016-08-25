@@ -11,7 +11,7 @@ private:
 	int FearLevel = 0;
 
 public:
-	Monster_FireBugs(std::string name, int stats[]);
+    Monster_FireBugs(std::string name, const std::vector<int>& stats);
 	virtual ~Monster_FireBugs();
 
 	//Monster Movement update

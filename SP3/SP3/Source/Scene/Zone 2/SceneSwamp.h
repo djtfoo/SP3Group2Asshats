@@ -3,11 +3,15 @@
 
 #include "../Scene.h"
 #include "../../GameObject/ItemProjectiles.h"
+#include "../../Graphics/Lighting/Fog.h"
 
 class SceneSwamp : public Scene
 {
     //float m_worldHeight;
     //float m_worldWidth;
+
+	// Fog
+	Fog fog;
 
     // Clicking
     bool bLButtonState;
@@ -16,10 +20,12 @@ public:
     SceneSwamp();
     ~SceneSwamp();
 
+	void UpdateFog(double dt);
+
     virtual void Init();
     virtual void Update(double dt);
     virtual void Render();
-    virtual void RenderLavaScene();
+    virtual void RenderSwampScene();
     virtual void Exit();
     bool ViewCheckPosition(Vector3 pos, float degree);
     //Test stuff
@@ -35,7 +41,7 @@ public:
 
     //AABB HITBOX;
 
-    World grass;
+    World swamp;
 
     AABB HITBOX;
     double counter;

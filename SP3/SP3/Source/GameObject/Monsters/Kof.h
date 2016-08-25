@@ -11,7 +11,7 @@ private:
 	int FearLevel = 0;
 
 public:
-	Monster_Kof(std::string name, int stats[]);
+    Monster_Kof(std::string name, const std::vector<int>& stats);
 	virtual ~Monster_Kof();
 
 	//Monster Movement update

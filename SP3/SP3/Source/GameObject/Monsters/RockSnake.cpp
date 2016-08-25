@@ -1,7 +1,7 @@
 #include "RockSnake.h"
 #include "../AI_Strategy.h"
 
-Boss_RockSnake::Boss_RockSnake(std::string name, int stats[]) : Monster(name, stats)
+Boss_RockSnake::Boss_RockSnake(std::string name, const std::vector<int>& stats) : Monster(name, stats)
 {
     m_strategy = NULL;
 }

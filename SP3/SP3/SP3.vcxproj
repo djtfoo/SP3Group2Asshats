@@ -115,6 +115,7 @@
     <ClInclude Include="Source\General\SharedData.h" />
     <ClInclude Include="Source\Graphics\GraphicsLoader\GraphicsLoader.h" />
     <ClInclude Include="Source\Graphics\Lighting\DepthFBO.h" />
+    <ClInclude Include="Source\Graphics\Lighting\Fog.h" />
     <ClInclude Include="Source\Graphics\Lighting\Light.h" />
     <ClInclude Include="Source\Graphics\LoadOBJ\LoadOBJ.h" />
     <ClInclude Include="Source\Graphics\LoadOBJ\LoadTGA.h" />

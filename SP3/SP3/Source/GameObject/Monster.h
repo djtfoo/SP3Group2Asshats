@@ -45,7 +45,7 @@ public:
 
 protected:
     Monster() {}
-    Monster(std::string name, int stats[]);
+    Monster(std::string name, const std::vector<int>& stats);
 
     std::string m_name;
 

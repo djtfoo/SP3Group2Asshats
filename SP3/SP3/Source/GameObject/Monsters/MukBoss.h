@@ -11,7 +11,7 @@ private:
 	int FearLevel = 0;
 
 public:
-	Boss_MukBoss(std::string name, int stats[]);
+    Boss_MukBoss(std::string name, const std::vector<int>& stats);
 	virtual ~Boss_MukBoss();
 
 	//Monster Movement update

@@ -11,7 +11,7 @@ private:
 	int FearLevel = 0;
 
 public:
-	Monster_Grimejam(std::string name, int stats[]);
+    Monster_Grimejam(std::string name, const std::vector<int>& stats);
 	virtual ~Monster_Grimejam();
 
 	//Monster Movement update

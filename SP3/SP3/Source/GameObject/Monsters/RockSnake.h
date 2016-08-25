@@ -11,7 +11,7 @@ private:
 	int FearLevel = 0;
 
 public:
-	Boss_RockSnake(std::string name, int stats[]);
+    Boss_RockSnake(std::string name, const std::vector<int>& stats);
 	virtual ~Boss_RockSnake();
 
 	//Monster Movement update

@@ -1,7 +1,7 @@
 #include "FireBugs.h"
 #include "../AI_Strategy.h"
 
-Monster_FireBugs::Monster_FireBugs(std::string name, int stats[]) : Monster(name, stats)
+Monster_FireBugs::Monster_FireBugs(std::string name, const std::vector<int>& stats) : Monster(name, stats)
 {
     m_strategy = NULL;
 }

@@ -1,7 +1,7 @@
 #include "Rabbit.h"
 #include "../AI_Strategy.h"
 
-Monster_Rabbit::Monster_Rabbit(std::string name, int stats[]) : Monster(name, stats)
+Monster_Rabbit::Monster_Rabbit(std::string name, const std::vector<int>& stats) : Monster(name, stats)
 {
     m_strategy = new AI_Strategy();
     m_strategy->Init(this);

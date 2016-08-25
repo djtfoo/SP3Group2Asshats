@@ -78,7 +78,7 @@ public:
 		U_FOG_END,
 		U_FOG_DENSITY,
 		U_FOG_TYPE,
-		U_FOG_ENABLE,
+		U_FOG_ENABLED,
 
 		U_TEXT_ENABLED,
 		U_TEXT_COLOR,
@@ -151,6 +151,8 @@ public:
 		//SceneSwamp
 		GEO_SWAMP_TERRAIN,
 		GEO_SWAMP_SKYPLANE,
+        GEO_SWAMP_PLANT,
+        GEO_SWAMP_ROOT,
 
 		//SceneRock
 		GEO_ROCK_TERRAIN,

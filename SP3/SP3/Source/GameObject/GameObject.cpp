@@ -7,7 +7,7 @@ unsigned int createGO(World *world)
 		if (world->mask[GO] == COMPONENT_NONE)
 		{
 			//Returns the first int that does not have a componenet/is inactive
-			std::cout << "created go" << std::endl;
+			//std::cout << "created go" << std::endl;
 			return(GO);
 		}
 	}
