@@ -411,17 +411,20 @@ void SceneGrass::Update(double dt)
 	{
 		//Net projectile
 		f_RotateNet += dt * 50;
-		if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_NET].Use() && counter > 3)
+		if (counter > 3)
 		{
-			ItemProjectile::NetProjectileList.push_back(new ItemProjectile(
-				Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
-				Vector3(SharedData::GetInstance()->player->GetViewVector().x, 0.5, SharedData::GetInstance()->player->GetViewVector().z),
-				500,
-				15,
-				10
-				));
+			if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_NET].Use())
+			{
+				ItemProjectile::NetProjectileList.push_back(new ItemProjectile(
+					Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+					Vector3(SharedData::GetInstance()->player->GetViewVector().x, 0.5, SharedData::GetInstance()->player->GetViewVector().z),
+					500,
+					15,
+					10
+					));
 
-			counter = 0;
+				counter = 0;
+			}
 		}
 	}
 	if (b_Baits)
@@ -591,12 +594,11 @@ void SceneGrass::Render()
 void SceneGrass::RenderGrassScene()
 {
     //Ground mesh
-    modelStack.PushMatrix();
-    modelStack.Translate(0, 0, 0);
-    modelStack.Rotate(-90, 1, 0, 0);
-    modelStack.Scale(250, 250, 100);
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_TERRAIN), true);
-    modelStack.PopMatrix();
+	modelStack.PushMatrix();
+	modelStack.Translate(0, -7, 0);
+	modelStack.Scale(300.0f, 30.0f, 300.0f);
+	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_TERRAIN), true);
+	modelStack.PopMatrix();
 
     RenderGameObjects(&grass);
 
@@ -610,11 +612,21 @@ void SceneGrass::RenderGrassScene()
 
 void SceneGrass::RenderHUD()
 {
-	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_TERRAIN), false, 10.0f, 25, -48);
-	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 10.0f, 68, -48);
+	std::stringstream ss,ss2,ss3,ss4;
+	ss << "Rocks: " << SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetCount();
+	ss2 << "Nets: " << SharedData::GetInstance()->player->inventory[Item::TYPE_NET].GetCount();
+	ss3 << "Baits: " << SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].GetCount();
+	ss4 << "Traps: " << SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP_ONE].GetCount();
+	//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_TERRAIN), false, 10.0f, 25, -48);
+	//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 10.0f, 68, -48);
 	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2, 25, 10, f_RotateRock, f_RotateRock, 0, false);
+	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 1, 23, 7);
 	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 2, 32, 9, 0, f_RotateNet, 0, false);
+	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(1, 1, 0), 1, 30, 7);
 	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2, 39, 10, f_RotateBait, f_RotateBait, 0, false);
+	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 1, 37, 7);
+	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2, 46, 10, 0, 0, 0, false);
+	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss4.str(), Color(1, 1, 0), 1, 44, 7);
 	//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), false, 30.f, 10, -30, false);
 	//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), true, 10.0f, 40, -48);
 }

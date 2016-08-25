@@ -258,13 +258,11 @@ void SceneSwamp::Render()
 
 void SceneSwamp::RenderSwampScene()
 {
-    //Ground mesh
-    modelStack.PushMatrix();
-    modelStack.Translate(0, 0, 0);
-    modelStack.Rotate(-90, 1, 0, 0);
-    modelStack.Scale(250, 250, 100);
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SWAMP_TERRAIN), true);
-    modelStack.PopMatrix();
+	modelStack.PushMatrix();
+	modelStack.Translate(0, -7, 0);
+	modelStack.Scale(300.0f, 30.0f, 300.0f);
+	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SWAMP_TERRAIN), true);
+	modelStack.PopMatrix();
 
     RenderGameObjects(&swamp);
 

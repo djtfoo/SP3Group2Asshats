@@ -128,7 +128,7 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_HUDHIGHLIGHT] = MeshBuilder::GenerateQuad("HUDHIGHLIGHT", Color(0, 1, 0), 1.f, 100);
 	m_meshList[GEO_HUDHIGHLIGHT]->textureID = LoadTGA("Image//HUD//HudHighlights.tga");
 
-	m_meshList[GEO_GRASS_TERRAIN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(0, 1,0), 1.f, 100);
+	m_meshList[GEO_GRASS_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw",m_heightMap);
 	m_meshList[GEO_GRASS_TERRAIN]->textureArray[0] = LoadTGA("Image//GrassZone//Grass.tga");
 
 	m_meshList[GEO_GRASS_SKYPLANE] = MeshBuilder::GenerateSkyPlane("skyplane", Color(1, 1, 1), 128, 400.0f, 3000.0f, 1.0f, 1.0f);
@@ -182,7 +182,7 @@ void GraphicsLoader::Init()
 	//m_meshList[GEO_ROCKS5] = MeshBuilder::GenerateOBJ("Bird", "OBJ//stone_5.obj");
 	//m_meshList[GEO_ROCKS5]->textureArray[0] = LoadTGA("Image//Rock5.tga");
 
-	m_meshList[GEO_SWAMP_TERRAIN] = MeshBuilder::GenerateQuad("Swamp Terrain", Color(1, 1, 1), 1.f, 20);
+	m_meshList[GEO_SWAMP_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw", m_heightMap);
 	m_meshList[GEO_SWAMP_TERRAIN]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_terrain.tga");
 	
 	m_meshList[GEO_SWAMP_SKYPLANE] = MeshBuilder::GenerateSkyPlane("skyplane", Color(1, 1, 1), 128, 400.0f, 3000.0f, 1.0f, 1.0f);
