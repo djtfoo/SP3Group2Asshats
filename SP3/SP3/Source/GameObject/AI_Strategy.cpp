@@ -73,7 +73,7 @@ int AI_Strategy::CalculateDistance(const Vector3& MonsterPos, const Vector3& Des
 
 void AI_Strategy::Update()
 {
-    if (currentState == STATE_TRAPPED || currentState == STATE_BAITED || currentState == STATE_CAPTURED)
+    if (currentState == STATE_TRAPPED || currentState == STATE_CAPTURED)
     {
         return;
     }
@@ -112,7 +112,7 @@ void AI_Strategy::Update()
 	//	if(timer > 5)
 	//	SetState(Prev State);
 	//}
-    else if (currentState != STATE_IDLE)
+    else if (currentState != STATE_BAITED && currentState != STATE_IDLE)
 	{
 		SetState(STATE_IDLE);
         std::cout << "IDLE";
@@ -122,6 +122,9 @@ void AI_Strategy::Update()
     {
         if (currentState == STATE_IDLE) {
             SetIdleStateDestination();
+        }
+        else if (currentState == STATE_RUN) {
+            SetRunStateDestination();
         }
     }
 }
@@ -169,5 +172,5 @@ void AI_Strategy::SetRunStateDestination()
 
     Vector3 destination = monster->m_position + 5 * view;
 
-    SetDestination(SharedData::GetInstance()->player->GetPositionVector());
+    SetDestination(destination);
 }

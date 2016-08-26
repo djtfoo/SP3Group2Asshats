@@ -20,35 +20,40 @@ Monster_Bird::~Monster_Bird()
 
 void Monster_Bird::Update(double dt)
 {
+    AggressionLevel = 0.f;
+    FearLevel = 0.f;
+
     if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > (8 * Scene::tileSize) * (8 * Scene::tileSize))
 	{
 		//reInit AggressionStat && FearStat
 		ResetAggression();
 		ResetFear();
 	}
+
 	//If near Player, increase aggro
     else if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < (5 * Scene::tileSize) * (5 * Scene::tileSize))
     {
         //std::cout << "increasing aggression...";
         AggressionLevel = 40 * dt * SharedData::GetInstance()->player->GetNoiseFactor();
-        changeAggressionStat(m_aggressionStat + AggressionLevel);
     }
-	//If health < 25, decrease aggro, increase fear
+	//If health < 25, decrease aggro
     else if (GetHealthStat() < 25)
     {
         AggressionLevel = -30 * dt * SharedData::GetInstance()->player->GetNoiseFactor();
-        FearLevel = 30 * dt;
-        changeAggressionStat(m_aggressionStat + AggressionLevel);
-        changeFearStat(m_fearStat + FearLevel);
+        //FearLevel = 30 * dt;
     }
+
+    if (m_strategy->GetState() == AI_Strategy::STATE_BAITED)
+    {
+        AggressionLevel /= 2.f;
+        FearLevel /= 2.f;
+    }
+
+    changeAggressionStat(m_aggressionStat + AggressionLevel);
+    //changeFearStat(m_fearStat + FearLevel);
 
 	//Update Strategy accordingly
     m_strategy->Update();
-
-    //std::cout << "Health:" << m_healthStat << " ";
-    //std::cout << "CapRate:" << m_captureRateStat << " ";
-    //std::cout << "Aggro:" << m_aggressionStat << " ";
-    //std::cout << "Fear:" << m_fearStat << std::endl;
 }
 
 void Monster_Bird::TakeDamage(const int damage)

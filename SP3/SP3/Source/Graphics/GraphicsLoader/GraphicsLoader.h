@@ -180,6 +180,10 @@ public:
 		GEO_TEXT_CAPTURE,
 		GEO_TEXT_MISS,
 
+        // Monster states
+        GEO_MONSTER_EXCLAMATION_MARK,
+        GEO_MONSTER_QUESTION_MARK,
+
 		NUM_GEOMETRY,
 	};
 

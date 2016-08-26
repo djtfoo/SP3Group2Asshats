@@ -435,14 +435,14 @@ void Scene::UpdateGameObjects(World* world, double dt)
 {
     for (unsigned GO = 0; GO < world->GAMEOBJECT_COUNT; ++GO)
     {
+        Vector3 *pos;
+        pos = &(world->position[GO]);
+
         Vector3 *vel;
         vel = &(world->velocity[GO]);
 
         if ((world->mask[GO] & MOVEMENT_MASK) == MOVEMENT_MASK)
         {
-            Vector3 *pos;
-            pos = &(world->position[GO]);
-
             pos->x += vel->x * (float)dt;
             pos->y += vel->y * (float)dt;
             pos->z += vel->z * (float)dt;
@@ -454,6 +454,9 @@ void Scene::UpdateGameObjects(World* world, double dt)
             Vector3 *origin;
             origin = &(world->hitbox[GO].m_origin);
 
+            //origin->x = pos->x;
+            //origin->y = pos->y;
+            //origin->z = pos->z;
             origin->x += vel->x * (float)dt;
             origin->y += vel->y * (float)dt;
             origin->z += vel->z * (float)dt;

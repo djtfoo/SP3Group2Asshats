@@ -47,6 +47,7 @@ public:
     virtual void TakeDamage(const int damage) = 0;
     virtual void GetTrapped();
     virtual void GetCaptured();
+    virtual void GetBaited(const Vector3& baitPos);
     void SetIdleState();
     void AttackPlayer();
 

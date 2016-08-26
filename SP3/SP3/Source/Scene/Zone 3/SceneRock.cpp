@@ -535,7 +535,7 @@ bool SceneRock::ViewCheckPosition(Vector3 pos, float degree)
     {
         Vector3 view = (pos - camera.position).Normalized();
 
-        float angleX = Math::RadianToDegree(acos(view.Dot(camera.target)));
+        float angleX = Math::RadianToDegree(acos(view.Dot(SharedData::GetInstance()->player->GetViewVector())));
 
         if (angleX <= degree)
         {
