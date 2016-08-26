@@ -170,6 +170,15 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_NET] = MeshBuilder::GenerateOBJ("Net", "OBJ//GrassZone//Net.obj");
 	m_meshList[GEO_NET]->textureArray[0] = LoadTGA("Image//GrassZone//Net.tga");
 
+	m_meshList[GEO_BOSS_FAIRY] = MeshBuilder::GenerateOBJ("Net", "OBJ//GrassZone//Fairy.obj");
+	m_meshList[GEO_BOSS_FAIRY]->textureArray[0] = LoadTGA("Image//GrassZone//Fairy.tga");
+
+	m_meshList[GEO_TEXT_MISS] = MeshBuilder::GenerateQuad("Miss", Color(0, 1, 0), 1.f);
+	m_meshList[GEO_TEXT_MISS]->textureArray[0] = LoadTGA("Image//GrassZone//Miss.tga");
+
+	m_meshList[GEO_TEXT_CAPTURE] = MeshBuilder::GenerateQuad("CAPTURE", Color(0, 1, 0), 1.f);
+	m_meshList[GEO_TEXT_CAPTURE]->textureArray[0] = LoadTGA("Image//GrassZone//Captured.tga");
+
 	//m_meshList[GEO_ROCKS2] = MeshBuilder::GenerateOBJ("Bird", "OBJ//stone_2.obj");
 	//m_meshList[GEO_ROCKS2]->textureArray[0] = LoadTGA("Image//Rock2.tga");
 

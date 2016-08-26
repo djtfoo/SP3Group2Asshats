@@ -49,7 +49,7 @@ public:
 
     AABB HITBOX;
     double counter;
-    GameObject monster, rock, net, bait;
+    GameObject monster, rock, net, bait,text_C,text_M;
 };
 
 #endif
