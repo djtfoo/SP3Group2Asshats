@@ -6,6 +6,7 @@
 //#include "../../Graphics/LoadOBJ/LoadTGA.h"
 //#include "../../Graphics/Mesh/MeshBuilder.h"
 #include "../../General/SharedData.h"
+#include "../../GameObject/MonsterFactory.h"
 
 #include <sstream>
 
@@ -30,25 +31,59 @@ void SceneZoo::Init()
     Application::GetCursorPos(&Application::cursorXPos, &Application::cursorYPos);
     Application::SetCursorPos(Application::GetWindowWidth() / 2.f, Application::GetWindowHeight() / 2.f);
 
-    bLButtonState = false;
+    grassAreaPosition.Set(50.f, 0.f, 50.f);
+    fireAreaPosition.Set(-50.f, 0.f, -50.f);
+    rockAreaPosition.Set(-50.f, 0.f, 50.f);
+    swampAreaPosition.Set(50.f, 0.f, -50.f);
 
-    b_capturing = false;
-    b_captured = false;
-    captureCounter = 0;
-    counter = 0;
+    //For now, some random monsters
+    for (unsigned i = 0; i < 200; ++i)
+    switch (Math::RandIntMinMax(0, 11))
+    {
+    case 0:
+        SharedData::GetInstance()->player->monsterList.push_back("Bird");
+        break;
+    case 1:
+        SharedData::GetInstance()->player->monsterList.push_back("Rabbit");
+        break;
+    case 2:
+        SharedData::GetInstance()->player->monsterList.push_back("Fairy");
+        break;
+    case 3:
+        SharedData::GetInstance()->player->monsterList.push_back("Grimejam");
+        break;
+    case 4:
+        SharedData::GetInstance()->player->monsterList.push_back("Kof");
+        break;
+    case 5:
+        SharedData::GetInstance()->player->monsterList.push_back("MukBoss");
+        break;
+    case 6:
+        SharedData::GetInstance()->player->monsterList.push_back("Fossil");
+        break;
+    case 7:
+        SharedData::GetInstance()->player->monsterList.push_back("Golem");
+        break;
+    case 8:
+        SharedData::GetInstance()->player->monsterList.push_back("RockSnake");
+        break;
+    case 9:
+        SharedData::GetInstance()->player->monsterList.push_back("FireBug");
+        break;
+    case 10:
+        SharedData::GetInstance()->player->monsterList.push_back("Magma");
+        break;
+    case 11:
+        SharedData::GetInstance()->player->monsterList.push_back("MagmaBerzeker");
+        break;
+    }
 
     memset(&zooWorld, 0, sizeof(zooWorld));
 
-    for (unsigned i = 0; i < 20; ++i)
-    {
-        GameObject go = createGO(&zooWorld);
-        zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
-        zooWorld.position[go].Set(Math::RandFloatMinMax(-100.f, 100.f), 2.5f, Math::RandFloatMinMax(-100.f, 100.f));
-        zooWorld.hitbox[go].m_origin = zooWorld.position[go];
-        zooWorld.hitbox[go].m_scale.Set(5.f, 5.f, 5.f);
-        zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
-        zooWorld.appearance[go].scale.Set(1, 1, 1);
-    }
+    populateMonsterList();
+
+    isFollowing = false;
+    iter = 0;
 }
 static double counter = 0;
 
@@ -61,10 +96,16 @@ void SceneZoo::Update(double dt)
     //===============================================================================================================================//
 
     //Movement update for Gameobjects
-    //UpdateGameObjects(&zooWorld, dt);
+    UpdateGameObjects(&zooWorld, 2 * dt);
 
     //Camera Update
-    zooCamera.Update(dt);
+    if (!isFollowing)
+        zooCamera.Update(dt);
+    else
+    {
+        zooCamera.position = zooWorld.position[followingGO] + Vector3(0, 10, -10);
+        zooCamera.target = zooWorld.position[followingGO];
+    }
 
     //Player Update
     //SharedData::GetInstance()->player->Update(dt);
@@ -76,11 +117,140 @@ void SceneZoo::Update(double dt)
     //                                                            Checks                                                             //
     //===============================================================================================================================//
 
+    //Boundry check;
+    for (unsigned i = 0; i < grassZone.size(); ++i)
+    {
+        if (zooWorld.position[grassZone[i]].x < grassAreaPosition.x - 50 ||
+            zooWorld.position[grassZone[i]].x > grassAreaPosition.x + 50 ||
+            zooWorld.position[grassZone[i]].z < grassAreaPosition.z - 50 ||
+            zooWorld.position[grassZone[i]].z > grassAreaPosition.z + 50)
+            zooWorld.velocity[grassZone[i]] = -zooWorld.velocity[grassZone[i]];
+    }
+
+    for (unsigned i = 0; i < fireZone.size(); ++i)
+    {
+        if (zooWorld.position[fireZone[i]].x < fireAreaPosition.x - 50 ||
+            zooWorld.position[fireZone[i]].x > fireAreaPosition.x + 50 ||
+            zooWorld.position[fireZone[i]].z < fireAreaPosition.z - 50 ||
+            zooWorld.position[fireZone[i]].z > fireAreaPosition.z + 50)
+            zooWorld.velocity[fireZone[i]] = -zooWorld.velocity[fireZone[i]];
+    }
+
+    for (unsigned i = 0; i < rockZone.size(); ++i)
+    {
+        if (zooWorld.position[rockZone[i]].x < rockAreaPosition.x - 50 ||
+            zooWorld.position[rockZone[i]].x > rockAreaPosition.x + 50 ||
+            zooWorld.position[rockZone[i]].z < rockAreaPosition.z - 50 ||
+            zooWorld.position[rockZone[i]].z > rockAreaPosition.z + 50)
+            zooWorld.velocity[rockZone[i]] = -zooWorld.velocity[rockZone[i]];
+    }
+
+    for (unsigned i = 0; i < swampZone.size(); ++i)
+    {
+        if (zooWorld.position[swampZone[i]].x < swampAreaPosition.x - 50 ||
+            zooWorld.position[swampZone[i]].x > swampAreaPosition.x + 50 ||
+            zooWorld.position[swampZone[i]].z < swampAreaPosition.z - 50 ||
+            zooWorld.position[swampZone[i]].z > swampAreaPosition.z + 50)
+            zooWorld.velocity[swampZone[i]] = -zooWorld.velocity[swampZone[i]];
+    }
+
     //===============================================================================================================================//
     //                                                            Key Inputs                                                         //
     //===============================================================================================================================//
 
-    counter += dt;
+    //Changing vision to be able to see zone
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].isPressed)
+    {
+        zooCamera.position = grassAreaPosition + Vector3(0, 50, -25);
+        zooCamera.target = grassAreaPosition;
+
+        if (currentArea == AREA_GRASS)
+        {
+            currentArea = AREA_OVERVIEW;
+            zooCamera.Reset();
+        }
+        else
+            currentArea = AREA_GRASS;
+
+        isFollowing = false;
+    }
+    else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_2].isPressed)
+    {
+        zooCamera.position = fireAreaPosition + Vector3(0, 50, -25);
+        zooCamera.target = fireAreaPosition;
+
+        if (currentArea == AREA_GRASS)
+        {
+            currentArea = AREA_OVERVIEW;
+            zooCamera.Reset();
+        }
+        else
+            currentArea = AREA_FIRE;
+
+        isFollowing = false;
+    }
+    else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_3].isPressed)
+    {
+        zooCamera.position = rockAreaPosition + Vector3(0, 50, -25);
+        zooCamera.target = rockAreaPosition;
+
+        if (currentArea == AREA_GRASS)
+        {
+            currentArea = AREA_OVERVIEW;
+            zooCamera.Reset();
+        }
+        else
+            currentArea = AREA_ROCK;
+
+        isFollowing = false;
+    }
+    else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_4].isPressed)
+    {
+        zooCamera.position = swampAreaPosition + Vector3(0, 50, -25);
+        zooCamera.target = swampAreaPosition;
+
+        if (currentArea == AREA_GRASS)
+        {
+            currentArea = AREA_OVERVIEW;
+            zooCamera.Reset();
+        }
+        else
+            currentArea = AREA_SWAMP;
+
+        isFollowing = false;
+    }
+
+    //Cycle thru Monsters in the area
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_TAB].isPressed)
+    {
+        switch (currentArea)
+        {
+        case AREA_GRASS:
+
+            CycleThroughZoneArea(grassZone);
+
+            break;
+
+        case AREA_FIRE:
+
+            CycleThroughZoneArea(fireZone);
+
+            break;
+
+        case AREA_ROCK:
+
+            CycleThroughZoneArea(rockZone);
+
+            break;
+
+        case AREA_SWAMP:
+
+            CycleThroughZoneArea(swampZone);
+
+            break;
+        }
+    }
+
 }
 
 void SceneZoo::Render()
@@ -141,10 +311,7 @@ void SceneZoo::Render()
     //Render World
     RenderZooScene();
 
-    for (GameObject ai = 0; ai < zooWorld.GAMEOBJECT_COUNT; ++ai)
-    {
-
-    }
+    RenderGameObjects(&zooWorld);
 
     for (GameObject tallGrass = 0; tallGrass < zooWorld.GAMEOBJECT_COUNT; ++tallGrass)
     {
@@ -161,6 +328,8 @@ void SceneZoo::Render()
         }
     }
 
+    if (isFollowing)
+        DisplayMonsterStats(zooWorld.monster[followingGO]);
 }
 
 void SceneZoo::RenderZooScene()
@@ -169,7 +338,7 @@ void SceneZoo::RenderZooScene()
     modelStack.PushMatrix();
     modelStack.Translate(0, 0, 0);
     modelStack.Rotate(-90, 1, 0, 0);
-    modelStack.Scale(200, 200, 100);
+    modelStack.Scale(200, 200, 1);
     RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCK_TERRAIN), true);
     modelStack.PopMatrix();
 
@@ -184,6 +353,215 @@ void SceneZoo::RenderZooScene()
 void SceneZoo::Exit()
 {
 
+}
+
+void SceneZoo::populateMonsterList()
+{
+    Vector3 randOffset;
+
+    for (unsigned i = 0; i < SharedData::GetInstance()->player->monsterList.size(); ++i)
+    {
+        randOffset.Set(Math::RandFloatMinMax(-25.f, 25.f),
+                       0,
+                       Math::RandFloatMinMax(-25.f, 25.f)
+                       );
+
+        //Grass Zone
+        if (SharedData::GetInstance()->player->monsterList[i] == "Bird")
+        {
+            GameObject go = createGO(&zooWorld);
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_AI;
+            zooWorld.position[go] = grassAreaPosition + randOffset;
+            zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
+            zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_BIRD);
+            zooWorld.appearance[go].scale.Set(1, 1, 1);
+            zooWorld.monster[go] = MonsterFactory::CreateMonster("Bird");
+
+            grassZone.push_back(go);
+        }
+        else if (SharedData::GetInstance()->player->monsterList[i] == "Rabbit")
+        {
+            GameObject go = createGO(&zooWorld);
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.position[go] = grassAreaPosition + randOffset;
+            zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
+            zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
+            zooWorld.appearance[go].scale.Set(1, 1, 1);
+            zooWorld.monster[go] = MonsterFactory::CreateMonster("Rabbit");
+
+            grassZone.push_back(go);
+        }
+        else if (SharedData::GetInstance()->player->monsterList[i] == "Fairy")
+        {
+            GameObject go = createGO(&zooWorld);
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.position[go] = grassAreaPosition + randOffset;
+            zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
+            zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
+            zooWorld.appearance[go].scale.Set(1, 1, 1);
+            zooWorld.monster[go] = MonsterFactory::CreateMonster("Fairy");
+
+            grassZone.push_back(go);
+        }
+
+        // Swamp Zone
+        else if (SharedData::GetInstance()->player->monsterList[i] == "Grimejam")
+        {
+            GameObject go = createGO(&zooWorld);
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.position[go] = swampAreaPosition + randOffset;
+            zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
+            zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
+            zooWorld.appearance[go].scale.Set(1, 1, 1);
+            zooWorld.monster[go] = MonsterFactory::CreateMonster("Grimejam");
+
+            swampZone.push_back(go);
+        }
+        else if (SharedData::GetInstance()->player->monsterList[i] == "Kof")
+        {
+            GameObject go = createGO(&zooWorld);
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.position[go] = swampAreaPosition + randOffset;
+            zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
+            zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
+            zooWorld.appearance[go].scale.Set(1, 1, 1);
+            zooWorld.monster[go] = MonsterFactory::CreateMonster("Kof");
+
+            swampZone.push_back(go);
+        }
+        else if (SharedData::GetInstance()->player->monsterList[i] == "MukBoss")
+        {
+            GameObject go = createGO(&zooWorld);
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.position[go] = swampAreaPosition + randOffset;
+            zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
+            zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
+            zooWorld.appearance[go].scale.Set(1, 1, 1);
+            zooWorld.monster[go] = MonsterFactory::CreateMonster("MukBoss");
+
+            swampZone.push_back(go);
+        }
+
+        // Rock Zone
+        else if (SharedData::GetInstance()->player->monsterList[i] == "Fossil")
+        {
+            GameObject go = createGO(&zooWorld);
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.position[go] = rockAreaPosition + randOffset;
+            zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
+            zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
+            zooWorld.appearance[go].scale.Set(1, 1, 1);
+            zooWorld.monster[go] = MonsterFactory::CreateMonster("Fossil");
+
+            rockZone.push_back(go);
+        }
+        else if (SharedData::GetInstance()->player->monsterList[i] == "Golem")
+        {
+            GameObject go = createGO(&zooWorld);
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.position[go] = rockAreaPosition + randOffset;
+            zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
+            zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
+            zooWorld.appearance[go].scale.Set(1, 1, 1);
+            zooWorld.monster[go] = MonsterFactory::CreateMonster("Golem");
+
+            rockZone.push_back(go);
+        }
+        else if (SharedData::GetInstance()->player->monsterList[i] == "RockSnake")
+        {
+            GameObject go = createGO(&zooWorld);
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.position[go] = rockAreaPosition + randOffset;
+            zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
+            zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
+            zooWorld.appearance[go].scale.Set(1, 1, 1);
+            zooWorld.monster[go] = MonsterFactory::CreateMonster("RockSnake");
+
+            rockZone.push_back(go);
+        }
+
+        // Fire Zone
+        else if (SharedData::GetInstance()->player->monsterList[i] == "FireBug")
+        {
+            GameObject go = createGO(&zooWorld);
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.position[go] = fireAreaPosition + randOffset;
+            zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
+            zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
+            zooWorld.appearance[go].scale.Set(1, 1, 1);
+            zooWorld.monster[go] = MonsterFactory::CreateMonster("FireBug");
+
+            fireZone.push_back(go);
+        }
+        else if (SharedData::GetInstance()->player->monsterList[i] == "Magma")
+        {
+            GameObject go = createGO(&zooWorld);
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.position[go] = fireAreaPosition + randOffset;
+            zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
+            zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
+            zooWorld.appearance[go].scale.Set(1, 1, 1);
+            zooWorld.monster[go] = MonsterFactory::CreateMonster("Magma");
+
+            fireZone.push_back(go);
+        }
+        else if (SharedData::GetInstance()->player->monsterList[i] == "MagmaBerzeker")
+        {
+            GameObject go = createGO(&zooWorld);
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.position[go] = fireAreaPosition + randOffset;
+            zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
+            zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
+            zooWorld.appearance[go].scale.Set(1, 1, 1);
+            zooWorld.monster[go] = MonsterFactory::CreateMonster("MagmaBerzeker");
+
+            fireZone.push_back(go);
+        }
+
+        else
+        {
+            std::cout << "monster does not exist" << std::endl;
+        }
+    }
+}
+
+void SceneZoo::DisplayMonsterStats(Monster* monster)
+{
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), monster->GetName(), Color(1, 1, 0), 3, 35, 55);
+
+    std::stringstream ss;
+    ss << "Health: " << monster->GetHealthStat();
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 45);
+
+    std::stringstream ss1;
+    ss1 << "Capture Rate: " << monster->GetCaptureRateStat();
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss1.str(), Color(1, 1, 0), 3, 0, 35);
+
+    std::stringstream ss2;
+    ss2 << "Aggresion: " << monster->GetAggressionStat();
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(1, 1, 0), 3, 0, 25);
+
+    std::stringstream ss3;
+    ss3 << "Fear: " << monster->GetFearStat();
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 3, 0, 15);
+}
+
+void SceneZoo::CycleThroughZoneArea(std::vector<GameObject> area)
+{
+    if (isFollowing)
+    {
+        if (++iter >= area.size())
+            iter = 0;
+        else
+            followingGO = area[iter];
+    }
+    else
+    {
+        if (area.size())
+            followingGO = area[iter];
+
+        isFollowing = true;
+    }
 }
 
 //========================

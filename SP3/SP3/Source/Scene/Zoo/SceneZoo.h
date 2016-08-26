@@ -8,12 +8,6 @@
 
 class SceneZoo : public Scene
 {
-    //float m_worldHeight;
-    //float m_worldWidth;
-
-    // Clicking
-    bool bLButtonState;
-
 public:
     SceneZoo();
     ~SceneZoo();
@@ -24,19 +18,42 @@ public:
     virtual void RenderZooScene();
     virtual void Exit();
 
-    //For placing traps
-    //bool b_placing = false;
-    bool b_capturing = false;
-    bool b_captured = false;
-    int captureCounter = 0;
+    void populateMonsterList();
 
-    //AABB HITBOX;
     World zooWorld;
     ZooCamera zooCamera;
-    double counter;
+
+    std::vector<GameObject> grassZone;
+    std::vector<GameObject> fireZone;
+    std::vector<GameObject> rockZone;
+    std::vector<GameObject> swampZone;
+
+    Vector3 grassAreaPosition;
+    Vector3 fireAreaPosition;
+    Vector3 rockAreaPosition;
+    Vector3 swampAreaPosition;
+
+    enum AREA
+    {
+        AREA_OVERVIEW,
+        AREA_GRASS,
+        AREA_FIRE,
+        AREA_ROCK,
+        AREA_SWAMP,
+
+        NUM_AREAS
+    };
+
+    AREA currentArea;
+
+    bool isFollowing;
+    GameObject followingGO;
+    GameObject iter;
 
     std::vector<Vector3> tempStore;
 
+    void DisplayMonsterStats(Monster* monster);
+    void CycleThroughZoneArea(std::vector<GameObject> area);
 };
 
 #endif
