@@ -158,14 +158,14 @@ void Application::Init()
 	sceneManager = new SceneManager();
 
     GetCursorPos(&cursorXPos, &cursorYPos);
-	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
+	//glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Application::Run()
 {
 
-	sceneManager->ChangeScene(5);
+	sceneManager->ChangeScene(1);
 
     //Main Loop
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame

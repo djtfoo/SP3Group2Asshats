@@ -9,6 +9,8 @@ Class that defines a monster's variables and statistics
 /******************************************************************************/
 #include "Monster.h"
 #include "MonsterFactory.h"
+#include "AI_Strategy.h"
+#include "../General/SharedData.h"
 
 Monster::Monster(std::string name, const std::vector<int>& stats) : m_name(name), m_originalAggression(stats[2]), m_originalFear(stats[3])
 {
@@ -93,4 +95,29 @@ void Monster::ResetAggression()
 void Monster::ResetFear()
 {
 	m_fearStat = m_originalFear;
+}
+
+void Monster::GetTrapped()
+{
+    m_strategy->SetState(AI_Strategy::STATE_TRAPPED);
+}
+
+void Monster::GetCaptured()
+{
+    m_strategy->SetState(AI_Strategy::STATE_CAPTURED);
+}
+
+void Monster::SetIdleState()
+{
+    m_strategy->SetState(AI_Strategy::STATE_IDLE);
+}
+
+int Monster::GetStrategyState()
+{
+    return static_cast<int>(m_strategy->GetState());
+}
+
+void Monster::AttackPlayer()
+{
+    SharedData::GetInstance()->player->TakeDamage(m_originalAggression * 0.5f);
 }

@@ -24,6 +24,7 @@ public:
 	enum STRATEGY_MODE
 	{
 		STATE_IDLE,
+        STATE_ALERT,
 		STATE_ATTACK,
 		STATE_RUN,
 		STATE_TRAPPED,	//inside trap
@@ -45,7 +46,9 @@ public:
 
 	int CalculateDistance(const Vector3& MonsterPos, const Vector3& Destination);
 
-    void SetIdleDestination();
+    void SetIdleStateDestination();
+    void SetAttackStateDestination();
+    void SetRunStateDestination();
 
 private:
 	Monster* monster;

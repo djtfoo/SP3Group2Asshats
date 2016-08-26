@@ -11,6 +11,7 @@ Class that Updates the strategy of monster
 #include "Monster.h"
 
 #include "../Scene/Scene.h"
+#include "../General/SharedData.h"
 
 AI_Strategy::AI_Strategy() : currentState(STATE_IDLE)
 {
@@ -24,11 +25,31 @@ void AI_Strategy::Init(Monster* monster)
     this->monster = monster;
 }
 
+AI_Strategy::STRATEGY_MODE AI_Strategy::GetState()
+{
+    return currentState;
+}
+
 void AI_Strategy::SetState(AI_Strategy::STRATEGY_MODE currentState)
 {
 	this->currentState = currentState;
 
     // change the destination
+
+    switch (this->currentState)
+    {
+    case STATE_IDLE:
+        SetIdleStateDestination();
+        break;
+        
+    case STATE_ATTACK:
+        SetAttackStateDestination();
+        break;
+
+    case STATE_RUN:
+        SetRunStateDestination();
+        break;
+    }
 }
 
 bool AI_Strategy::CheckDestinationReached()
@@ -52,19 +73,32 @@ int AI_Strategy::CalculateDistance(const Vector3& MonsterPos, const Vector3& Des
 
 void AI_Strategy::Update()
 {
-    //std::cout << " AI UPDATE ";
-	float m_aggressionLevel = monster->GetAggressionStat();
-	float m_fearLevel = monster->GetFearStat();
-    
-	if (m_aggressionLevel > 60 && m_fearLevel < 50)
+    if (currentState == STATE_TRAPPED || currentState == STATE_BAITED || currentState == STATE_CAPTURED)
+    {
+        return;
+    }
+
+	float aggressionLevel = monster->GetAggressionStat();
+	float fearLevel = monster->GetFearStat();
+
+    if (aggressionLevel > 50 || fearLevel > 50)
+    {
+        //if (currentState != STATE_ALERT)
+        //{
+        //    SetState(STATE_ALERT);
+        //}
+    }
+
+	if (aggressionLevel > 70 && fearLevel < 50)
 	{
         if (currentState != STATE_ATTACK)
         {
             SetState(STATE_ATTACK);
             std::cout << "ATTACK!";
         }
+        SetAttackStateDestination();
 	}
-    else if (m_aggressionLevel < 40 && m_fearLevel > 50)
+    else if (aggressionLevel < 40 && fearLevel > 60)
 	{
         if (currentState != STATE_RUN)
         {
@@ -87,12 +121,12 @@ void AI_Strategy::Update()
     if (CheckDestinationReached())
     {
         if (currentState == STATE_IDLE) {
-            SetIdleDestination();
+            SetIdleStateDestination();
         }
     }
 }
 
-void AI_Strategy::SetIdleDestination()
+void AI_Strategy::SetIdleStateDestination()
 {
     int cols = (int)(monster->m_position.x / Scene::tileSize);
     int rows = (int)(monster->m_position.z / Scene::tileSize);
@@ -118,4 +152,22 @@ void AI_Strategy::SetIdleDestination()
     Vector3 RNGdestination(randCol * Scene::tileSize + Scene::tileSize * 0.5f, 0, randRow * Scene::tileSize + Scene::tileSize * 0.5f);
 
     SetDestination(RNGdestination);
+}
+
+void AI_Strategy::SetAttackStateDestination()
+{
+    Vector3 destination = SharedData::GetInstance()->player->GetPositionVector();
+    destination.y = 0.f;
+    SetDestination(destination);
+}
+
+void AI_Strategy::SetRunStateDestination()
+{
+    Vector3 view = monster->m_position - SharedData::GetInstance()->player->GetPositionVector();
+    view.y = 0.f;
+    view.Normalize();
+
+    Vector3 destination = monster->m_position + 5 * view;
+
+    SetDestination(SharedData::GetInstance()->player->GetPositionVector());
 }

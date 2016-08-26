@@ -42,7 +42,13 @@ public:
 
     AI_Strategy* m_strategy;
 
+    int GetStrategyState();
 	virtual void Update(double dt) = 0;
+    virtual void TakeDamage(const int damage) = 0;
+    virtual void GetTrapped();
+    virtual void GetCaptured();
+    void SetIdleState();
+    void AttackPlayer();
 
 protected:
     Monster() {}

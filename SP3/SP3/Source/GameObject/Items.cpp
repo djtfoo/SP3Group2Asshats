@@ -49,7 +49,7 @@ bool Item::Upgrade()
                 this->m_effectiveness += 200;
                 return true;
             case TYPE_ROCK:
-                this->m_effectiveness++;
+                this->m_effectiveness += 5;
                 return true;
 
             default:

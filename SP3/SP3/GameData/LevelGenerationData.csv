@@ -1,8 +1,8 @@
-#tileName(ignore),tileCount,components...<--components can be a vector
-empty,0,
-bush,A,displacement
-long bush,B,displacement
-tree2,C,displacement
-tree4,D,displacement
-swamp plant,E,displacement
-swamp root,F,displacement
+#tileName(ignore),tileCount,components...<--components can be a vector,,
+empty,0,,,
+bush,A,displacement,appearance,
+long bush,B,displacement,appearance,
+tree2,C,displacement,appearance,hitbox
+tree4,D,displacement,appearance,hitbox
+swamp plant,E,displacement,appearance,
+swamp root,F,displacement,appearance,

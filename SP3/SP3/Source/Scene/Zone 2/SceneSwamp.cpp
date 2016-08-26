@@ -56,7 +56,7 @@ void SceneSwamp::Init()
 			{
 				GameObject go = createGO(&swamp);
 				swamp.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
-				swamp.position[go].Set(-100.f + cols * Scene::tileSize, 0.f, -100.f + rows * Scene::tileSize);
+				swamp.position[go].Set(cols * Scene::tileSize, 0.f, rows * Scene::tileSize);
 				swamp.hitbox[go].m_origin = swamp.position[go];
 				swamp.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
 				swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
@@ -68,7 +68,7 @@ void SceneSwamp::Init()
 				swamp.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
 				//swamp.velocity[go].Set(Math::RandFloatMinMax(0.f, 1.f), 0, Math::RandFloatMinMax(0.f, 1.f));
 				swamp.velocity[go].SetZero();
-				swamp.position[go].Set(-100.f + cols * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f), 0.f, -100.f + rows * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f));
+				swamp.position[go].Set(cols * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f), 0.f, rows * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f));
 				swamp.hitbox[go].m_origin = swamp.position[go];
 				swamp.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
 				switch (tile)

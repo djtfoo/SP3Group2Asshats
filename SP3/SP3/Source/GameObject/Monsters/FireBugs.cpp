@@ -57,3 +57,8 @@ void Monster_FireBugs::Update(double dt)
 	//Update Strategy accordingly
 	m_strategy->Update();
 }
+
+void Monster_FireBugs::TakeDamage(const int damage)
+{
+    changeHealthStat(m_healthStat - damage);
+}

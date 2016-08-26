@@ -49,6 +49,8 @@ void SceneRock::Init()
             // first in it->second is mesh
             // second in it->second is vector of components
             //std::cout << m_levelMap[rows][cols] << " ";
+            if (m_levelMap[rows][cols] >= '1' && m_levelMap[rows][cols] <= '9')
+                continue;
 
             GameObject go = createGO(&rockWorld);
             rockWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX;

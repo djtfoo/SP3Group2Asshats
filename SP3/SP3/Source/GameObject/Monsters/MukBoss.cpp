@@ -57,3 +57,8 @@ void Boss_MukBoss::Update(double dt)
 	//Update Strategy accordingly
 	m_strategy->Update();
 }
+
+void Boss_MukBoss::TakeDamage(const int damage)
+{
+    changeHealthStat(m_healthStat - damage);
+}

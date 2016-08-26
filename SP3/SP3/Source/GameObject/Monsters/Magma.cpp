@@ -57,3 +57,8 @@ void Monster_Magma::Update(double dt)
 	//Update Strategy accordingly
 	m_strategy->Update();
 }
+
+void Monster_Magma::TakeDamage(const int damage)
+{
+    changeHealthStat(m_healthStat - damage);
+}

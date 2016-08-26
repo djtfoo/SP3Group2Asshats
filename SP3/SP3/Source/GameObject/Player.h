@@ -58,6 +58,8 @@ private:
     float m_gravity;
     float m_jumpHeight;
 
+    float m_health;
+
     MOVEMENT_STATE m_movementState;
     HEIGHT_STATE m_heightState;
 
@@ -92,6 +94,10 @@ public:
 
     void Update(double dt);
 	AABB PlayerHitBox;
+
+    // Health matters
+    float GetHealth();
+    void TakeDamage(const int damage);
 };
 
 #endif

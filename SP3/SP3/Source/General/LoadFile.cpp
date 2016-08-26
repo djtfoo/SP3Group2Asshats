@@ -179,13 +179,30 @@ COMPONENTS ConvertStringToComponent(std::string line)
         "velocity",
         "appearance",
         "hitbox",
+        "trap",
+        "AI",
+        "capture",
+        "bait",
+        "moneytree",
     };
 
-    //for (int i = 0; i < 10; ++i)
-    //{
-    //    if (line == list[i])
-    //        return (COMPONENT_NONE + 1 << i);
-    //}
+    COMPONENTS component[10] = {
+        COMPONENT_DISPLACEMENT,
+        COMPONENT_VELOCITY,
+        COMPONENT_APPEARANCE,
+        COMPONENT_HITBOX,
+        COMPONENT_TRAP,
+        COMPONENT_AI,
+        COMPONENT_CAPTURE,
+        COMPONENT_BAIT,
+        COMPONENT_MONEYTREE,
+    };
+
+    for (int i = 0; i < 10; ++i)
+    {
+        if (line == list[i])
+            return component[10];
+    }
     
     return COMPONENT_DISPLACEMENT;
 }

@@ -57,3 +57,8 @@ void Monster_Kof::Update(double dt)
 	//Update Strategy accordingly
 	m_strategy->Update();
 }
+
+void Monster_Kof::TakeDamage(const int damage)
+{
+    changeHealthStat(m_healthStat - damage);
+}

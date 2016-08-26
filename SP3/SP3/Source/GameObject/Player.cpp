@@ -28,6 +28,8 @@ Player::Player()
     m_noiseFactor = 0.5f;
     m_bHiding = false;
 
+    m_health = 100.f;
+
     PlayerHitBox.m_origin.SetZero();
     PlayerHitBox.m_scale = Vector3(10, 0.1, 10);
 
@@ -297,6 +299,15 @@ void Player::move(const double dt)
         break;
     }
     m_position.y = m_eyeLevel + m_jumpHeight;
+
+    if (m_speed <= 0.f)
+    {
+        m_noiseFactor = 0.f;
+    }
+    else if (m_speed > 20.f)
+    {
+        m_noiseFactor = 0.6f;
+    }
 }
 
 void Player::crouch()
@@ -354,21 +365,21 @@ void Player::updateStandUp(const double dt)
         m_eyeLevel += (float)(20.f * dt);
         m_eyeLevel = Math::Min(5.f, m_eyeLevel);
     }
-    // m_noiseFactor = 0.5f;
+    m_noiseFactor = 0.5f;
 }
 
 void Player::updateCrouch(const double dt)
 {
     m_eyeLevel -= (float)(20.f * dt);
     m_eyeLevel = Math::Max(2.5f, m_eyeLevel);
-    //m_noiseFactor = 0.35f;
+    m_noiseFactor = 0.35f;
 }
 
 void Player::updateProne(const double dt)
 {
     m_eyeLevel -= (float)(20.f * dt);
     m_eyeLevel = Math::Max(1.f, m_eyeLevel);
-    //m_noiseFactor = 0.2f;
+    m_noiseFactor = 0.2f;
 }
 
 void Player::updateJump(const double dt)
@@ -400,4 +411,14 @@ void Player::updateJump(const double dt)
 float Player::GetNoiseFactor()
 {
     return this->m_noiseFactor;
+}
+
+float Player::GetHealth()
+{
+    return this->m_health;
+}
+
+void Player::TakeDamage(const int damage)
+{
+    this->m_health -= damage;
 }
