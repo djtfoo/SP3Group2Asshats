@@ -218,10 +218,10 @@ void GraphicsLoader::Init()
 	//m_meshList[GEO_VOLCANO]->textureArray[0] = LoadTGA("Image//FireZone/Volcano.tga");
 
 	m_meshList[GEO_MONEY_TREE] = MeshBuilder::GenerateOBJ("Money Tree", "OBJ//BonusTree.obj");
-	//m_meshList[GEO_MONEY_TREE]->textureArray[0] = LoadTGA("Image//BonusTree.tga");
+	m_meshList[GEO_MONEY_TREE]->textureArray[0] = LoadTGA("Image//BonusTree.tga");
 
 	m_meshList[GEO_COINS] = MeshBuilder::GenerateOBJ("Coins", "OBJ//coin.obj");
-	//m_meshList[GEO_COINS]->textureArray[0] = LoadTGA("Image//coin.tga");
+	m_meshList[GEO_COINS]->textureArray[0] = LoadTGA("Image//coin.tga");
 
     m_meshList[GEO_MONSTER_EXCLAMATION_MARK] = MeshBuilder::GenerateQuad("Exclamation mark", Color(1, 0, 0), 1.f);
     m_meshList[GEO_MONSTER_EXCLAMATION_MARK]->textureArray[0] = LoadTGA("Image//monster_exclamation.tga");

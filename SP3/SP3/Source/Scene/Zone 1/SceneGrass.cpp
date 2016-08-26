@@ -624,24 +624,61 @@ void SceneGrass::Update(double dt)
 		//	}
 		//}
 
-        for (GameObject net = 0; net < grass.GAMEOBJECT_COUNT; ++net)
-        {
-            if ((grass.mask[net] & COMPONENT_CAPTURE) == COMPONENT_CAPTURE)
-            {
-                GameObject ai = grass.capture[net].caughtMonster;
-                if ((camera.position - grass.position[ai]).LengthSquared() < 150)
-                {
-                    if (ViewCheckPosition(grass.position[ai], 45.f) == true)
-                    {
-                        std::cout << "CAUGHT THE MONSTER" << std::endl;
-                        SharedData::GetInstance()->player->monsterList.push_back(grass.monster[ai]->GetName());
-                        destroyGO(&grass, ai);
-                        // destroy net
-                        destroyGO(&grass, net);
-                    }
-                }
-            }
-        }
+		for (GameObject GO = 0; GO < grass.GAMEOBJECT_COUNT; ++GO)
+		{
+			// check for picking up net
+			if ((grass.mask[GO] & COMPONENT_CAPTURE) == COMPONENT_CAPTURE)
+			{
+				GameObject ai = grass.capture[GO].caughtMonster;
+				if ((camera.position - grass.position[ai]).LengthSquared() < 150)
+				{
+					if (ViewCheckPosition(grass.position[ai], 45.f) == true)
+					{
+						std::cout << "CAUGHT THE MONSTER" << std::endl;
+						SharedData::GetInstance()->player->monsterList.push_back(grass.monster[ai]->GetName());
+						destroyGO(&grass, ai);
+						// destroy net
+						destroyGO(&grass, GO);
+					}
+				}
+			}
+
+			// check for interacting with money tree
+			if ((grass.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+			{
+				if ((camera.position - grass.position[GO]).LengthSquared() < 150)
+				{
+					if (ViewCheckPosition(grass.position[GO], 180.f) == true)
+					{
+						std::cout << "MoneyTree Found" << std::endl;
+						grass.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_COIN;
+						grass.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COINS);
+						grass.appearance[GO].scale.Set(5, 5, 5);
+						break;
+					}
+				}
+			}
+
+			// check for interacting with coin
+			if ((grass.mask[GO] & COMPONENT_COIN) == COMPONENT_COIN)
+			{
+				if ((camera.position - grass.position[GO]).LengthSquared() < 150)
+				{
+					if (ViewCheckPosition(grass.position[GO], 180.f) == true)
+					{
+						std::cout << "coin picked up" << std::endl;
+						destroyGO(&grass, GO);
+						break;
+					}
+				}
+			}
+		}
+
+		//for (GameObject MoneyTree = 0; MoneyTree < grass.GAMEOBJECT_COUNT; ++MoneyTree)
+		//{
+
+		//}
+
 	}
 
     // TEMPORARY DEBUG: check of inventory
@@ -745,11 +782,11 @@ void SceneGrass::Render()
 	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
 	modelStack.PopMatrix();*/
 
-	modelStack.PushMatrix();
-	modelStack.Translate(SharedData::GetInstance()->player->PlayerHitBox.m_origin.x, 0.1, SharedData::GetInstance()->player->PlayerHitBox.m_origin.z);
-	modelStack.Scale(SharedData::GetInstance()->player->PlayerHitBox.m_scale.x, SharedData::GetInstance()->player->PlayerHitBox.m_scale.y, SharedData::GetInstance()->player->PlayerHitBox.m_scale.z);
-	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_PLAYERBOX), false);
-	modelStack.PopMatrix();
+	//modelStack.PushMatrix();
+	//modelStack.Translate(SharedData::GetInstance()->player->PlayerHitBox.m_origin.x, 0.1, SharedData::GetInstance()->player->PlayerHitBox.m_origin.z);
+	//modelStack.Scale(SharedData::GetInstance()->player->PlayerHitBox.m_scale.x, SharedData::GetInstance()->player->PlayerHitBox.m_scale.y, /SharedData::GetInstance/()->player->PlayerHitBox.m_scale.z);
+	//RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_PLAYERBOX), false);
+	//modelStack.PopMatrix();
 
     //Trap placing
     double x, y;
@@ -775,19 +812,19 @@ void SceneGrass::Render()
     ss << "PLAYER HEALTH:" << SharedData::GetInstance()->player->GetHealth();
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 9);
 
-    for (GameObject tallGrass = 0; tallGrass < grass.GAMEOBJECT_COUNT; ++tallGrass)
-    {
-        if ((grass.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
-        {
-            modelStack.PushMatrix();
-            modelStack.Translate(grass.hitbox[tallGrass].m_origin.x, grass.hitbox[tallGrass].m_origin.y, grass.hitbox[tallGrass].m_origin.z);
-            modelStack.Scale(grass.hitbox[tallGrass].m_scale.x, grass.hitbox[tallGrass].m_scale.y, grass.hitbox[tallGrass].m_scale.z);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            modelStack.PopMatrix();
-        }
-    }
+    //for (GameObject tallGrass = 0; tallGrass < grass.GAMEOBJECT_COUNT; ++tallGrass)
+    //{
+    //    if ((grass.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
+    //    {
+    //        modelStack.PushMatrix();
+    //        modelStack.Translate(grass.hitbox[tallGrass].m_origin.x, grass.hitbox[tallGrass].m_origin.y, grass.hitbox[tallGrass].m_origin.z);
+    //        modelStack.Scale(grass.hitbox[tallGrass].m_scale.x, grass.hitbox[tallGrass].m_scale.y, grass.hitbox[tallGrass].m_scale.z);
+    //        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    //        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //        modelStack.PopMatrix();
+    //    }
+    //}
 
     RenderMonsterStates();
 
