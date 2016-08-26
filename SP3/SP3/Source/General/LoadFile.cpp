@@ -135,8 +135,11 @@ void LoadLevelGenerationData(std::ifstream& fileStream)
         std::getline(dataStream, data, ',');
         for (std::string prevData = ""; prevData != data; std::getline(dataStream, data, ','))
         {
-            tempComponents.push_back(ConvertStringToComponent(data));
-            //std::cout << "Converted! ";
+            COMPONENTS tempComponent = ConvertStringToComponent(data);
+            if (tempComponent != COMPONENT_NONE) {
+                tempComponents.push_back(tempComponent);
+                //std::cout << "Converted " << data << std::endl;
+            }
             prevData = data;
         }
 
@@ -156,6 +159,7 @@ GraphicsLoader::GEOMETRY_TYPE AssignMeshType(int num)
         GraphicsLoader::GEO_TREE2,
         GraphicsLoader::GEO_SWAMP_PLANT,
         GraphicsLoader::GEO_SWAMP_ROOT,
+		GraphicsLoader::GEO_MONEY_TREE,
     };
 
     return list[num];
@@ -174,7 +178,7 @@ GraphicsLoader::GEOMETRY_TYPE AssignMeshType(int num)
 
 COMPONENTS ConvertStringToComponent(std::string line)
 {
-    std::string list[10] = {
+    std::string list[11] = {
         "displacement",
         "velocity",
         "appearance",
@@ -184,9 +188,10 @@ COMPONENTS ConvertStringToComponent(std::string line)
         "capture",
         "bait",
         "moneytree",
+        "obstacle",
     };
 
-    COMPONENTS component[10] = {
+    COMPONENTS component[11] = {
         COMPONENT_DISPLACEMENT,
         COMPONENT_VELOCITY,
         COMPONENT_APPEARANCE,
@@ -196,15 +201,16 @@ COMPONENTS ConvertStringToComponent(std::string line)
         COMPONENT_CAPTURE,
         COMPONENT_BAIT,
         COMPONENT_MONEYTREE,
+        COMPONENT_OBSTACLE,
     };
 
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 11; ++i)
     {
         if (line == list[i])
-            return component[10];
+            return component[i];
     }
     
-    return COMPONENT_DISPLACEMENT;
+    return COMPONENT_NONE;
 }
 
 

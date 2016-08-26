@@ -22,6 +22,7 @@ public:
 	virtual void RenderGrassScene();
 	virtual void RenderHUD();
 	virtual void Exit();
+    void RenderMonsterStates();
 	bool ViewCheckPosition(Vector3 pos, float degree);
     //Test stuff
 	ItemProjectile* itemProjectile;

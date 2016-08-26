@@ -36,6 +36,8 @@ public:
         KEY_Q,
         KEY_E,
 
+        KEY_C,  // temp debug key
+
         KEY_G,
         KEY_X,
 

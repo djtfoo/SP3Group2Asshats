@@ -13,7 +13,8 @@ Player class that stores the game's player variables
 #include "Vector3.h"
 #include "Items.h"
 #include "../GameObject/AABB.h"
-//#include <vector>
+#include <vector>
+#include <string>
 
 /******************************************************************************/
 /*!
@@ -44,6 +45,8 @@ public:
 
     Item inventory[Item::NUM_TYPE];
 
+    std::vector<std::string> monsterList;
+
 private:
     Vector3 m_position;
     Vector3 m_view;
@@ -71,8 +74,6 @@ private:
     void standUp();
     void jump();
 
-    void move(const double dt);
-
     void updateStandUp(const double dt);
     void updateCrouch(const double dt);
     void updateProne(const double dt);
@@ -85,9 +86,12 @@ public:
     Vector3 GetPositionVector();
     Vector3 GetViewVector();
     Vector3 GetUpVector();
+    Vector3 GetVelocityVector();
 
     float m_noiseFactor;
     bool m_bHiding;
+
+    void Move(const double dt);
 
     float GetNoiseFactor();
     void SetToHiding();

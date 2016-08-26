@@ -14,7 +14,7 @@ Player class that stores the game's player variables
 
 Player::Player()
 {
-    m_position.SetZero();
+    m_position.Set(Scene::tileSize, 0.f, Scene::tileSize);
     m_velocity.SetZero();
     m_view.Set(1, 0, 0);
     m_up.Set(0, 1, 0);
@@ -30,8 +30,8 @@ Player::Player()
 
     m_health = 100.f;
 
-    PlayerHitBox.m_origin.SetZero();
-    PlayerHitBox.m_scale = Vector3(10, 0.1, 10);
+    PlayerHitBox.m_origin = m_position;
+    PlayerHitBox.m_scale = Vector3(10, 5, 10);
 
     m_movementState = MOVEMENT_STATE_IDLE;
     m_heightState = HEIGHT_STATE_STANDING;
@@ -71,6 +71,11 @@ Vector3 Player::GetViewVector()
 Vector3 Player::GetUpVector()
 {
     return m_up;
+}
+
+Vector3 Player::GetVelocityVector()
+{
+    return m_velocity;
 }
 
 static const float CAMERA_SPEED = 5.0f;
@@ -221,10 +226,8 @@ void Player::Update(double dt)
         }
         break;
     }
-    PlayerHitBox.m_origin = m_position;
-    move(dt);
 
-    //Move(dt); // move by Vector3 velocity
+    //Move(dt);
 
     // Turn player's view
     double x, y;
@@ -275,7 +278,7 @@ void Player::yaw(const double dt)
 
 }
 
-void Player::move(const double dt)
+void Player::Move(const double dt)
 {
     m_position += m_velocity * m_speed * (float)dt;
     //std::cout << m_movementState << " | " << m_heightState  << " | " << m_speed << std::endl;
@@ -308,6 +311,8 @@ void Player::move(const double dt)
     {
         m_noiseFactor = 0.6f;
     }
+
+    PlayerHitBox.m_origin = m_position;
 }
 
 void Player::crouch()

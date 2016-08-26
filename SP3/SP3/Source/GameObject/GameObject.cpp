@@ -52,6 +52,7 @@ void destroyGO(World *world, GameObject GO)
 		world->capture[GO].capturedMonster = false;
 		world->capture[GO].capturingMonster = false;
 		world->capture[GO].timeBeforeCapture = 0;
+        world->capture[GO].caughtMonster = 0;
 	}
 	if ((world->mask[GO] & COMPONENT_BAIT) == COMPONENT_BAIT)
 	{
@@ -60,8 +61,14 @@ void destroyGO(World *world, GameObject GO)
 		world->bait[GO].scentRadius = 0;
 		world->bait[GO].foundRadius = 0;
 		world->bait[GO].timeEatting = 0;
-	}
+        world->bait[GO].finishedBait = false;
+    }
 
+    if (world->monster[GO])
+    {
+        delete world->monster[GO];
+        world->monster[GO] = 0;
+    }
 
 
 	world->mask[GO] = COMPONENT_NONE;
