@@ -208,8 +208,20 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_ROCK_TERRAIN] = MeshBuilder::GenerateQuad("Rock Terrain", Color(1, 1, 1), 1.f, 100);
 	//m_meshList[GEO_ROCK_TERRAIN]->textureArray[0] = LoadTGA();
 
-	m_meshList[GEO_LAVA_TERRAIN] = MeshBuilder::GenerateQuad("Lava Terrain", Color(1, 1, 1), 1.f, 100);
-	//m_meshList[GEO_LAVA_TERRAIN]->textureArray[0] = LoadTGA();
+	m_meshList[GEO_LAVA_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw", m_heightMap);
+	m_meshList[GEO_LAVA_TERRAIN]->textureArray[0] = LoadTGA("Image//FireZone/lava_terrain.tga");
+
+	m_meshList[GEO_LAVA_SKYPLANE] = MeshBuilder::GenerateSkyPlane("skyplane", Color(1, 1, 1), 128, 400.0f, 3000.0f, 1.0f, 1.0f);
+	m_meshList[GEO_LAVA_SKYPLANE]->textureArray[0] = LoadTGA("Image//SwampZone//swamp_skyplane.tga");
+
+	m_meshList[GEO_VOLCANO] = MeshBuilder::GenerateOBJ("Volcano", "OBJ//FireZone/Volcano.obj");
+	m_meshList[GEO_VOLCANO]->textureArray[0] = LoadTGA("Image//FireZone/Volcano.tga");
+
+	m_meshList[GEO_MONEY_TREE] = MeshBuilder::GenerateOBJ("Money Tree", "OBJ//BonusTree.obj");
+	m_meshList[GEO_MONEY_TREE]->textureArray[0] = LoadTGA("Image//BonusTree.tga");
+
+	m_meshList[GEO_COINS] = MeshBuilder::GenerateOBJ("Coins", "OBJ//coin.obj");
+	m_meshList[GEO_COINS]->textureArray[0] = LoadTGA("Image//coin.tga");
 
     // Fonts
     m_meshList[GEO_TEXT_IMPACT] = MeshBuilder::GenerateText("Font - Impact", 16, 16);

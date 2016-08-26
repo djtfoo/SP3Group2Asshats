@@ -172,6 +172,10 @@ public:
 
         GEO_TEXT_IMPACT,
 
+		// Bonus
+		GEO_MONEY_TREE,
+		GEO_COINS,
+
 		// Capturing monsters
 		GEO_TEXT_CAPTURE,
 		GEO_TEXT_MISS,

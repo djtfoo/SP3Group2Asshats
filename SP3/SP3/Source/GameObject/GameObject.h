@@ -87,6 +87,13 @@ struct Bait_Script
 	float timeEatting;
 };
 
+struct Money_Tree_Script
+{
+	Vector3 pos;
+	bool destroyed;
+	int coins;
+};
+
 struct World
 {
     static const GameObject GAMEOBJECT_COUNT = 1000;

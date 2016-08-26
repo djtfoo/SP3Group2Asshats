@@ -6,40 +6,50 @@
 
 class SceneLava : public Scene
 {
-    //float m_worldHeight;
-    //float m_worldWidth;
+	//float m_worldHeight;
+	//float m_worldWidth;
 
-    // Clicking
-    bool bLButtonState;
+	// Clicking
+	bool bLButtonState;
 
 public:
-    SceneLava();
-    ~SceneLava();
+	SceneLava();
+	~SceneLava();
 
-    virtual void Init();
-    virtual void Update(double dt);
-    virtual void Render();
-    virtual void RenderLavaScene();
-    virtual void Exit();
-    bool ViewCheckPosition(Vector3 pos, float degree);
-    //Test stuff
-    ItemProjectile* itemProjectile;
+	virtual void Init();
+	virtual void Update(double dt);
+	virtual void Render();
+	virtual void RenderLavaScene();
+	virtual void RenderHUD();
+	virtual void Exit();
+	bool ViewCheckPosition(Vector3 pos, float degree);
+	//Test stuff
+	ItemProjectile* itemProjectile;
+	ItemProjectile* rockProjectile;
+	ItemProjectile* netProjectile;
+	ItemProjectile* baitProjectile;
 
-    //For placing traps
-    //bool b_placing = false;
-    bool b_capturing = false;
-    bool b_captured = false;
-    int captureCounter = 0;
+	//For placing traps
+	bool b_placing = false;
 
-    std::vector<Vector3> placedTraps;
+	//Item Switch
+	bool b_Rocks;
+	bool b_Nets;
+	bool b_Baits;
 
-    //AABB HITBOX;
+	float f_RotateRock;
+	float f_RotateNet;
+	float f_RotateBait;
 
-    World grass;
+	std::vector<Vector3> placedTraps;
 
-    AABB HITBOX;
-    double counter;
-    GameObject monster, rock, net, bait;
+	//AABB HITBOX;
+
+	World lava;
+
+	AABB HITBOX;
+	double counter;
+	GameObject monster, rock, net, bait;
 };
 
 #endif
