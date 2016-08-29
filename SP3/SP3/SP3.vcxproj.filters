@@ -293,9 +293,6 @@
     <ClCompile Include="Source\GameObject\Monsters\Grimejam.cpp">
       <Filter>Source Files\GameObject\Monsters</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GameObject\Monsters\Kof.cpp">
-      <Filter>Source Files\GameObject\Monsters</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GameObject\Monsters\Magma.cpp">
       <Filter>Source Files\GameObject\Monsters</Filter>
     </ClCompile>
@@ -328,6 +325,9 @@
     </ClCompile>
     <ClCompile Include="Source\General\MousePicker.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObject\Monsters\SeaMonster.cpp">
+      <Filter>Source Files\GameObject\Monsters</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -439,9 +439,6 @@
     <ClInclude Include="Source\GameObject\Monsters\Grimejam.h">
       <Filter>Header Files\GameObject\Monsters</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GameObject\Monsters\Kof.h">
-      <Filter>Header Files\GameObject\Monsters</Filter>
-    </ClInclude>
     <ClInclude Include="Source\GameObject\Monsters\Golem.h">
       <Filter>Header Files\GameObject\Monsters</Filter>
     </ClInclude>
@@ -489,6 +486,9 @@
     </ClInclude>
     <ClInclude Include="Source\General\MousePicker.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObject\Monsters\SeaMonster.h">
+      <Filter>Header Files\GameObject\Monsters</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

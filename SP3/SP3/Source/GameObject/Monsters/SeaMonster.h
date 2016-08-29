@@ -4,11 +4,11 @@
 #include "../Monster.h"
 #include "../../General/SharedData.h"
 
-class Monster_Kof : public Monster
+class Monster_SeaMonster : public Monster
 {
 public:
-    Monster_Kof(std::string name, const std::vector<int>& stats);
-	virtual ~Monster_Kof();
+    Monster_SeaMonster(std::string name, const std::vector<int>& stats);
+	virtual ~Monster_SeaMonster();
 
 	//Monster Movement update
 	virtual void Update(double dt);

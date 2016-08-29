@@ -24,9 +24,8 @@ Mesh::~Mesh()
 {
 	glDeleteBuffers(1, &vertexBuffer);
 	glDeleteBuffers(1, &indexBuffer);
-	/*if(textureID > 0)
+	if(textureID > 0)
 		glDeleteTextures(1, &textureID);
-	*/
 
 	for (int i = 0; i < MAX_TEXTURES; ++i)
 	{

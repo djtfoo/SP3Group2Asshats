@@ -6,24 +6,31 @@ SharedData::SharedData()
 {
 }
 
+SharedData::~SharedData()
+{
+}
+
 void SharedData::Init()
 {
-	player = new Player();
-	graphicsLoader = new GraphicsLoader();
+    player = new Player();
+    graphicsLoader = new GraphicsLoader();
     inputManager = new InputManager();
-	graphicsLoader->Init();
+    graphicsLoader->Init();
 
     MonsterFactory::LoadMonsterData("GameData/MonstersData.csv");
     Scene::LoadLevelGenerationData("GameData/LevelGenerationData.csv");
 }
 
-SharedData::~SharedData()
+void SharedData::Exit()
 {
-	if (player)
-		delete player;
+    if (player)
+        delete player;
 
-	if (graphicsLoader)
-		delete graphicsLoader;
+    if (graphicsLoader)
+    {
+        graphicsLoader->Exit();
+        delete graphicsLoader;
+    }
 
     if (inputManager)
         delete inputManager;

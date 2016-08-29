@@ -58,23 +58,6 @@ bool LoadFile(const char* file_path, FILE_TYPE file_type)
     }
 
     fileStream.close();
-
-    //unsigned int allocateCount = 0;
-    //while (!fileStream.eof())
-    //{
-    //    std::getline(fileStream, line);
-    //
-    //    std::stringstream dataStream(line);
-    //    std::string data;
-    //    std::getline(dataStream, data, ',');
-    //
-    //    // first content is name
-    //    string tempName = data;
-    //
-    //    // second content is elixir cost
-    //    std::getline(dataStream, data, ',');
-    //    int tempElixirCost = std::stoi(data);
-    //
 }
 
 void LoadMonsterData(std::ifstream& fileStream)
@@ -145,8 +128,6 @@ void LoadLevelGenerationData(std::ifstream& fileStream)
 
         // push into map
         Scene::AddToMap(tempTileCount, AssignMeshType(tempTileCount - 65), tempComponents);
-        //MonsterFactory::AddToMap(tempName, stats);
-        //std::map<int, std::pair<GraphicsLoader::GEOMETRY_TYPE, std::vector<COMPONENTS>> > m_levelGenerationData;
     }
 }
 

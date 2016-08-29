@@ -164,7 +164,6 @@ void Application::Init()
 
 void Application::Run()
 {
-
 	sceneManager->ChangeScene(1);
 
     //Main Loop
@@ -187,6 +186,7 @@ void Application::Run()
 	} //Check if the game has been exited the window had been closed
 
 	sceneManager->Exit();
+    SharedData::GetInstance()->Exit();
 	delete sceneManager;
 }
 

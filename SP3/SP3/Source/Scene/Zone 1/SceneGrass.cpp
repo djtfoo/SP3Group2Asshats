@@ -68,6 +68,7 @@ void SceneGrass::Init()
                 grass.hitbox[go].m_scale.Set(4.f, 8.f, 4.f);
                 grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
                 grass.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(0.5f, 1.f), Math::RandFloatMinMax(0.8f, 1.f));
+                grass.appearance[go].angle = Math::RandFloatMinMax(0.f, 360.f);
                 //grass.appearance[go].scale.Set(1, 1, 1);
             }
             else if (tile >= '1' && tile <= '9')
@@ -84,18 +85,25 @@ void SceneGrass::Init()
                     grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
                     grass.monster[go] = MonsterFactory::CreateMonster("Rabbit");
                     grass.hitbox[go].m_scale.Set(1.5f, 2.f, 1.75f);
+                    grass.appearance[go].scale.Set(1, 1, 1);
                     break;
                 
                 case '2':
                     grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_BIRD);
                     grass.monster[go] = MonsterFactory::CreateMonster("Bird");
                     grass.hitbox[go].m_scale.Set(2.f, 2.f, 2.f);
+                    grass.appearance[go].scale.Set(1, 1, 1);
                     break;
                 
                 case '3':
+                    grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_FAIRY);
+                    grass.monster[go] = MonsterFactory::CreateMonster("Fairy");
+                    grass.hitbox[go].m_scale.Set(3.f, 3.f, 3.f);
+                    grass.appearance[go].scale.Set(3, 3, 3);
                     break;
                 }
                 grass.monster[go]->m_position = grass.position[go];
+                grass.appearance[go].angle = 0.f;
 
                 int randCol = cols + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
                 int randRow = rows + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
@@ -110,32 +118,35 @@ void SceneGrass::Init()
                 grass.monster[go]->m_destination = RNGdestination;
                 grass.velocity[go] = (RNGdestination - grass.position[go]).Normalized() * 2.f;
                 grass.monster[go]->m_velocity = grass.velocity[go];
-                grass.appearance[go].scale.Set(1, 1, 1);
 
             }
         }
     }
 
-    monster = createGO(&grass);
-    grass.mask[monster] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
-    grass.position[monster].SetZero();
-    grass.velocity[monster].Set(0, 0, 1);
-    grass.hitbox[monster].m_origin = grass.position[monster] + Vector3(0, 0.75f, -0.3);
-    grass.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
-    grass.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
-    grass.appearance[monster].scale.Set(1, 1, 1);
+    //monster = createGO(&grass);
+    //grass.mask[monster] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
+    //grass.position[monster].SetZero();
+    //grass.velocity[monster].Set(0, 0, 1);
+    //grass.hitbox[monster].m_origin = grass.position[monster] + Vector3(0, 0.75f, -0.3);
+    //grass.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
+    //grass.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
+    //grass.appearance[monster].scale.Set(1, 1, 1);
+    //grass.appearance[monster].angle = 0.f;
+    //
+	//rock = createGO(&grass);
+	//grass.mask[rock] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
+	//grass.position[rock].Set(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z);
+	//grass.appearance[rock].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1);
+	//grass.appearance[rock].scale.Set(1, 1, 1);
+    //grass.appearance[rock].angle = 0.f;
+    //
+	//net = createGO(&grass);
+	//grass.mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE;
+	//grass.position[net].SetZero();
+	//grass.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
+	//grass.appearance[net].scale.Set(2, 2, 2);
+    //grass.appearance[net].angle = 0.f;
 
-	rock = createGO(&grass);
-	grass.mask[rock] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
-	grass.position[rock].Set(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z);
-	grass.appearance[rock].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1);
-	grass.appearance[rock].scale.Set(1, 1, 1);
-
-	net = createGO(&grass);
-	grass.mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE;
-	grass.position[net].SetZero();
-	grass.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
-	grass.appearance[net].scale.Set(2, 2, 2);
 	//HITBOX.m_origin = Vector3(0, 5, 0);
 	//HITBOX.m_scale = Vector3(10, 10, 10);
 
@@ -174,6 +185,12 @@ void SceneGrass::Update(double dt)
 		{
 			grass.monster[ai]->m_position = grass.position[ai];
 			grass.monster[ai]->Update(dt);
+
+            if (grass.monster[ai]->GetStrategyState() == AI_Strategy::STATE_ALERT)
+            {
+                grass.monster[ai]->m_velocity.SetZero();
+            }
+
 			grass.velocity[ai] = grass.monster[ai]->m_velocity;
 		}
 	}
@@ -273,6 +290,7 @@ void SceneGrass::Update(double dt)
 					grass.capture[net].timeBeforeCapture = 3;
 					grass.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
 					grass.appearance[net].scale.Set(2, 2, 2);
+                    grass.appearance[net].angle = 0.f;
 
 					if (grass.capture[net].capturingMonster == true)
 					{
@@ -291,6 +309,7 @@ void SceneGrass::Update(double dt)
 							grass.velocity[text_C].y = 3;
 							grass.appearance[text_C].scale.Set(2, 2, 2);
 							grass.appearance[text_C].billboard = true;
+                            grass.appearance[text_C].angle = 0.f;
 						}
 						else
 						{
@@ -304,6 +323,8 @@ void SceneGrass::Update(double dt)
 							grass.velocity[text_M].y = 3;
 							grass.appearance[text_M].scale.Set(2, 2, 2);
 							grass.appearance[text_M].billboard = true;
+                            grass.appearance[text_M].angle = 0.f;
+
 							destroyGO(&grass, net);
 							grass.capture[net].capturingMonster = false;//fail capture
 						}
@@ -339,6 +360,7 @@ void SceneGrass::Update(double dt)
 				grass.position[bait] = tempo;
 				grass.appearance[bait].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT);
 				grass.appearance[bait].scale.Set(1, 1, 1);
+                grass.appearance[bait].angle = 0.f;
 				grass.bait[bait].scentRadius = 200;
 				grass.bait[bait].foundRadius = 5;
 				grass.bait[bait].eattingBait = false;
@@ -358,7 +380,7 @@ void SceneGrass::Update(double dt)
             {
                 if ((grass.mask[ai] & COMPONENT_AI) == COMPONENT_AI && grass.monster[ai])
                 {
-                    if ((grass.position[ai] - grass.position[bait]).LengthSquared() < grass.bait[bait].scentRadius && grass.bait[bait].eattingBait == false)
+                    if (grass.monster[ai]->GetStrategyState() == AI_Strategy::STATE_IDLE && (grass.position[ai] - grass.position[bait]).LengthSquared() < grass.bait[bait].scentRadius && grass.bait[bait].eattingBait == false)
                     {
                         grass.bait[bait].foundBait = true;
                         //std::cout << " FOUND BAIT " + grass.bait[bait].foundBait << std::endl;
@@ -376,7 +398,7 @@ void SceneGrass::Update(double dt)
                     }
                     if ((grass.position[ai] - grass.position[bait]).LengthSquared() < grass.bait[bait].foundRadius)
                     {
-                        std::cout << "EATTING BAIT " + grass.bait[bait].foundBait << std::endl;
+                        std::cout << "EATING BAIT " + grass.bait[bait].foundBait << std::endl;
                         grass.bait[bait].foundBait = false;
                         grass.bait[bait].eattingBait = true;
                         grass.velocity[ai].SetZero();
@@ -384,15 +406,17 @@ void SceneGrass::Update(double dt)
                     }
                     if (grass.bait[bait].eattingBait == true && (grass.position[ai] - grass.position[bait]).LengthSquared() < grass.bait[bait].foundRadius)
                     {
-                        grass.bait[bait].timeEatting -= dt;
-                        std::cout << grass.bait[bait].timeEatting << std::endl;
+                        grass.bait[bait].timeEatting -= (float)(dt);
+                        if (grass.bait[bait].timeEatting > 0.1f) {
+                            float scale = grass.bait[bait].timeEatting / 3.f;
+                            grass.appearance[bait].scale.Set(scale, scale, scale);
+                        }
                     }
 
                     if (grass.bait[bait].timeEatting <= 0)
                     {
                         //grass.bait[bait].eattingBait = false;
                         grass.bait[bait].finishedBait = true;
-                        std::cout << "Done Eatting" << std::endl;
                         //grass.velocity[ai] = 2;
                         //grass.velocity[ai].y = 0;
                     }
@@ -490,6 +514,7 @@ void SceneGrass::Update(double dt)
 		grass.position[trap].Set(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
 		grass.appearance[trap].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP);
 		grass.appearance[trap].scale.Set(3, 3, 3);
+        grass.appearance[trap].angle = 0.f;
 
 		grass.trap[trap].triggerDuration = 3.0f;
 		grass.trap[trap].triggerTimer = 0.f;
@@ -826,8 +851,6 @@ void SceneGrass::Render()
     //    }
     //}
 
-    RenderMonsterStates();
-
 	SetHUD(true);
 	RenderHUD();
 	SetHUD(false);
@@ -906,42 +929,6 @@ void SceneGrass::Exit()
 
         // call destroyGO instead
         destroyGO(&grass, GO);
-    }
-
-}
-
-//========================
-// == OBJECTS TO RENDER
-//========================
-
-void SceneGrass::RenderMonsterStates()
-{
-    for (GameObject ai = 0; ai < grass.GAMEOBJECT_COUNT; ++ai)
-    {
-        if (grass.monster[ai])
-        {
-
-            switch (grass.monster[ai]->GetStrategyState())
-            {
-            case AI_Strategy::STATE_ALERT:
-                break;
-
-            case AI_Strategy::STATE_ATTACK:
-            case AI_Strategy::STATE_RUN:
-                Vector3 pos;
-
-                pos = (grass.position[ai]);
-
-                modelStack.PushMatrix();
-                modelStack.Translate(pos.x, pos.y + 5.f, pos.z);
-                modelStack.Scale(5, 5, 5);
-                modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - pos.x, camera.position.z - pos.z)), 0, 1, 0);
-                RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_EXCLAMATION_MARK), false);
-                modelStack.PopMatrix();
-                break;
-            }
-
-        }
     }
 
 }

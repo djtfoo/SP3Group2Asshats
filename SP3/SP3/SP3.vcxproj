@@ -51,7 +51,7 @@
     <ClCompile Include="Source\GameObject\Monsters\Fossil.cpp" />
     <ClCompile Include="Source\GameObject\Monsters\Golem.cpp" />
     <ClCompile Include="Source\GameObject\Monsters\Grimejam.cpp" />
-    <ClCompile Include="Source\GameObject\Monsters\Kof.cpp" />
+    <ClCompile Include="Source\GameObject\Monsters\SeaMonster.cpp" />
     <ClCompile Include="Source\GameObject\Monsters\Magma.cpp" />
     <ClCompile Include="Source\GameObject\Monsters\MagmaBerzeker.cpp" />
     <ClCompile Include="Source\GameObject\Monsters\MukBoss.cpp" />
@@ -101,7 +101,7 @@
     <ClInclude Include="Source\GameObject\Monsters\Fossil.h" />
     <ClInclude Include="Source\GameObject\Monsters\Golem.h" />
     <ClInclude Include="Source\GameObject\Monsters\Grimejam.h" />
-    <ClInclude Include="Source\GameObject\Monsters\Kof.h" />
+    <ClInclude Include="Source\GameObject\Monsters\SeaMonster.h" />
     <ClInclude Include="Source\GameObject\Monsters\Magma.h" />
     <ClInclude Include="Source\GameObject\Monsters\MagmaBerzeker.h" />
     <ClInclude Include="Source\GameObject\Monsters\MukBoss.h" />

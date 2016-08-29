@@ -1,12 +1,12 @@
-#include "Kof.h"
+#include "SeaMonster.h"
 #include "../AI_Strategy.h"
 
-Monster_Kof::Monster_Kof(std::string name, const std::vector<int>& stats) : Monster(name, stats)
+Monster_SeaMonster::Monster_SeaMonster(std::string name, const std::vector<int>& stats) : Monster(name, stats)
 {
     m_strategy = NULL;
 }
 
-Monster_Kof::~Monster_Kof()
+Monster_SeaMonster::~Monster_SeaMonster()
 {
     if (m_strategy != NULL)
     {
@@ -15,7 +15,7 @@ Monster_Kof::~Monster_Kof()
     }
 }
 
-void Monster_Kof::Update(double dt)
+void Monster_SeaMonster::Update(double dt)
 {
     if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > 24)
 	{
@@ -58,7 +58,7 @@ void Monster_Kof::Update(double dt)
 	m_strategy->Update();
 }
 
-void Monster_Kof::TakeDamage(const int damage)
+void Monster_SeaMonster::TakeDamage(const int damage)
 {
     changeHealthStat(m_healthStat - damage);
 }

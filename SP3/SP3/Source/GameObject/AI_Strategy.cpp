@@ -16,6 +16,7 @@ Class that Updates the strategy of monster
 AI_Strategy::AI_Strategy() : currentState(STATE_IDLE)
 {
 }
+
 AI_Strategy::~AI_Strategy()
 {
 }
@@ -64,6 +65,11 @@ void AI_Strategy::SetDestination(const Vector3& destination)
 {
     this->monster->m_destination = destination;
     this->monster->m_velocity = (destination - this->monster->m_position).Normalized();
+
+    if (currentState == STATE_ATTACK || currentState == STATE_RUN)
+    {
+        this->monster->m_velocity *= 2.f;
+    }
 }
 
 int AI_Strategy::CalculateDistance(const Vector3& MonsterPos, const Vector3& Destination)
@@ -80,14 +86,6 @@ void AI_Strategy::Update()
 
 	float aggressionLevel = monster->GetAggressionStat();
 	float fearLevel = monster->GetFearStat();
-
-    if (aggressionLevel > 50 || fearLevel > 50)
-    {
-        //if (currentState != STATE_ALERT)
-        //{
-        //    SetState(STATE_ALERT);
-        //}
-    }
 
 	if (aggressionLevel > 70 && fearLevel < 50)
 	{
@@ -106,12 +104,15 @@ void AI_Strategy::Update()
             std::cout << "RUN!";
         }
 	}
-	//if (monster collide with trap)
-	//{
-	//	SetState(TRAPPED);
-	//	if(timer > 5)
-	//	SetState(Prev State);
-	//}
+
+    else if (aggressionLevel > 50 || fearLevel > 50)
+    {
+        if (currentState != STATE_ALERT)
+        {
+            SetState(STATE_ALERT);
+        }
+    }
+
     else if (currentState != STATE_BAITED && currentState != STATE_IDLE)
 	{
 		SetState(STATE_IDLE);

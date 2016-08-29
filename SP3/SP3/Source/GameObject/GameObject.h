@@ -33,7 +33,7 @@ struct Appearance
     Vector3 scale;
     Mesh* mesh = nullptr;
 	bool billboard = false;
-
+    float angle;
 };
 
 struct AI_Script

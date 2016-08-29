@@ -27,6 +27,7 @@ class SharedData
 
 public:
 	void Init();
+    void Exit();
 
 	static SharedData* GetInstance()
 	{

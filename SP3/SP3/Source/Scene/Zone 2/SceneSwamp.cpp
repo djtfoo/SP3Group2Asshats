@@ -35,61 +35,91 @@ void SceneSwamp::Init()
     //Set heap(?)
     memset(&swamp, 0, sizeof(swamp));
 
-    //Load map
+    // Load map
     Scene::LoadLevelMap("GameData/SwampScene.csv");
-	for (int rows = 0; rows < Scene::m_rows; ++rows)
-	{
-		for (int cols = 0; cols < Scene::m_cols; ++cols)
-		{
-			char tile = m_levelMap[rows][cols];
-	
-			if (tile == '0')
-				continue;
-	
-			LevelGenerationMap::iterator it = Scene::m_levelGenerationData.find(tile);
-	
-			// it->first is tileCount
-			// first in it->second is mesh
-			// second in it->second is vector of components
-			//std::cout << m_levelMap[rows][cols] << " ";
-			if (tile >= 'A' && tile <= 'Z')
-			{
-				GameObject go = createGO(&swamp);
-				swamp.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
-				swamp.position[go].Set(cols * Scene::tileSize, 0.f, rows * Scene::tileSize);
-				swamp.hitbox[go].m_origin = swamp.position[go];
-				swamp.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
-				swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
-				swamp.appearance[go].scale.Set(1, 1, 1);
-			}
-			else if (tile >= '1' && tile <= '9')
-			{
-				GameObject go = createGO(&swamp);
-				swamp.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
-				//swamp.velocity[go].Set(Math::RandFloatMinMax(0.f, 1.f), 0, Math::RandFloatMinMax(0.f, 1.f));
-				swamp.velocity[go].SetZero();
-				swamp.position[go].Set(cols * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f), 0.f, rows * Scene::tileSize + Math::RandFloatMinMax(0.f, 1.f));
-				swamp.hitbox[go].m_origin = swamp.position[go];
-				swamp.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
-				switch (tile)
-				{
-				case '1':
-					swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
-					swamp.monster[go] = MonsterFactory::CreateMonster("Rabbit");
-					break;
-	
-				case '2':
-					swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_BIRD);
-					swamp.monster[go] = MonsterFactory::CreateMonster("Bird");
-					break;
-	
-				case '3':
-					break;
-				}
-				swamp.appearance[go].scale.Set(1, 1, 1);
-			}
-		}
-	}
+    for (int rows = 0; rows < Scene::m_rows; ++rows)
+    {
+        for (int cols = 0; cols < Scene::m_cols; ++cols)
+        {
+            char tile = m_levelMap[rows][cols];
+
+            if (tile == '0')
+                continue;
+
+            LevelGenerationMap::iterator it = Scene::m_levelGenerationData.find(tile);
+
+            // it->first is tileCount
+            // first in it->second is mesh
+            // second in it->second is vector of components
+
+            if (tile >= 'A' && tile <= 'Z')
+            {
+                GameObject go = createGO(&swamp);
+
+                for (unsigned i = 0; i < (it->second).second.size(); ++i)
+                {
+                    swamp.mask[go] = swamp.mask[go] | (it->second).second[i];
+                }
+
+                swamp.position[go].Set(cols * Scene::tileSize, 0.f, rows * Scene::tileSize);
+                swamp.hitbox[go].m_origin = swamp.position[go] + Vector3(0, 2, 0);
+                swamp.hitbox[go].m_scale.Set(4.f, 8.f, 4.f);
+                swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
+                swamp.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(0.5f, 1.f), Math::RandFloatMinMax(0.8f, 1.f));
+                swamp.appearance[go].angle = Math::RandFloatMinMax(0.f, 360.f);
+                //swamp.appearance[go].scale.Set(1, 1, 1);
+            }
+            else if (tile >= '1' && tile <= '9')
+            {
+                GameObject go = createGO(&swamp);
+                swamp.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI | COMPONENT_OBSTACLE;
+                //swamp.velocity[go].Set(Math::RandFloatMinMax(0.f, 1.f), 0, Math::RandFloatMinMax(0.f, 1.f));
+                //swamp.velocity[go].SetZero();
+                swamp.position[go].Set(cols * tileSize + Math::RandFloatMinMax(0.f, 1.f), 0.f, rows * tileSize + Math::RandFloatMinMax(0.f, 1.f));
+                swamp.hitbox[go].m_origin = swamp.position[go] + Vector3(0, 0.75f, -0.3f);
+                switch (tile)
+                {
+                case '1':
+                    swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_SEAMONSTER);
+                    swamp.monster[go] = MonsterFactory::CreateMonster("SeaMonster");
+                    swamp.hitbox[go].m_scale.Set(1.5f, 2.f, 1.75f);
+                    swamp.appearance[go].scale.Set(1, 1, 1);
+                    break;
+
+                case '2':
+                    swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_GRIMEJAM);
+                    swamp.monster[go] = MonsterFactory::CreateMonster("Grimejam");
+                    swamp.hitbox[go].m_scale.Set(2.f, 2.f, 2.f);
+                    swamp.appearance[go].scale.Set(1, 1, 1);
+                    break;
+
+                case '3':
+                    swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_MUKBOSS);
+                    swamp.monster[go] = MonsterFactory::CreateMonster("MukBoss");
+                    swamp.hitbox[go].m_scale.Set(3.f, 3.f, 3.f);
+                    swamp.appearance[go].scale.Set(3, 3, 3);
+                    break;
+                }
+                swamp.monster[go]->m_position = swamp.position[go];
+                swamp.appearance[go].angle = 0.f;
+
+                int randCol = cols + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+                int randRow = rows + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+                while (randCol < 0 || randCol >= 40 || randRow < 0 || randRow >= 40 || Scene::m_levelMap[randRow][randCol] != '0')
+                {
+                    randCol = cols + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+                    randRow = rows + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+                }
+
+                Vector3 RNGdestination(randCol * Scene::tileSize + Scene::tileSize * 0.5f, 0, randRow * Scene::tileSize + Scene::tileSize * 0.5f);
+
+                swamp.monster[go]->m_destination = RNGdestination;
+                swamp.velocity[go] = (RNGdestination - swamp.position[go]).Normalized() * 2.f;
+                swamp.monster[go]->m_velocity = swamp.velocity[go];
+
+            }
+        }
+    }
     
     //monster = createGO(&grass);
     //grass.mask[monster] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;

@@ -128,6 +128,7 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_HUDHIGHLIGHT] = MeshBuilder::GenerateQuad("HUDHIGHLIGHT", Color(0, 1, 0), 1.f);
 	m_meshList[GEO_HUDHIGHLIGHT]->textureID = LoadTGA("Image//HUD//HudHighlights.tga");
 
+    // Grass Scene
 	m_meshList[GEO_GRASS_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw",m_heightMap);
 	m_meshList[GEO_GRASS_TERRAIN]->textureArray[0] = LoadTGA("Image//GrassZone//Grass.tga");
 
@@ -191,6 +192,7 @@ void GraphicsLoader::Init()
 	//m_meshList[GEO_ROCKS5] = MeshBuilder::GenerateOBJ("Bird", "OBJ//stone_5.obj");
 	//m_meshList[GEO_ROCKS5]->textureArray[0] = LoadTGA("Image//Rock5.tga");
 
+    // Swamp Scene
 	m_meshList[GEO_SWAMP_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw", m_heightMap);
 	m_meshList[GEO_SWAMP_TERRAIN]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_terrain.tga");
 	
@@ -205,9 +207,20 @@ void GraphicsLoader::Init()
     //m_meshList[GEO_SWAMP_ROOT] = MeshBuilder::GenerateCube("cube", Color(1, 1, 0), 1.f);
     m_meshList[GEO_SWAMP_ROOT]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_root.tga");
 
+    m_meshList[GEO_MONSTER_SEAMONSTER] = MeshBuilder::GenerateOBJ("SeaMonster", "OBJ//SwampZone/SeaMonster.obj");
+    m_meshList[GEO_MONSTER_SEAMONSTER]->textureArray[0] = LoadTGA("Image//SwampZone/SeaMonster.tga");
+
+    m_meshList[GEO_MONSTER_GRIMEJAM] = MeshBuilder::GenerateOBJ("Grimejam", "OBJ//SwampZone/Grimejam.obj");
+    m_meshList[GEO_MONSTER_GRIMEJAM]->textureArray[0] = LoadTGA("Image//SwampZone/Grimejam.tga");
+
+    m_meshList[GEO_BOSS_MUKBOSS] = MeshBuilder::GenerateOBJ("Rabbit", "OBJ//SwampZone/MukBoss.obj");
+    m_meshList[GEO_BOSS_MUKBOSS]->textureArray[0] = LoadTGA("Image//SwampZone/MukBoss.tga");
+
+    // Rock Scene
 	m_meshList[GEO_ROCK_TERRAIN] = MeshBuilder::GenerateQuad("Rock Terrain", Color(1, 1, 1), 1.f, 100);
 	//m_meshList[GEO_ROCK_TERRAIN]->textureArray[0] = LoadTGA();
-
+    
+    // Lava Scene
 	m_meshList[GEO_LAVA_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw", m_heightMap);
 	m_meshList[GEO_LAVA_TERRAIN]->textureArray[0] = LoadTGA("Image//FireZone/lava_terrain.tga");
 
@@ -215,7 +228,7 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_LAVA_SKYPLANE]->textureArray[0] = LoadTGA("Image//SwampZone//swamp_skyplane.tga");
 
 	m_meshList[GEO_VOLCANO] = MeshBuilder::GenerateOBJ("Volcano", "OBJ//FireZone/Volcano.obj");
-	//m_meshList[GEO_VOLCANO]->textureArray[0] = LoadTGA("Image//FireZone/Volcano.tga");
+	m_meshList[GEO_VOLCANO]->textureArray[0] = LoadTGA("Image//FireZone/Volcano.tga");
 
 	m_meshList[GEO_MONEY_TREE] = MeshBuilder::GenerateOBJ("Money Tree", "OBJ//BonusTree.obj");
 	m_meshList[GEO_MONEY_TREE]->textureArray[0] = LoadTGA("Image//BonusTree.tga");
@@ -226,10 +239,23 @@ void GraphicsLoader::Init()
     m_meshList[GEO_MONSTER_EXCLAMATION_MARK] = MeshBuilder::GenerateQuad("Exclamation mark", Color(1, 0, 0), 1.f);
     m_meshList[GEO_MONSTER_EXCLAMATION_MARK]->textureArray[0] = LoadTGA("Image//monster_exclamation.tga");
 
+    m_meshList[GEO_MONSTER_QUESTION_MARK] = MeshBuilder::GenerateQuad("Question Mark", Color(0, 1, 0), 1.f);
+    m_meshList[GEO_MONSTER_QUESTION_MARK]->textureArray[0] = LoadTGA("Image//monster_questionmark.tga");
+
     // Fonts
     m_meshList[GEO_TEXT_IMPACT] = MeshBuilder::GenerateText("Font - Impact", 16, 16);
     m_meshList[GEO_TEXT_IMPACT]->textureID = LoadTGA("Image//Fonts/Font_Impact.tga");
     m_meshList[GEO_TEXT_IMPACT]->LoadFontData("Image//Fonts/FontData_Impact.csv");
+}
+
+void GraphicsLoader::Exit()
+{
+    // Cleanup VBO
+    for (int i = 0; i < NUM_GEOMETRY; ++i)
+    {
+        if (m_meshList[i])
+            delete m_meshList[i];
+    }
 }
 
 Mesh* GraphicsLoader::GetMesh(GEOMETRY_TYPE m_geotype)

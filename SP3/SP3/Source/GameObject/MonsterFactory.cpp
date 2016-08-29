@@ -16,7 +16,7 @@ Class that creates Monsters inside a scene
 #include "Monsters/Fossil.h"
 #include "Monsters/Golem.h"
 #include "Monsters/Grimejam.h"
-#include "Monsters/Kof.h"
+#include "Monsters/SeaMonster.h"
 #include "Monsters/Magma.h"
 #include "Monsters/MagmaBerzeker.h"
 #include "Monsters/MukBoss.h"
@@ -47,8 +47,8 @@ Monster* MonsterFactory::CreateMonster(const std::string name)
     // Water Zone
     else if (name == "Grimejam")
         createdMonster = new Monster_Grimejam(name, it->second);
-    else if (name == "Kof")
-        createdMonster = new Monster_Kof(name, it->second);
+    else if (name == "SeaMonster")
+        createdMonster = new Monster_SeaMonster(name, it->second);
     else if (name == "MukBoss")
         createdMonster = new Boss_MukBoss(name, it->second);
 
