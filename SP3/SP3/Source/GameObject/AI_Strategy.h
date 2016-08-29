@@ -50,6 +50,7 @@ public:
     void SetAttackStateDestination();
     void SetRunStateDestination();
 	void SetRampageStateDestination();
+    void SetBaitedStateDestination(const Vector3& destination);
 
 private:
 	Monster* monster;

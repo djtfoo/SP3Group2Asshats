@@ -309,6 +309,11 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_MONSTERSTATE_RAMPAGE] = MeshBuilder::GenerateQuad("Rampage State", Color(0, 1, 0), 1.f);
 	m_meshList[GEO_MONSTERSTATE_RAMPAGE]->textureArray[0] = LoadTGA("Image//monster_rampage.tga");
 
+    // Shop stuff
+    m_meshList[GEO_SHOP_BACKGROUND] = MeshBuilder::GenerateQuad("Rock Terrain", Color(0.5f, 0.5f, 0.5f), 1.f, 100);
+    m_meshList[GEO_SHOP_SELECTION] = MeshBuilder::GenerateQuad("Rock Terrain", Color(0, 0, 0), 1.f, 100);
+    m_meshList[GEO_SHOP_SELECTION_ALT] = MeshBuilder::GenerateQuad("Rock Terrain", Color(1, 1, 1), 1.f, 100);
+
     // Fonts
     m_meshList[GEO_TEXT_IMPACT] = MeshBuilder::GenerateText("Font - Impact", 16, 16);
     m_meshList[GEO_TEXT_IMPACT]->textureID = LoadTGA("Image//Fonts/Font_Impact.tga");

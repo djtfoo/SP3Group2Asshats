@@ -329,6 +329,9 @@
     <ClCompile Include="Source\GameObject\Monsters\SeaMonster.cpp">
       <Filter>Source Files\GameObject\Monsters</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene\mainMenu.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\shader.hpp">
@@ -489,6 +492,9 @@
     </ClInclude>
     <ClInclude Include="Source\GameObject\Monsters\SeaMonster.h">
       <Filter>Header Files\GameObject\Monsters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\mainMenu.h">
+      <Filter>Header Files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

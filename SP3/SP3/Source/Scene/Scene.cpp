@@ -518,3 +518,51 @@ void Scene::UpdateGameObjects(World* world, double dt)
 
     }
 }
+
+void Scene::RenderUI(Mesh* mesh, float sizex, float sizey, float sizez, float x, float y, float rotatex, float rotatey, float rotatez, bool enableLight)
+{
+    glDisable(GL_DEPTH_TEST);
+    Mtx44 ortho;
+    ortho.SetToOrtho(0, 80, 0, 60, -100, 100); //size of screen UI
+    projectionStack.PushMatrix();
+    projectionStack.LoadMatrix(ortho);
+    viewStack.PushMatrix();
+    viewStack.LoadIdentity(); //No need camera for ortho mode
+    modelStack.PushMatrix();
+    modelStack.LoadIdentity(); //Reset modelStack
+    modelStack.Translate(x, y, 97);
+    modelStack.Rotate(rotatex, 1, 0, 0);
+    modelStack.Rotate(rotatey, 0, 1, 0);
+    modelStack.Rotate(rotatez, 0, 0, 1);
+    modelStack.Scale(sizex, sizey, sizez);
+    if (enableLight)
+    {
+        glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_LIGHTENABLED), 1);
+    }
+    else
+    {
+        glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_LIGHTENABLED), 0);
+    }
+    if (mesh->textureArray[0] > 0)
+    {
+        glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_COLOR_TEXTURE_ENABLED), 1);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, mesh->textureArray[0]);
+        glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_COLOR_TEXTURE), 0);
+    }
+    else
+    {
+        glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_COLOR_TEXTURE_ENABLED), 0);
+    }
+
+    Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
+    glUniformMatrix4fv(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_MVP), 1, GL_FALSE, &MVP.a[0]);
+
+    mesh->Render();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    projectionStack.PopMatrix();
+    viewStack.PopMatrix();
+    modelStack.PopMatrix();
+    glEnable(GL_DEPTH_TEST);
+}

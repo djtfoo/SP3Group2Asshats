@@ -189,5 +189,9 @@ void AI_Strategy::SetRampageStateDestination()
 	Vector3 destination = SharedData::GetInstance()->player->GetPositionVector();
 	destination.y = 0.f;
 	setDestination(destination);
-	std::cout << "DESTINATION" << std::endl;
+}
+
+void AI_Strategy::SetBaitedStateDestination(const Vector3& destination)
+{
+    setDestination(destination);
 }

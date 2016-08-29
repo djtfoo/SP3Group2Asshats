@@ -77,6 +77,7 @@
     <ClCompile Include="Source\Graphics\ParticleManager\Particle.cpp" />
     <ClCompile Include="Source\Graphics\Vertex\Utility.cpp" />
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Scene\mainMenu.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
     <ClCompile Include="Source\Scene\Zone 1\SceneGrass.cpp" />
     <ClCompile Include="Source\Scene\Zone 1\SceneSP3.cpp" />
@@ -132,6 +133,7 @@
     <ClInclude Include="Source\Graphics\ParticleManager\Particle.h" />
     <ClInclude Include="Source\Graphics\Vertex\Utility.h" />
     <ClInclude Include="Source\Graphics\Vertex\Vertex.h" />
+    <ClInclude Include="Source\Scene\mainMenu.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Scene\Zone 1\SceneGrass.h" />
     <ClInclude Include="Source\Scene\Zone 1\SceneSP3.h" />

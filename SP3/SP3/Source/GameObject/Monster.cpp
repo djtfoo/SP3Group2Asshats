@@ -110,7 +110,7 @@ void Monster::GetCaptured()
 void Monster::GetBaited(const Vector3& baitPos)
 {
     m_strategy->SetState(AI_Strategy::STATE_BAITED);
-    m_strategy->SetDestination(baitPos);
+    m_strategy->SetBaitedStateDestination(baitPos);
 }
 
 void Monster::SetIdleState()

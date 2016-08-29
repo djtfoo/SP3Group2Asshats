@@ -54,6 +54,7 @@ public:
 	//void RenderMeshIn2D(Mesh *mesh, bool enableLight, float size = 1.0f, float x = 0.0f, float y = 0.0f, bool rotate = false, float angle = 0.0f);
     void RenderMeshIn2D(Mesh *mesh, bool enableLight, float sizeX, float sizeY, float x, float y);
 	void RenderUI(Mesh* mesh, float size, float x, float y, float rotatex = 0, float rotatey = 0, float rotatez = 0, bool enableLight = false);
+    void RenderUI(Mesh* mesh, float sizex, float sizey, float sizez, float x, float y, float rotatex, float rotatey, float rotatez, bool enableLight);
 
 	bool m_bIsInOrthogonalMode;
 	bool SetHUD(const bool m_bHUDmode);
