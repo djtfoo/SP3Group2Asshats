@@ -3,7 +3,8 @@
 
 Monster_Fossil::Monster_Fossil(std::string name, const std::vector<int>& stats) : Monster(name, stats)
 {
-    m_strategy = NULL;
+    m_strategy = new AI_Strategy();
+    m_strategy->Init(this);
 }
 
 Monster_Fossil::~Monster_Fossil()

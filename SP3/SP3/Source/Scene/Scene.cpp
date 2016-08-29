@@ -453,7 +453,7 @@ void Scene::RenderGameObjects(World* world)
             case AI_Strategy::STATE_RUN:
 
                 modelStack.PushMatrix();
-                modelStack.Translate(pos.x, pos.y + 3.f + 2.f * world->appearance[GO].scale.y, pos.z);
+                modelStack.Translate(pos.x, pos.y + 4.f + 2.f * world->appearance[GO].scale.y, pos.z);
                 modelStack.Scale(4, 4, 4);
                 modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - pos.x, camera.position.z - pos.z)), 0, 1, 0);
                 RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_EXCLAMATION_MARK), false);
@@ -463,7 +463,7 @@ void Scene::RenderGameObjects(World* world)
             case AI_Strategy::STATE_BAITED:
 
                 modelStack.PushMatrix();
-                modelStack.Translate(pos.x, pos.y + 2.f + 2.f * world->appearance[GO].scale.y, pos.z);
+                modelStack.Translate(pos.x, pos.y + 4.f + 2.f * world->appearance[GO].scale.y, pos.z);
                 modelStack.Scale(1, 1, 1);
                 modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - pos.x, camera.position.z - pos.z)), 0, 1, 0);
                 RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), false);

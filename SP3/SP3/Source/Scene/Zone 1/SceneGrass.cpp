@@ -84,21 +84,21 @@ void SceneGrass::Init()
                 case '1':
                     grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
                     grass.monster[go] = MonsterFactory::CreateMonster("Rabbit");
-                    grass.hitbox[go].m_scale.Set(1.5f, 2.f, 1.75f);
+                    grass.hitbox[go].m_scale.Set(3.f, 4.f, 3.5f);
                     grass.appearance[go].scale.Set(1, 1, 1);
                     break;
                 
                 case '2':
                     grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_BIRD);
                     grass.monster[go] = MonsterFactory::CreateMonster("Bird");
-                    grass.hitbox[go].m_scale.Set(2.f, 2.f, 2.f);
+                    grass.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
                     grass.appearance[go].scale.Set(1, 1, 1);
                     break;
                 
                 case '3':
                     grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_FAIRY);
                     grass.monster[go] = MonsterFactory::CreateMonster("Fairy");
-                    grass.hitbox[go].m_scale.Set(3.f, 3.f, 3.f);
+                    grass.hitbox[go].m_scale.Set(5.f, 5.f, 5.f);
                     grass.appearance[go].scale.Set(3, 3, 3);
                     break;
                 }

@@ -221,7 +221,7 @@ void GraphicsLoader::Init()
 	//m_meshList[GEO_ROCK_TERRAIN]->textureArray[0] = LoadTGA();
     
     // Lava Scene
-	m_meshList[GEO_LAVA_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//FireZone/lavaheightmap.raw", m_heightMap);
+	m_meshList[GEO_LAVA_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//FireZone/heightmaplava.raw", m_heightMap);
 	m_meshList[GEO_LAVA_TERRAIN]->textureArray[0] = LoadTGA("Image//FireZone/lava_terrain.tga");
 
 	m_meshList[GEO_LAVA] = MeshBuilder::GenerateQuad("GEO_TERRAIN", Color(1,1,1), 1.f, 10);

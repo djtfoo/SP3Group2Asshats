@@ -39,9 +39,9 @@ void SceneLava::Init()
 
 	// Load map
 	Scene::LoadLevelMap("GameData/LavaScene.csv");
-	for (rows = 0; rows < Scene::m_rows; ++rows)
+	for (int rows = 0; rows < Scene::m_rows; ++rows)
 	{
-		for (cols = 0; cols < Scene::m_cols; ++cols)
+		for (int cols = 0; cols < Scene::m_cols; ++cols)
 		{
 			char tile = m_levelMap[rows][cols];
 
@@ -94,26 +94,29 @@ void SceneLava::Init()
 				{
 				case '1':
 					lava.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_MAGMA);
+                    lava.appearance[go].scale.Set(2.f, 2.f, 2.f);
 					lava.monster[go] = MonsterFactory::CreateMonster("Magma");
 					lava.hitbox[go].m_scale.Set(5.f, 8.5f, 5.f);
 					break;
 
 				case '2':
 					lava.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_FIREBUG);
+                    lava.appearance[go].scale.Set(2.5f, 2.5f, 2.5f);
 					lava.monster[go] = MonsterFactory::CreateMonster("FireBug");
 					lava.hitbox[go].m_scale.Set(2.f, 5.5f, 2.f);
 					break;
 
 				case '3':
 					lava.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_MAGMA_BERZEKER);
+                    lava.appearance[go].scale.Set(2.f, 2.f, 2.f);
 					lava.monster[go] = MonsterFactory::CreateMonster("MagmaBerzeker");
 					lava.hitbox[go].m_scale.Set(7.5f, 17.5f, 7.5f);
 					break;
 				}
 				lava.monster[go]->m_position = lava.position[go];
 
-				randCol = cols + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
-				randRow = rows + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+				int randCol = cols + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+				int randRow = rows + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
 				while (randCol < 0 || randCol >= 40 || randRow < 0 || randRow >= 40 || Scene::m_levelMap[randRow][randCol] != '0')
 				{
 					randCol = cols + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
@@ -125,7 +128,6 @@ void SceneLava::Init()
 				lava.monster[go]->m_destination = RNGdestination;
 				lava.velocity[go] = (RNGdestination - lava.position[go]).Normalized() * 2.f;
 				lava.monster[go]->m_velocity = lava.velocity[go];
-				lava.appearance[go].scale.Set(1, 1, 1);
 			}
 		}
 	}

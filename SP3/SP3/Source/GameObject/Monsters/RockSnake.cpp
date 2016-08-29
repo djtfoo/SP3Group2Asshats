@@ -3,7 +3,8 @@
 
 Boss_RockSnake::Boss_RockSnake(std::string name, const std::vector<int>& stats) : Monster(name, stats)
 {
-    m_strategy = NULL;
+    m_strategy = new AI_Strategy();
+    m_strategy->Init(this);
 }
 
 Boss_RockSnake::~Boss_RockSnake()

@@ -172,7 +172,7 @@ void Application::Run()
 	{
 		if (Application::IsKeyPressed('V'))
 		{
-			sceneManager->ChangeScene(2);
+			sceneManager->ChangeScene(4);
 		}
 		sceneManager->Update(m_timer.getElapsedTime());
 		GetCursorPos(&cursorXPos, &cursorYPos);

@@ -3,12 +3,13 @@
 
 Monster_Grimejam::Monster_Grimejam(std::string name, const std::vector<int>& stats) : Monster(name, stats)
 {
-    m_strategy = NULL;
+    m_strategy = new AI_Strategy();
+    m_strategy->Init(this);
 }
 
 Monster_Grimejam::~Monster_Grimejam()
 {
-    if (m_strategy != NULL)
+    if (m_strategy)
     {
         delete m_strategy;
         m_strategy = NULL;

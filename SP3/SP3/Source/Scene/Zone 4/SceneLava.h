@@ -60,10 +60,6 @@ public:
 	double counter;
 	GameObject monster, rock, net, bait, text_C, text_M;
 
-	int rows;
-	int cols;
-	int randCol;
-	int randRow;
 };
 
 #endif

@@ -3,7 +3,8 @@
 
 Monster_Golem::Monster_Golem(std::string name, const std::vector<int>& stats) : Monster(name, stats)
 {
-    m_strategy = NULL;
+    m_strategy = new AI_Strategy();
+    m_strategy->Init(this);
 }
 
 Monster_Golem::~Monster_Golem()
