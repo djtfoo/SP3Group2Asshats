@@ -49,6 +49,7 @@ public:
     virtual void GetCaptured();
     virtual void GetBaited(const Vector3& baitPos);
     void SetIdleState();
+	void SetRampageState();
     void AttackPlayer();
 
 protected:
@@ -70,6 +71,8 @@ protected:
 	float m_originalFear;
 
     Pathfinding* m_pathfinder;
+
+	void updateStats(double dt);
 
     void move();
     void changeHealthStat(const int newHealth);

@@ -141,6 +141,7 @@ GraphicsLoader::GEOMETRY_TYPE AssignMeshType(int num)
         GraphicsLoader::GEO_SWAMP_PLANT,
         GraphicsLoader::GEO_SWAMP_ROOT,
 		GraphicsLoader::GEO_MONEY_TREE,
+		GraphicsLoader::GEO_RED_CRYSTAL,
     };
 
     return list[num];

@@ -837,6 +837,31 @@ void SceneGrass::Render()
     ss << "PLAYER HEALTH:" << SharedData::GetInstance()->player->GetHealth();
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 9);
 
+	for (GameObject GO = 0; GO < grass.GAMEOBJECT_COUNT; ++GO)
+	{
+		if ((grass.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+		{
+			if ((camera.position - grass.position[GO]).LengthSquared() < 150)
+			{
+				if (ViewCheckPosition(grass.position[GO], 45.f) == true)
+				{
+					RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO CUT DOWN", Color(1, 1, 0), 3, 30, 30);
+
+				}
+			}
+		}
+		if ((grass.mask[GO] & COMPONENT_COIN) == COMPONENT_COIN)
+		{
+			if ((camera.position - grass.position[GO]).LengthSquared() < 150)
+			{
+				if (ViewCheckPosition(grass.position[GO], 45.f) == true)
+				{
+					RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
+				}
+			}
+		}
+	}
+
     //for (GameObject tallGrass = 0; tallGrass < grass.GAMEOBJECT_COUNT; ++tallGrass)
     //{
     //    if ((grass.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)

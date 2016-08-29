@@ -164,7 +164,7 @@ void Application::Init()
 
 void Application::Run()
 {
-	sceneManager->ChangeScene(1);
+	sceneManager->ChangeScene(4);
 
     //Main Loop
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
@@ -172,7 +172,7 @@ void Application::Run()
 	{
 		if (Application::IsKeyPressed('V'))
 		{
-			sceneManager->ChangeScene(4);
+			sceneManager->ChangeScene(2);
 		}
 		sceneManager->Update(m_timer.getElapsedTime());
 		GetCursorPos(&cursorXPos, &cursorYPos);

@@ -118,6 +118,11 @@ void Monster::SetIdleState()
     m_strategy->SetState(AI_Strategy::STATE_IDLE);
 }
 
+void Monster::SetRampageState()
+{
+	m_strategy->SetState(AI_Strategy::STATE_RAMPAGE);
+}
+
 int Monster::GetStrategyState()
 {
     return static_cast<int>(m_strategy->GetState());
@@ -126,4 +131,30 @@ int Monster::GetStrategyState()
 void Monster::AttackPlayer()
 {
     SharedData::GetInstance()->player->TakeDamage(m_originalAggression * 0.5f);
+}
+
+void Monster::updateStats(double dt)
+{
+	if (m_strategy->GetState() == AI_Strategy::STATE_BAITED)
+	{
+		if (AggressionLevel > Math::EPSILON) {
+			AggressionLevel /= 2.f;
+		}
+		if (FearLevel > Math::EPSILON) {
+			FearLevel /= 2.f;
+		}
+	}
+
+	else if (m_strategy->GetState() == AI_Strategy::STATE_ALERT)
+	{
+		if (AggressionLevel <= Math::EPSILON) {
+			AggressionLevel = -5 * dt;
+		}
+		if (FearLevel <= Math::EPSILON) {
+			FearLevel = -5 * dt;
+		}
+	}
+
+	changeAggressionStat(m_aggressionStat + AggressionLevel);
+	changeFearStat(m_fearStat + FearLevel);
 }

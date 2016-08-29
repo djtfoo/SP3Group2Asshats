@@ -41,13 +41,7 @@ void Monster_Rabbit::Update(double dt)
         FearLevel = 30 * dt * SharedData::GetInstance()->player->GetNoiseFactor();
     }
 
-    if (m_strategy->GetState() == AI_Strategy::STATE_BAITED)
-    {
-        AggressionLevel /= 2.f;
-        FearLevel /= 2.f;
-    }
-
-    changeFearStat(m_fearStat + FearLevel);
+	Monster::updateStats(dt);
 
     //Update Strategy accordingly
     m_strategy->Update();

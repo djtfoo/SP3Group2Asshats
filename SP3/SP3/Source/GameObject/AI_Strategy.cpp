@@ -40,6 +40,8 @@ void AI_Strategy::SetState(AI_Strategy::STRATEGY_MODE currentState)
     switch (this->currentState)
     {
     case STATE_IDLE:
+		//monster->ResetAggression();
+		//monster->ResetFear();
         SetIdleStateDestination();
         break;
         
@@ -50,6 +52,10 @@ void AI_Strategy::SetState(AI_Strategy::STRATEGY_MODE currentState)
     case STATE_RUN:
         SetRunStateDestination();
         break;
+
+	case STATE_RAMPAGE:
+		SetRampageStateDestination();
+		break;
     }
 }
 
@@ -61,12 +67,12 @@ bool AI_Strategy::CheckDestinationReached()
     return false;
 }
 
-void AI_Strategy::SetDestination(const Vector3& destination)
+void AI_Strategy::setDestination(const Vector3& destination)
 {
     this->monster->m_destination = destination;
     this->monster->m_velocity = (destination - this->monster->m_position).Normalized();
 
-    if (currentState == STATE_ATTACK || currentState == STATE_RUN)
+    if (currentState == STATE_ATTACK || currentState == STATE_RUN || currentState == STATE_RAMPAGE)
     {
         this->monster->m_velocity *= 2.f;
     }
@@ -79,7 +85,7 @@ int AI_Strategy::CalculateDistance(const Vector3& MonsterPos, const Vector3& Des
 
 void AI_Strategy::Update()
 {
-    if (currentState == STATE_TRAPPED || currentState == STATE_CAPTURED)
+    if (currentState == STATE_TRAPPED || currentState == STATE_CAPTURED || currentState == STATE_RAMPAGE)
     {
         return;
     }
@@ -113,8 +119,10 @@ void AI_Strategy::Update()
         }
     }
 
-    else if (currentState != STATE_BAITED && currentState != STATE_IDLE)
+    else if (currentState != STATE_RAMPAGE && currentState != STATE_BAITED && currentState != STATE_IDLE)
 	{
+		monster->ResetAggression();
+		monster->ResetFear();
 		SetState(STATE_IDLE);
         std::cout << "IDLE";
 	}
@@ -155,14 +163,14 @@ void AI_Strategy::SetIdleStateDestination()
 
     Vector3 RNGdestination(randCol * Scene::tileSize + Scene::tileSize * 0.5f, 0, randRow * Scene::tileSize + Scene::tileSize * 0.5f);
 
-    SetDestination(RNGdestination);
+    setDestination(RNGdestination);
 }
 
 void AI_Strategy::SetAttackStateDestination()
 {
     Vector3 destination = SharedData::GetInstance()->player->GetPositionVector();
     destination.y = 0.f;
-    SetDestination(destination);
+    setDestination(destination);
 }
 
 void AI_Strategy::SetRunStateDestination()
@@ -173,5 +181,13 @@ void AI_Strategy::SetRunStateDestination()
 
     Vector3 destination = monster->m_position + 5 * view;
 
-    SetDestination(destination);
+    setDestination(destination);
+}
+
+void AI_Strategy::SetRampageStateDestination()
+{
+	Vector3 destination = SharedData::GetInstance()->player->GetPositionVector();
+	destination.y = 0.f;
+	setDestination(destination);
+	std::cout << "DESTINATION" << std::endl;
 }

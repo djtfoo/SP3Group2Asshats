@@ -253,11 +253,14 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_RED_CRYSTAL]->textureArray[0] = LoadTGA("Image//FireZone/RedCrystal.tga");
 
 	// Monster State
-    m_meshList[GEO_MONSTER_EXCLAMATION_MARK] = MeshBuilder::GenerateQuad("Exclamation mark", Color(1, 0, 0), 1.f);
-    m_meshList[GEO_MONSTER_EXCLAMATION_MARK]->textureArray[0] = LoadTGA("Image//monster_exclamation.tga");
+    m_meshList[GEO_MONSTERSTATE_EXCLAMATION_MARK] = MeshBuilder::GenerateQuad("Exclamation mark", Color(1, 0, 0), 1.f);
+    m_meshList[GEO_MONSTERSTATE_EXCLAMATION_MARK]->textureArray[0] = LoadTGA("Image//monster_exclamation.tga");
 
-    m_meshList[GEO_MONSTER_QUESTION_MARK] = MeshBuilder::GenerateQuad("Question Mark", Color(0, 1, 0), 1.f);
-    m_meshList[GEO_MONSTER_QUESTION_MARK]->textureArray[0] = LoadTGA("Image//monster_questionmark.tga");
+    m_meshList[GEO_MONSTERSTATE_QUESTION_MARK] = MeshBuilder::GenerateQuad("Question Mark", Color(0, 1, 0), 1.f);
+    m_meshList[GEO_MONSTERSTATE_QUESTION_MARK]->textureArray[0] = LoadTGA("Image//monster_questionmark.tga");
+
+	m_meshList[GEO_MONSTERSTATE_RAMPAGE] = MeshBuilder::GenerateQuad("Rampage State", Color(0, 1, 0), 1.f);
+	m_meshList[GEO_MONSTERSTATE_RAMPAGE]->textureArray[0] = LoadTGA("Image//monster_rampage.tga");
 
     // Fonts
     m_meshList[GEO_TEXT_IMPACT] = MeshBuilder::GenerateText("Font - Impact", 16, 16);

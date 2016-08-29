@@ -30,6 +30,7 @@ public:
 		STATE_TRAPPED,	//inside trap
         STATE_BAITED,
         STATE_CAPTURED,
+		STATE_RAMPAGE,
 		TOTAL_AI_STATE,
 	};
 
@@ -37,7 +38,6 @@ public:
 	STRATEGY_MODE GetState();
 
     bool CheckDestinationReached();
-    void SetDestination(const Vector3& destination);
 
     void Init(Monster* monster);
 	void Update();
@@ -49,11 +49,15 @@ public:
     void SetIdleStateDestination();
     void SetAttackStateDestination();
     void SetRunStateDestination();
+	void SetRampageStateDestination();
 
 private:
 	Monster* monster;
 
 	STRATEGY_MODE currentState;
+
+	void setDestination(const Vector3& destination);
+
 	//AABB hitbox;
 	//Vector3 destination;
 

@@ -43,14 +43,7 @@ void Monster_Bird::Update(double dt)
         //FearLevel = 30 * dt;
     }
 
-    if (m_strategy->GetState() == AI_Strategy::STATE_BAITED)
-    {
-        AggressionLevel /= 2.f;
-        FearLevel /= 2.f;
-    }
-
-    changeAggressionStat(m_aggressionStat + AggressionLevel);
-    //changeFearStat(m_fearStat + FearLevel);
+	updateStats(dt);
 
 	//Update Strategy accordingly
     m_strategy->Update();
