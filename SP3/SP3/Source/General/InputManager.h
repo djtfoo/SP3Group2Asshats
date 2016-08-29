@@ -51,6 +51,11 @@ public:
         MOUSE_L,
         MOUSE_R,
 
+        KEY_UP,
+        KEY_DOWN,
+        KEY_LEFT,
+        KEY_RIGHT,
+
         NUM_KEYS
     };
 

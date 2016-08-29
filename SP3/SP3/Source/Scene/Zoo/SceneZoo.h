@@ -5,6 +5,7 @@
 #include "../../GameObject/ItemProjectiles.h"
 #include "../../General/ZooCamera.h"
 #include "../../General/MousePicker.h"
+#include "../../GameObject/Items.h"
 
 class SceneZoo : public Scene
 {
@@ -33,6 +34,14 @@ public:
     Vector3 rockAreaPosition;
     Vector3 swampAreaPosition;
 
+    //Probably needs to be in SharedData or Player class
+    const int AREA_MAX_SIZE;
+
+    float grassAreaSize;
+    float fireAreaSize;
+    float rockAreaSize;
+    float swampAreaSize;
+
     enum AREA
     {
         AREA_OVERVIEW,
@@ -44,16 +53,44 @@ public:
         NUM_AREAS
     };
 
+    enum STATE
+    {
+        STATE_ZOO,
+        STATE_ENCLOSURE,
+        STATE_SHOP
+    };
+    
+    enum SHOP
+    {
+        SHOP_MAIN,
+        SHOP_BUY,
+        SHOP_SELL,
+        SHOP_UPGRADE,
+
+        NUM_SHOP
+    };
+
+    STATE currentState;
     AREA currentArea;
+    SHOP currentShop;
 
-    bool isFollowing;
-    GameObject followingGO;
+    bool isFollowingMonster;
+    GameObject targetedMonster;
     GameObject iter;
-
-    std::vector<Vector3> tempStore;
 
     void DisplayMonsterStats(Monster* monster);
     void CycleThroughZoneArea(std::vector<GameObject> area);
+    void UpgradeEnclosureSize(AREA area);
+    void RenderEnclosures();
+
+    void PurchaseItem(Item item);
+    void SellItem(Item item);
+
+    void RenderShopInterface();
+    void RenderEnclosureInterface();
+    void RenderShopkeeperText();
+
+    float updown, leftright;
 };
 
 #endif

@@ -349,7 +349,7 @@ void SceneRock::Update(double dt)
     //===============================================================================================================================//
 
     //Place trap
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP_ONE].Use())
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].Use())
     {
         GameObject trap = createGO(&rockWorld);
 

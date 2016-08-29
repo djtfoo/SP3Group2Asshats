@@ -38,6 +38,11 @@ InputManager::InputManager()
     keyState[KEY_5].Assign('5');
     keyState[KEY_6].Assign('6');
 
+    keyState[KEY_UP].Assign(VK_UP);
+    keyState[KEY_DOWN].Assign(VK_DOWN);
+    keyState[KEY_LEFT].Assign(VK_LEFT);
+    keyState[KEY_RIGHT].Assign(VK_RIGHT);
+
     keyState[KEY_TAB].Assign(VK_TAB);
 }
 

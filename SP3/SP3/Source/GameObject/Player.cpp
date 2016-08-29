@@ -41,8 +41,7 @@ Player::Player()
         Item("Net", Item::TYPE_NET, 10, 100, 10),
         Item("Bait", Item::TYPE_BAIT, 10, 100, 10),
         Item("Meat", Item::TYPE_MEAT, 10, 100, 10),
-        Item("Trap1", Item::TYPE_TRAP_ONE, 10, 100, 10),
-        Item("Trap2", Item::TYPE_TRAP_TWO, 10, 100, 10),
+        Item("Trap", Item::TYPE_TRAP, 10, 100, 10),
         Item("Rock", Item::TYPE_ROCK, 10, 100, 10)
     };
 
@@ -52,6 +51,7 @@ Player::Player()
         inventory[i].Add(100);
     }
 
+    m_currency = 1000000;
 }
 
 Player::~Player()

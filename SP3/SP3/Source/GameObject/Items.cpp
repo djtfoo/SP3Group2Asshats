@@ -30,7 +30,6 @@ bool Item::Upgrade()
 {
     if (this->m_currentUpgradeLevel == MAX_UPGRADE_LEVEL)
         return false;
-
     else
         switch (this->m_type)
         {
@@ -42,10 +41,7 @@ bool Item::Upgrade()
             case TYPE_MEAT:
                 //You cannot upgrade meat
                 return false;
-            case TYPE_TRAP_ONE:
-                this->m_effectiveness += 200;
-                return true;
-            case TYPE_TRAP_TWO:
+            case TYPE_TRAP:
                 this->m_effectiveness += 200;
                 return true;
             case TYPE_ROCK:

@@ -102,6 +102,8 @@ public:
     // Health matters
     float GetHealth();
     void TakeDamage(const int damage);
+
+    unsigned m_currency;
 };
 
 #endif

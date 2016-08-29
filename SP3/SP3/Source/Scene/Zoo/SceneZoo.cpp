@@ -1,5 +1,4 @@
 #include "GL\glew.h"
-//#include "../../shader.hpp"
 
 #include "SceneZoo.h"
 #include "../../General/Application.h"
@@ -10,7 +9,7 @@
 
 #include <sstream>
 
-SceneZoo::SceneZoo()
+SceneZoo::SceneZoo() : AREA_MAX_SIZE(50)
 {
 }
 
@@ -37,7 +36,7 @@ void SceneZoo::Init()
     swampAreaPosition.Set(50.f, 0.f, -50.f);
 
     //For now, some random monsters
-    for (unsigned i = 0; i < 200; ++i)
+    for (unsigned i = 0; i < 40; ++i)
     switch (Math::RandIntMinMax(0, 11))
     {
     case 0:
@@ -80,10 +79,23 @@ void SceneZoo::Init()
 
     memset(&zooWorld, 0, sizeof(zooWorld));
 
+    grassAreaSize = 10;
+    fireAreaSize = 10;
+    rockAreaSize = 10;
+    swampAreaSize = 10;
+
     populateMonsterList();
 
-    isFollowing = false;
+    isFollowingMonster = false;
     iter = 0;
+
+    currentState = STATE_SHOP;
+
+    //debug stuff
+    updown = 0.15f;
+    leftright = 0.15f;
+
+    currentShop = SHOP_MAIN;
 }
 static double counter = 0;
 
@@ -96,19 +108,34 @@ void SceneZoo::Update(double dt)
     //===============================================================================================================================//
 
     //Movement update for Gameobjects
-    UpdateGameObjects(&zooWorld, 2 * dt);
+    UpdateGameObjects(&zooWorld, 5 * dt);
 
-    //Camera Update
-    if (!isFollowing)
-        zooCamera.Update(dt);
-    else
+    //Camera Update - Follows monster if cycling through area
+    switch (currentState)
     {
-        zooCamera.position = zooWorld.position[followingGO] + Vector3(0, 10, -10);
-        zooCamera.target = zooWorld.position[followingGO];
-    }
+    case STATE_ZOO:
 
-    //Player Update
-    //SharedData::GetInstance()->player->Update(dt);
+        zooCamera.Update(dt);
+
+        break;
+
+    case STATE_ENCLOSURE:
+
+        if (!isFollowingMonster)
+            zooCamera.Update(dt);
+        else
+        {//Follow monster
+            zooCamera.position = zooWorld.position[targetedMonster] + Vector3(0, 15, -10);
+            zooCamera.target = zooWorld.position[targetedMonster];
+        }
+
+        break;
+
+    case STATE_SHOP:
+
+        break;
+    }
+    
 
     //Inputmanager Update
     SharedData::GetInstance()->inputManager->Update();
@@ -120,37 +147,37 @@ void SceneZoo::Update(double dt)
     //Boundry check;
     for (unsigned i = 0; i < grassZone.size(); ++i)
     {
-        if (zooWorld.position[grassZone[i]].x < grassAreaPosition.x - 50 ||
-            zooWorld.position[grassZone[i]].x > grassAreaPosition.x + 50 ||
-            zooWorld.position[grassZone[i]].z < grassAreaPosition.z - 50 ||
-            zooWorld.position[grassZone[i]].z > grassAreaPosition.z + 50)
+        if (zooWorld.position[grassZone[i]].x < grassAreaPosition.x - grassAreaSize ||
+            zooWorld.position[grassZone[i]].x > grassAreaPosition.x + grassAreaSize ||
+            zooWorld.position[grassZone[i]].z < grassAreaPosition.z - grassAreaSize ||
+            zooWorld.position[grassZone[i]].z > grassAreaPosition.z + grassAreaSize)
             zooWorld.velocity[grassZone[i]] = -zooWorld.velocity[grassZone[i]];
     }
 
     for (unsigned i = 0; i < fireZone.size(); ++i)
     {
-        if (zooWorld.position[fireZone[i]].x < fireAreaPosition.x - 50 ||
-            zooWorld.position[fireZone[i]].x > fireAreaPosition.x + 50 ||
-            zooWorld.position[fireZone[i]].z < fireAreaPosition.z - 50 ||
-            zooWorld.position[fireZone[i]].z > fireAreaPosition.z + 50)
+        if (zooWorld.position[fireZone[i]].x < fireAreaPosition.x - fireAreaSize ||
+            zooWorld.position[fireZone[i]].x > fireAreaPosition.x + fireAreaSize ||
+            zooWorld.position[fireZone[i]].z < fireAreaPosition.z - fireAreaSize ||
+            zooWorld.position[fireZone[i]].z > fireAreaPosition.z + fireAreaSize)
             zooWorld.velocity[fireZone[i]] = -zooWorld.velocity[fireZone[i]];
     }
 
     for (unsigned i = 0; i < rockZone.size(); ++i)
     {
-        if (zooWorld.position[rockZone[i]].x < rockAreaPosition.x - 50 ||
-            zooWorld.position[rockZone[i]].x > rockAreaPosition.x + 50 ||
-            zooWorld.position[rockZone[i]].z < rockAreaPosition.z - 50 ||
-            zooWorld.position[rockZone[i]].z > rockAreaPosition.z + 50)
+        if (zooWorld.position[rockZone[i]].x < rockAreaPosition.x - rockAreaSize ||
+            zooWorld.position[rockZone[i]].x > rockAreaPosition.x + rockAreaSize ||
+            zooWorld.position[rockZone[i]].z < rockAreaPosition.z - rockAreaSize ||
+            zooWorld.position[rockZone[i]].z > rockAreaPosition.z + rockAreaSize)
             zooWorld.velocity[rockZone[i]] = -zooWorld.velocity[rockZone[i]];
     }
 
     for (unsigned i = 0; i < swampZone.size(); ++i)
     {
-        if (zooWorld.position[swampZone[i]].x < swampAreaPosition.x - 50 ||
-            zooWorld.position[swampZone[i]].x > swampAreaPosition.x + 50 ||
-            zooWorld.position[swampZone[i]].z < swampAreaPosition.z - 50 ||
-            zooWorld.position[swampZone[i]].z > swampAreaPosition.z + 50)
+        if (zooWorld.position[swampZone[i]].x < swampAreaPosition.x - swampAreaSize ||
+            zooWorld.position[swampZone[i]].x > swampAreaPosition.x + swampAreaSize ||
+            zooWorld.position[swampZone[i]].z < swampAreaPosition.z - swampAreaSize ||
+            zooWorld.position[swampZone[i]].z > swampAreaPosition.z + swampAreaSize)
             zooWorld.velocity[swampZone[i]] = -zooWorld.velocity[swampZone[i]];
     }
 
@@ -172,14 +199,15 @@ void SceneZoo::Update(double dt)
         else
             currentArea = AREA_GRASS;
 
-        isFollowing = false;
+        isFollowingMonster = false;
+        currentState = STATE_ENCLOSURE;
     }
     else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_2].isPressed)
     {
         zooCamera.position = fireAreaPosition + Vector3(0, 50, -25);
         zooCamera.target = fireAreaPosition;
 
-        if (currentArea == AREA_GRASS)
+        if (currentArea == AREA_FIRE)
         {
             currentArea = AREA_OVERVIEW;
             zooCamera.Reset();
@@ -187,14 +215,15 @@ void SceneZoo::Update(double dt)
         else
             currentArea = AREA_FIRE;
 
-        isFollowing = false;
+        isFollowingMonster = false;
+        currentState = STATE_ENCLOSURE;
     }
     else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_3].isPressed)
     {
         zooCamera.position = rockAreaPosition + Vector3(0, 50, -25);
         zooCamera.target = rockAreaPosition;
 
-        if (currentArea == AREA_GRASS)
+        if (currentArea == AREA_ROCK)
         {
             currentArea = AREA_OVERVIEW;
             zooCamera.Reset();
@@ -202,14 +231,15 @@ void SceneZoo::Update(double dt)
         else
             currentArea = AREA_ROCK;
 
-        isFollowing = false;
+        isFollowingMonster = false;
+        currentState = STATE_ENCLOSURE;
     }
     else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_4].isPressed)
     {
         zooCamera.position = swampAreaPosition + Vector3(0, 50, -25);
         zooCamera.target = swampAreaPosition;
 
-        if (currentArea == AREA_GRASS)
+        if (currentArea == AREA_SWAMP)
         {
             currentArea = AREA_OVERVIEW;
             zooCamera.Reset();
@@ -217,7 +247,8 @@ void SceneZoo::Update(double dt)
         else
             currentArea = AREA_SWAMP;
 
-        isFollowing = false;
+        isFollowingMonster = false;
+        currentState = STATE_ENCLOSURE;
     }
 
     //Cycle thru Monsters in the area
@@ -251,6 +282,35 @@ void SceneZoo::Update(double dt)
         }
     }
 
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isPressed)
+    {
+
+    }
+
+
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed)
+    {
+        currentState = STATE_SHOP;
+    }
+
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_UP].isHeldDown)
+    {
+        updown += 0.5f * dt;
+    }
+    else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_DOWN].isHeldDown)
+    {
+        updown -= 0.5f * dt;
+    }
+
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_LEFT].isHeldDown)
+    {
+        leftright -= 0.5f * dt;
+    }
+    else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_RIGHT].isHeldDown)
+    {
+        leftright += 0.5f * dt;
+    }
+
 }
 
 void SceneZoo::Render()
@@ -271,30 +331,6 @@ void SceneZoo::Render()
     // Model matrix : an identity matrix (model will be at the origin)
     modelStack.LoadIdentity();
 
-    //shows pressed locations
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_SPACE].isPressed)
-    {
-        Vector3 temp;
-        temp = zooCamera.target;
-        temp.y = 0;
-        tempStore.push_back(temp);
-    }
-
-    //for checking stuff
-    for (unsigned i = 0; i < tempStore.size(); ++i)
-    {
-        modelStack.PushMatrix();
-        modelStack.Translate(tempStore[i].x, tempStore[i].y, tempStore[i].z);
-        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
-        modelStack.PopMatrix();
-    }
-
-    //for camera.target
-    modelStack.PushMatrix();
-    modelStack.Translate(zooCamera.target.x, zooCamera.target.y, zooCamera.target.z);
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
-    modelStack.PopMatrix();
-
     //Lights are currently set to directional
     Light light = SharedData::GetInstance()->graphicsLoader->GetLights();
 
@@ -311,25 +347,22 @@ void SceneZoo::Render()
     //Render World
     RenderZooScene();
 
+    //RenderGameObjects
     RenderGameObjects(&zooWorld);
 
-    for (GameObject tallGrass = 0; tallGrass < zooWorld.GAMEOBJECT_COUNT; ++tallGrass)
-    {
-        if ((zooWorld.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
-        {
-            modelStack.PushMatrix();
-            modelStack.Translate(zooWorld.hitbox[tallGrass].m_origin.x, zooWorld.hitbox[tallGrass].m_origin.y, zooWorld.hitbox[tallGrass].m_origin.z);
-            modelStack.Scale(zooWorld.hitbox[tallGrass].m_scale.x, zooWorld.hitbox[tallGrass].m_scale.y, zooWorld.hitbox[tallGrass].m_scale.z);
-            //modelStack.Rotate(0, 0, 0, 0);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            modelStack.PopMatrix();
-        }
-    }
+    //Render Enclosures
+    RenderEnclosures();
+    
+    //If cycling thru monsters in zone display their stats
+    if (isFollowingMonster)
+        DisplayMonsterStats(zooWorld.monster[targetedMonster]);
+    
+    //Render Shop Interface
+    if (currentState == STATE_SHOP)
+        RenderShopInterface();
 
-    if (isFollowing)
-        DisplayMonsterStats(zooWorld.monster[followingGO]);
+    if (currentState == STATE_ENCLOSURE)
+        RenderEnclosureInterface();
 }
 
 void SceneZoo::RenderZooScene()
@@ -345,7 +378,6 @@ void SceneZoo::RenderZooScene()
     //Skyplane
     modelStack.PushMatrix();
     modelStack.Translate(500, 2800, -500);
-    //modelStack.Rotate(0, 0,0,0);
     RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_SKYPLANE), false);
     modelStack.PopMatrix();
 }
@@ -361,9 +393,10 @@ void SceneZoo::populateMonsterList()
 
     for (unsigned i = 0; i < SharedData::GetInstance()->player->monsterList.size(); ++i)
     {
-        randOffset.Set(Math::RandFloatMinMax(-25.f, 25.f),
+        float offset = grassAreaSize * 0.5f;
+        randOffset.Set(Math::RandFloatMinMax(-offset, offset),
                        0,
-                       Math::RandFloatMinMax(-25.f, 25.f)
+                       Math::RandFloatMinMax(-offset, offset)
                        );
 
         //Grass Zone
@@ -382,7 +415,7 @@ void SceneZoo::populateMonsterList()
         else if (SharedData::GetInstance()->player->monsterList[i] == "Rabbit")
         {
             GameObject go = createGO(&zooWorld);
-            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_AI;
             zooWorld.position[go] = grassAreaPosition + randOffset;
             zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
             zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
@@ -394,7 +427,7 @@ void SceneZoo::populateMonsterList()
         else if (SharedData::GetInstance()->player->monsterList[i] == "Fairy")
         {
             GameObject go = createGO(&zooWorld);
-            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_AI;
             zooWorld.position[go] = grassAreaPosition + randOffset;
             zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
             zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
@@ -408,7 +441,7 @@ void SceneZoo::populateMonsterList()
         else if (SharedData::GetInstance()->player->monsterList[i] == "Grimejam")
         {
             GameObject go = createGO(&zooWorld);
-            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_AI;
             zooWorld.position[go] = swampAreaPosition + randOffset;
             zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
             zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
@@ -420,7 +453,7 @@ void SceneZoo::populateMonsterList()
         else if (SharedData::GetInstance()->player->monsterList[i] == "Kof")
         {
             GameObject go = createGO(&zooWorld);
-            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_AI;
             zooWorld.position[go] = swampAreaPosition + randOffset;
             zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
             zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
@@ -432,7 +465,7 @@ void SceneZoo::populateMonsterList()
         else if (SharedData::GetInstance()->player->monsterList[i] == "MukBoss")
         {
             GameObject go = createGO(&zooWorld);
-            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_AI;
             zooWorld.position[go] = swampAreaPosition + randOffset;
             zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
             zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
@@ -446,7 +479,7 @@ void SceneZoo::populateMonsterList()
         else if (SharedData::GetInstance()->player->monsterList[i] == "Fossil")
         {
             GameObject go = createGO(&zooWorld);
-            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_AI;
             zooWorld.position[go] = rockAreaPosition + randOffset;
             zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
             zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
@@ -458,7 +491,7 @@ void SceneZoo::populateMonsterList()
         else if (SharedData::GetInstance()->player->monsterList[i] == "Golem")
         {
             GameObject go = createGO(&zooWorld);
-            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_AI;
             zooWorld.position[go] = rockAreaPosition + randOffset;
             zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
             zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
@@ -470,7 +503,7 @@ void SceneZoo::populateMonsterList()
         else if (SharedData::GetInstance()->player->monsterList[i] == "RockSnake")
         {
             GameObject go = createGO(&zooWorld);
-            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_AI;
             zooWorld.position[go] = rockAreaPosition + randOffset;
             zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
             zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
@@ -484,7 +517,7 @@ void SceneZoo::populateMonsterList()
         else if (SharedData::GetInstance()->player->monsterList[i] == "FireBug")
         {
             GameObject go = createGO(&zooWorld);
-            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_AI;
             zooWorld.position[go] = fireAreaPosition + randOffset;
             zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
             zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
@@ -496,7 +529,7 @@ void SceneZoo::populateMonsterList()
         else if (SharedData::GetInstance()->player->monsterList[i] == "Magma")
         {
             GameObject go = createGO(&zooWorld);
-            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_AI;
             zooWorld.position[go] = fireAreaPosition + randOffset;
             zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
             zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
@@ -508,7 +541,7 @@ void SceneZoo::populateMonsterList()
         else if (SharedData::GetInstance()->player->monsterList[i] == "MagmaBerzeker")
         {
             GameObject go = createGO(&zooWorld);
-            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE;
+            zooWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_AI;
             zooWorld.position[go] = fireAreaPosition + randOffset;
             zooWorld.velocity[go].Set(Math::RandFloatMinMax(-1.f, 1.f), 0.f, Math::RandFloatMinMax(-1.f, 1.f));
             zooWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
@@ -517,7 +550,6 @@ void SceneZoo::populateMonsterList()
 
             fireZone.push_back(go);
         }
-
         else
         {
             std::cout << "monster does not exist" << std::endl;
@@ -548,28 +580,380 @@ void SceneZoo::DisplayMonsterStats(Monster* monster)
 
 void SceneZoo::CycleThroughZoneArea(std::vector<GameObject> area)
 {
-    if (isFollowing)
+    if (isFollowingMonster)
     {
         if (++iter >= area.size())
             iter = 0;
         else
-            followingGO = area[iter];
+            targetedMonster = area[iter];
     }
     else
     {
         if (area.size())
-            followingGO = area[iter];
+            targetedMonster = area[iter];
 
-        isFollowing = true;
+        isFollowingMonster = true;
     }
 }
 
-//========================
-// == OBJECTS TO RENDER
-//========================
+void SceneZoo::UpgradeEnclosureSize(AREA area)
+{
+    switch (area)
+    {
+    case AREA_GRASS:
+        if (grassAreaSize != AREA_MAX_SIZE)
+            grassAreaSize += 10;
+        else
+            std::cout << "Currently at full size" << std::endl;
+            
+        break;
+
+    case AREA_FIRE:
+        if (fireAreaSize != AREA_MAX_SIZE)
+            fireAreaSize += 10;
+        else
+            std::cout << "Currently at full size" << std::endl;
+
+        break;
+
+    case AREA_ROCK:
+        if (rockAreaSize != AREA_MAX_SIZE)
+            rockAreaSize += 10;
+        else
+            std::cout << "Currently at full size" << std::endl;
+
+        break;
+
+    case AREA_SWAMP:
+        if (swampAreaSize != AREA_MAX_SIZE)
+            swampAreaSize += 10;
+        else
+            std::cout << "Currently at full size" << std::endl;
+
+        break;
+    }
+}
+
+void SceneZoo::RenderEnclosures()
+{
+    //Hardcoded enclosure boxes
+
+    //Grass
+    modelStack.PushMatrix();
+    modelStack.Translate(grassAreaPosition.x + grassAreaSize, 0, grassAreaPosition.z);
+    modelStack.Scale(1, 1, grassAreaSize);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    modelStack.PushMatrix();
+    modelStack.Translate(grassAreaPosition.x - grassAreaSize, 0, grassAreaPosition.z);
+    modelStack.Scale(1, 1, grassAreaSize);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    modelStack.PushMatrix();
+    modelStack.Translate(grassAreaPosition.x, 0, grassAreaPosition.z + grassAreaSize);
+    modelStack.Scale(grassAreaSize, 1, 1);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    modelStack.PushMatrix();
+    modelStack.Translate(grassAreaPosition.x, 0, grassAreaPosition.z - grassAreaSize);
+    modelStack.Scale(grassAreaSize, 1, 1);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    //Fire
+    modelStack.PushMatrix();
+    modelStack.Translate(fireAreaPosition.x + fireAreaSize, 0, fireAreaPosition.z);
+    modelStack.Scale(1, 1, fireAreaSize);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    modelStack.PushMatrix();
+    modelStack.Translate(fireAreaPosition.x - fireAreaSize, 0, fireAreaPosition.z);
+    modelStack.Scale(1, 1, fireAreaSize);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    modelStack.PushMatrix();
+    modelStack.Translate(fireAreaPosition.x, 0, fireAreaPosition.z + fireAreaSize);
+    modelStack.Scale(fireAreaSize, 1, 1);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    modelStack.PushMatrix();
+    modelStack.Translate(fireAreaPosition.x, 0, fireAreaPosition.z - fireAreaSize);
+    modelStack.Scale(fireAreaSize, 1, 1);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    //Rock
+    modelStack.PushMatrix();
+    modelStack.Translate(rockAreaPosition.x + rockAreaSize, 0, rockAreaPosition.z);
+    modelStack.Scale(1, 1, rockAreaSize);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    modelStack.PushMatrix();
+    modelStack.Translate(rockAreaPosition.x - rockAreaSize, 0, rockAreaPosition.z);
+    modelStack.Scale(1, 1, rockAreaSize);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    modelStack.PushMatrix();
+    modelStack.Translate(rockAreaPosition.x, 0, rockAreaPosition.z + rockAreaSize);
+    modelStack.Scale(rockAreaSize, 1, 1);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    modelStack.PushMatrix();
+    modelStack.Translate(rockAreaPosition.x, 0, rockAreaPosition.z - rockAreaSize);
+    modelStack.Scale(rockAreaSize, 1, 1);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    //Swamp
+    modelStack.PushMatrix();
+    modelStack.Translate(swampAreaPosition.x + swampAreaSize, 0, swampAreaPosition.z);
+    modelStack.Scale(1, 1, swampAreaSize);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    modelStack.PushMatrix();
+    modelStack.Translate(swampAreaPosition.x - swampAreaSize, 0, swampAreaPosition.z);
+    modelStack.Scale(1, 1, swampAreaSize);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    modelStack.PushMatrix();
+    modelStack.Translate(swampAreaPosition.x, 0, swampAreaPosition.z + swampAreaSize);
+    modelStack.Scale(swampAreaSize, 1, 1);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+
+    modelStack.PushMatrix();
+    modelStack.Translate(swampAreaPosition.x, 0, swampAreaPosition.z - swampAreaSize);
+    modelStack.Scale(swampAreaSize, 1, 1);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    modelStack.PopMatrix();
+}
+
+void SceneZoo::PurchaseItem(Item item)
+{
+
+}
+
+void SceneZoo::SellItem(Item item)
+{
+
+}
+
+void SceneZoo::RenderShopkeeperText()
+{
+
+}
+
+void SceneZoo::RenderShopInterface()
+{
+    SetHUD(true);
+
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_BACKGROUND), 50.f, 40.f, 30.f, false);
+
+    //Check selection
+    if (Application::cursorXPos / Application::m_width >= .231f &&
+        Application::cursorXPos / Application::m_width <= .389f)
+    {
+        //Talk - Net - Net - Net
+        if (Application::cursorYPos / Application::m_height >= .1325f &&
+            Application::cursorYPos / Application::m_height <= .188f)
+        {
+            RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 12.5f, 3.5f, 1.f, 25.f, 50.f, 0.f, 0.f, 0.f, false);
+
+            if (Application::IsMousePressed(0))
+                switch (currentShop)
+            {
+                case SHOP_MAIN:
+                    RenderShopkeeperText();
+                    std::cout << "shop keeeper text" << std::endl;
+                    break;
+                case SHOP_BUY:
+                    PurchaseItem(SharedData::GetInstance()->player->inventory[Item::TYPE_NET]);
+                    break;
+                case SHOP_SELL:
+                    SellItem(SharedData::GetInstance()->player->inventory[Item::TYPE_NET]);
+                    break;
+                case SHOP_UPGRADE:
+                    if (SharedData::GetInstance()->player->m_currency > 100 && SharedData::GetInstance()->player->inventory[Item::TYPE_NET].Upgrade())
+                        std::cout << "upgraded" << std::endl;     //Render Sucessfully upgraded
+                    else
+                        std::cout << "not upgraded" << std::endl; //Might need to specify if not enough gold or already at max upgrade level
+                    break;
+            }
+        }
+        else
+            RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 12.5f, 3.5f, 1.f, 25.f, 50.f, 0.f, 0.f, 0.f, false);
+
+        //Buy - Bait - Bait - Bait 
+        if (Application::cursorYPos / Application::m_height >= .294f &&
+            Application::cursorYPos / Application::m_height <= .3525f)
+        {
+            RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 12.5f, 3.5f, 1.f, 25.f, 40.f, 0.f, 0.f, 0.f, false);
+
+            if (Application::IsMousePressed(0))
+                switch (currentShop)
+            {
+                case SHOP_MAIN:
+                    currentShop = SHOP_BUY;
+                    break;
+                case SHOP_BUY:
+                    PurchaseItem(SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT]);
+                    break;
+                case SHOP_SELL:
+                    SellItem(SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT]);
+                    break;
+                case SHOP_UPGRADE:
+                    if (SharedData::GetInstance()->player->m_currency > 100 && SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].Upgrade())
+                        std::cout << "upgraded" << std::endl;     //Render Sucessfully upgraded
+                    else
+                        std::cout << "not upgraded" << std::endl; //Might need to specify if not enough gold or already at max upgrade level
+                    break;
+            }
+        }
+        else
+            RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 12.5f, 3.5f, 1.f, 25.f, 40.f, 0.f, 0.f, 0.f, false);
+
+        //Sell - Trap - Trap - Trap
+        if (Application::cursorYPos / Application::m_height >= .4555f &&
+            Application::cursorYPos / Application::m_height <= .517f)
+        {
+            RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 12.5f, 3.5f, 1.f, 25.f, 30.f, 0.f, 0.f, 0.f, false);
+
+            if (Application::IsMousePressed(0))
+                switch (currentShop)
+            {
+                case SHOP_MAIN:
+                    currentShop = SHOP_SELL;
+                    break;
+                case SHOP_BUY:
+                    PurchaseItem(SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP]);
+                    break;
+                case SHOP_SELL:
+                    SellItem(SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP]);
+                    break;
+                case SHOP_UPGRADE:
+                    if (SharedData::GetInstance()->player->m_currency > 100 && SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].Upgrade())
+                        std::cout << "upgraded" << std::endl;     //Render Sucessfully upgraded
+                    else
+                        std::cout << "not upgraded" << std::endl; //Might need to specify if not enough gold or already at max upgrade level
+                    break;
+            }
+        }
+        else
+            RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 12.5f, 3.5f, 1.f, 25.f, 30.f, 0.f, 0.f, 0.f, false);
+
+        //Upgrade - Rock - Rock - Rock
+        if (Application::cursorYPos / Application::m_height >= .617f &&
+            Application::cursorYPos / Application::m_height <= 0.6785f)
+        {
+            RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 12.5f, 3.5f, 1.f, 25.f, 20.f, 0.f, 0.f, 0.f, false);
+
+            if (Application::IsMousePressed(0))
+                switch (currentShop)
+            {
+                case SHOP_MAIN:
+                    currentShop = SHOP_UPGRADE;
+                    break;
+                case SHOP_BUY:
+                    PurchaseItem(SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK]);
+                    break;
+                case SHOP_SELL:
+                    SellItem(SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK]);
+                    break;
+                case SHOP_UPGRADE:
+                    if (SharedData::GetInstance()->player->m_currency > 100 && SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Upgrade())
+                        std::cout << "upgraded" << std::endl;//Render Sucessfully upgraded
+                    else
+                        std::cout << "not upgraded" << std::endl;//Might need to specify if not enough gold or already at max upgrade level
+                    break;
+            }
+        }
+        else
+            RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 12.5f, 3.5f, 1.f, 25.f, 20.f, 0.f, 0.f, 0.f, false);
+
+        //Exit
+        if (Application::cursorYPos / Application::m_height >= .7785f &&
+            Application::cursorYPos / Application::m_height <= .84f)
+        {
+            RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 12.5f, 3.5f, 1.f, 25.f, 10.f, 0.f, 0.f, 0.f, false);
+
+            if (Application::IsMousePressed(0))
+                switch (currentShop)
+            {
+                case SHOP_MAIN:
+                    currentState = STATE_ZOO;
+                    break;
+                default:
+                    currentShop = SHOP_MAIN;
+                    break;
+            }
+        }
+        else
+            RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 12.5f, 3.5f, 1.f, 25.f, 10.f, 0.f, 0.f, 0.f, false);
+    }
+    else
+    {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 12.5f, 3.5f, 1.f, 25.f, 50.f, 0.f, 0.f, 0.f, false);
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 12.5f, 3.5f, 1.f, 25.f, 40.f, 0.f, 0.f, 0.f, false);
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 12.5f, 3.5f, 1.f, 25.f, 30.f, 0.f, 0.f, 0.f, false);
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 12.5f, 3.5f, 1.f, 25.f, 20.f, 0.f, 0.f, 0.f, false);
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 12.5f, 3.5f, 1.f, 25.f, 10.f, 0.f, 0.f, 0.f, false);
+    }
+
+    //Selection text
+    switch (currentShop)
+    {
+    case SHOP_MAIN:
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Talk", Color(1, 1, 0), 3.f, 18.75f, 48.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Buy", Color(1, 1, 0), 3.f, 18.75f, 38.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Sell", Color(1, 1, 0), 3.f, 18.75f, 28.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Upgrade", Color(1, 1, 0), 3.f, 18.75f, 18.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Back to Zoo", Color(1, 1, 0), 2.5f, 18.75f, 8.5f);
+        break;
+    case SHOP_BUY:
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Net", Color(1, 1, 0), 3.f, 18.75f, 48.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Bait", Color(1, 1, 0), 3.f, 18.75f, 38.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Trap", Color(1, 1, 0), 3.f, 18.75f, 28.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Rock", Color(1, 1, 0), 3.f, 18.75f, 18.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Back", Color(1, 1, 0), 2.5f, 18.75f, 8.5f);
+        break;
+    case SHOP_SELL:
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Net", Color(1, 1, 0), 3.f, 18.75f, 48.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Bait", Color(1, 1, 0), 3.f, 18.75f, 38.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Trap", Color(1, 1, 0), 3.f, 18.75f, 28.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Rock", Color(1, 1, 0), 3.f, 18.75f, 18.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Back", Color(1, 1, 0), 2.5f, 18.75f, 8.5f);
+        break;
+    case SHOP_UPGRADE:
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Net", Color(1, 1, 0), 3.f, 18.75f, 48.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Bait", Color(1, 1, 0), 3.f, 18.75f, 38.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Trap", Color(1, 1, 0), 3.f, 18.75f, 28.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Rock", Color(1, 1, 0), 3.f, 18.75f, 18.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Back", Color(1, 1, 0), 2.5f, 18.75f, 8.5f);
+        break;
+    }
+
+    SetHUD(false);
+}
+
+void SceneZoo::RenderEnclosureInterface()
+{
+    SetHUD(true);
 
 
 
+    SetHUD(false);
+}
 
 
 //Mouse picking stuff//
