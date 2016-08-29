@@ -3,11 +3,13 @@
 
 #include "../Scene.h"
 #include "../../GameObject/ItemProjectiles.h"
+#include "../../Graphics/Lighting/Fog.h"
 
 class SceneLava : public Scene
 {
 	//float m_worldHeight;
 	//float m_worldWidth;
+	Fog fog;
 
 	// Clicking
 	bool bLButtonState;
@@ -22,6 +24,7 @@ public:
 	virtual void RenderLavaScene();
 	virtual void RenderHUD();
 	virtual void Exit();
+	void RenderMonsterStates();
 	bool ViewCheckPosition(Vector3 pos, float degree);
 	//Test stuff
 	ItemProjectile* itemProjectile;
@@ -41,6 +44,12 @@ public:
 	float f_RotateNet;
 	float f_RotateBait;
 
+	// check if collected
+	bool b_Collected;
+
+	// monster rampage timer
+	float f_RampageTimer;
+
 	std::vector<Vector3> placedTraps;
 
 	//AABB HITBOX;
@@ -49,7 +58,12 @@ public:
 
 	AABB HITBOX;
 	double counter;
-	GameObject monster, rock, net, bait;
+	GameObject monster, rock, net, bait, text_C, text_M;
+
+	int rows;
+	int cols;
+	int randCol;
+	int randRow;
 };
 
 #endif

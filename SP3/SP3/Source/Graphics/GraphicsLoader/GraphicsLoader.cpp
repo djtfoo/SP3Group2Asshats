@@ -221,21 +221,38 @@ void GraphicsLoader::Init()
 	//m_meshList[GEO_ROCK_TERRAIN]->textureArray[0] = LoadTGA();
     
     // Lava Scene
-	m_meshList[GEO_LAVA_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw", m_heightMap);
+	m_meshList[GEO_LAVA_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//FireZone/lavaheightmap.raw", m_heightMap);
 	m_meshList[GEO_LAVA_TERRAIN]->textureArray[0] = LoadTGA("Image//FireZone/lava_terrain.tga");
 
+	m_meshList[GEO_LAVA] = MeshBuilder::GenerateQuad("GEO_TERRAIN", Color(1,1,1), 1.f, 10);
+	m_meshList[GEO_LAVA]->textureArray[0] = LoadTGA("Image//FireZone/LavaTexture.tga");
+
 	m_meshList[GEO_LAVA_SKYPLANE] = MeshBuilder::GenerateSkyPlane("skyplane", Color(1, 1, 1), 128, 400.0f, 3000.0f, 1.0f, 1.0f);
-	m_meshList[GEO_LAVA_SKYPLANE]->textureArray[0] = LoadTGA("Image//SwampZone//swamp_skyplane.tga");
+	m_meshList[GEO_LAVA_SKYPLANE]->textureArray[0] = LoadTGA("Image//FireZone//fire_skyplane.tga");
 
 	m_meshList[GEO_VOLCANO] = MeshBuilder::GenerateOBJ("Volcano", "OBJ//FireZone/Volcano.obj");
-	m_meshList[GEO_VOLCANO]->textureArray[0] = LoadTGA("Image//FireZone/Volcano.tga");
+	m_meshList[GEO_VOLCANO]->textureArray[0] = LoadTGA("Image//FireZone/volcano_terrain.tga");
 
+	m_meshList[GEO_MONSTER_MAGMA] = MeshBuilder::GenerateOBJ("Magma", "OBJ//FireZone/Magma.obj");
+	m_meshList[GEO_MONSTER_MAGMA]->textureArray[0] = LoadTGA("Image//FireZone/Magma.tga");
+
+	m_meshList[GEO_MONSTER_FIREBUG] = MeshBuilder::GenerateOBJ("Magma", "OBJ//FireZone/FireBug.obj");
+	m_meshList[GEO_MONSTER_FIREBUG]->textureArray[0] = LoadTGA("Image//FireZone/FireBug.tga");
+
+	m_meshList[GEO_BOSS_MAGMA_BERZEKER] = MeshBuilder::GenerateOBJ("Magma", "OBJ//FireZone/MagmaBezerker.obj");
+	m_meshList[GEO_BOSS_MAGMA_BERZEKER]->textureArray[0] = LoadTGA("Image//FireZone/MagmaBezerker.tga");
+
+	// Bonuses
 	m_meshList[GEO_MONEY_TREE] = MeshBuilder::GenerateOBJ("Money Tree", "OBJ//BonusTree.obj");
 	m_meshList[GEO_MONEY_TREE]->textureArray[0] = LoadTGA("Image//BonusTree.tga");
 
 	m_meshList[GEO_COINS] = MeshBuilder::GenerateOBJ("Coins", "OBJ//coin.obj");
 	m_meshList[GEO_COINS]->textureArray[0] = LoadTGA("Image//coin.tga");
 
+	m_meshList[GEO_RED_CRYSTAL] = MeshBuilder::GenerateOBJ("Red Crystal", "OBJ//FireZone/RedCrystal.obj");
+	m_meshList[GEO_RED_CRYSTAL]->textureArray[0] = LoadTGA("Image//FireZone/RedCrystal.tga");
+
+	// Monster State
     m_meshList[GEO_MONSTER_EXCLAMATION_MARK] = MeshBuilder::GenerateQuad("Exclamation mark", Color(1, 0, 0), 1.f);
     m_meshList[GEO_MONSTER_EXCLAMATION_MARK]->textureArray[0] = LoadTGA("Image//monster_exclamation.tga");
 
