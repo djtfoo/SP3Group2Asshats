@@ -252,6 +252,53 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_RED_CRYSTAL] = MeshBuilder::GenerateOBJ("Red Crystal", "OBJ//FireZone/RedCrystal.obj");
 	m_meshList[GEO_RED_CRYSTAL]->textureArray[0] = LoadTGA("Image//FireZone/RedCrystal.tga");
 
+	// Bars above monsters
+	m_meshList[GEO_HPBAR] = MeshBuilder::GenerateQuad("HP BAR", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_CAPTUREBAR] = MeshBuilder::GenerateQuad("CAPTURE BAR", Color(0.5f, 0, 0.5f), 1.f);
+
+	// Menu stuffs
+	m_meshList[GEO_START] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_START]->textureID = LoadTGA("Image//MenuText/Start.tga");
+
+	m_meshList[GEO_START_HL] = MeshBuilder::GenerateQuad("StartHL", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_START_HL]->textureID = LoadTGA("Image//MenuText/StartHL.tga");
+
+	m_meshList[GEO_INSTRUCTIONS] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_INSTRUCTIONS]->textureID = LoadTGA("Image//MenuText/Instructions.tga");
+
+	m_meshList[GEO_INSTRUCTIONS_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_INSTRUCTIONS_HL]->textureID = LoadTGA("Image//MenuText/InstructionsHL.tga");
+
+	m_meshList[GEO_OPTIONS] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_OPTIONS]->textureID = LoadTGA("Image//MenuText/Options.tga");
+
+	m_meshList[GEO_OPTIONS_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_OPTIONS_HL]->textureID = LoadTGA("Image//MenuText/Options.tga");
+
+	m_meshList[GEO_STORY] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_STORY]->textureID = LoadTGA("Image//MenuText/Story.tga");
+
+	m_meshList[GEO_STORY_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_STORY_HL]->textureID = LoadTGA("Image//MenuText/StoryHL.tga");
+
+	m_meshList[GEO_CREDITS] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_CREDITS]->textureID = LoadTGA("Image//MenuText/Credits.tga");
+
+	m_meshList[GEO_CREDITS_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_CREDITS_HL]->textureID = LoadTGA("Image//MenuText/CreditsHL.tga");
+
+	m_meshList[GEO_EXIT] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_EXIT]->textureID = LoadTGA("Image//MenuText/Exit.tga");
+
+	m_meshList[GEO_EXIT_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_EXIT_HL]->textureID = LoadTGA("Image//MenuText/ExitHL.tga");
+
+	m_meshList[GEO_BACK] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_BACK]->textureID = LoadTGA("Image//MenuText/Back.tga");
+
+	m_meshList[GEO_BACK_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_BACK_HL]->textureID = LoadTGA("Image//MenuText/BackHL.tga");
+
 	// Monster State
     m_meshList[GEO_MONSTERSTATE_EXCLAMATION_MARK] = MeshBuilder::GenerateQuad("Exclamation mark", Color(1, 0, 0), 1.f);
     m_meshList[GEO_MONSTERSTATE_EXCLAMATION_MARK]->textureArray[0] = LoadTGA("Image//monster_exclamation.tga");

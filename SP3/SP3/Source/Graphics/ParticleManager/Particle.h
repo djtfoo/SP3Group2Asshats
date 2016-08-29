@@ -6,7 +6,7 @@
 enum ParticleObject_TYPE
 {
 	P_WATER = 0,
-	P_BLOODSNOW,
+	P_HIDDENBONUS,
 	P_TOTAL
 };
 

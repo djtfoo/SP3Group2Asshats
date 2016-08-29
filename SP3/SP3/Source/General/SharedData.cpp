@@ -34,4 +34,7 @@ void SharedData::Exit()
 
     if (inputManager)
         delete inputManager;
+
+	if (sound)
+		delete sound;
 }

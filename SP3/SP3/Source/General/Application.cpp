@@ -197,3 +197,13 @@ void Application::Exit()
 	//Finalize and clean up GLFW
 	glfwTerminate();
 }
+
+void Application::SetDisabledCursor()
+{
+	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void Application::SetNormalCursor()
+{
+	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}

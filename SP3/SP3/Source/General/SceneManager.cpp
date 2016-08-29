@@ -7,7 +7,8 @@
 A Class that handles the different scenes
 */
 /****************************************************************************/
-#include "SceneManager.h"
+#include "Application.h"
+//#include "SceneManager.h"
 //#include "../Scene/MainMenu/MenuScene.h"
 #include "../Scene/Zone 1/SceneSP3.h"
 
@@ -16,6 +17,7 @@ A Class that handles the different scenes
 #include "../Scene/Zone 3/SceneRock.h"
 #include "../Scene/Zone 4/SceneLava.h"
 #include "../Scene/Zoo/SceneZoo.h"
+#include "../Scene//mainMenu.h"
 
 SceneManager::SceneManager() : m_scene(0)
 {
@@ -35,23 +37,28 @@ void SceneManager::ChangeScene(short id)
 
 	if (id == 0)
 	{
-		//m_scene = new MenuScene();
+		m_scene = new mainMenu();
+		Application::SetNormalCursor();
 	}
 	else if (id == 1)
 	{
         m_scene = new SceneGrass();
+		Application::SetDisabledCursor();
 	}
 	else if (id == 2)
 	{
 		m_scene = new SceneSwamp();
+		Application::SetDisabledCursor();
 	}
     else if (id == 3)
     {
         m_scene = new SceneRock();
+		Application::SetDisabledCursor();
     }
     else if (id == 4)
     {
         m_scene = new SceneLava();
+		Application::SetDisabledCursor();
     }
     else if (id == 5)
     {

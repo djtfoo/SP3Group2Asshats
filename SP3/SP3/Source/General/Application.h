@@ -22,6 +22,10 @@ public:
 	static void GetCursorPos(double *xpos, double *ypos);
 	static void SetCursorPos(double xpos, double ypos);
 
+	// Set glfw cursor input types
+	static void SetDisabledCursor();
+	static void SetNormalCursor();
+
     void GetMonitorResolution();
 
 	static int GetWindowWidth();

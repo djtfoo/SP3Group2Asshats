@@ -330,9 +330,9 @@ void Scene::RenderUI(Mesh* mesh, float size, float x, float y, float rotatex, fl
 	mesh->Render();
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-	projectionStack.PopMatrix();
-	viewStack.PopMatrix();
 	modelStack.PopMatrix();
+	viewStack.PopMatrix();
+	projectionStack.PopMatrix();
 	glEnable(GL_DEPTH_TEST);
 }
 //
