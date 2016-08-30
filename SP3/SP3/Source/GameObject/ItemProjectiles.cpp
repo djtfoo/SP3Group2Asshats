@@ -103,7 +103,7 @@ void ItemProjectile::Update(double dt)
 /****************************************************************************/
 void ItemProjectile::UpdateProjectile(double dt)
 {
-	for (vector<ItemProjectile*>::iterator it = ItemProjectileList.begin(); it != ItemProjectileList.end();){
+	for (vector<ItemProjectile*>::iterator it = ItemProjectileList.begin(); it != ItemProjectileList.end();) {
 		if ((*it)->deleteBullet == true){
 			delete *it;
 			it = ItemProjectile::ItemProjectileList.erase(it);

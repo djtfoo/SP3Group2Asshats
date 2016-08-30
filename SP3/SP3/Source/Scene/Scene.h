@@ -48,6 +48,46 @@ public:
 	Camera camera;
 	float fps;
 
+    //Item Switch
+    bool b_Rocks;
+    bool b_Nets;
+    bool b_Baits;
+
+    // GAME HUD INVENTORY
+    float f_RotateRock;
+    float f_RotateNet;
+    float f_RotateBait;
+
+    float f_HighlightPos;
+
+    // Generic Updates
+    void UpdatePlayer(double dt, World *world);
+    void UpdateMonsters(double dt, World *world);
+    void DestroyText(World *world);
+    void UpdateRockProjectiles(World *world);
+    void UpdateNetProjectiles(World *world);
+    void UpdateBaitProjectiles(World *world);
+
+    void UpdateBait(World *world, double dt);
+    void UpdateTrap(World *world, double dt);
+    void CheckMonsterAttack(World *world);
+
+    void ShootRock();
+    void ShootNet();
+    void ShootBait();
+    void PlaceTrap(World *world);
+
+    bool CheckPickUpCaughtMonster(World *world, GameObject GO);
+    virtual bool CheckInteractMoneyTree(World *world, GameObject GO);
+    bool CheckPickUpCoin(World *world, GameObject GO);
+    bool CheckPickUpMeat(World *world, GameObject GO);
+    bool CheckPickUpRock(World *world, GameObject GO);
+
+    bool ViewCheckPosition(Vector3 pos, float degree);
+    
+    void RenderPressEText(World *world);
+    void RenderHUD(World *world);
+
 	// To render
 	// ideal case is put objects in a vector; then use for loop to go through the list to render them
 

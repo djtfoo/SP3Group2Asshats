@@ -220,7 +220,7 @@ void Pause::MainMenuButton()
         }
         else if (b_mouseClick && !Application::IsMousePressed(0))
         {
-            SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
             b_mouseClick = false;
             //MM_STATE = M_INSTRUCTION;
         }
@@ -243,7 +243,7 @@ void Pause::MainMenuButton()
         }
         else if (b_mouseClick && !Application::IsMousePressed(0))
         {
-            SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
             b_mouseClick = false;
             //MM_STATE = M_STORY;
         }
@@ -266,7 +266,7 @@ void Pause::MainMenuButton()
         }
         else if (b_mouseClick && !Application::IsMousePressed(0))
         {
-            SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
             b_mouseClick = false;
             //MM_STATE = M_OPTION;
         }
@@ -289,7 +289,7 @@ void Pause::MainMenuButton()
         }
         else if (b_mouseClick && !Application::IsMousePressed(0))
         {
-            SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
             b_mouseClick = false;
             //MM_STATE = M_CREDITS;
         }
@@ -312,7 +312,7 @@ void Pause::MainMenuButton()
         }
         else if (b_mouseClick && !Application::IsMousePressed(0))
         {
-            SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
             b_mouseClick = false;
             std::cout << "EXIT" << std::endl;
             SharedData::GetInstance()->sceneManager->SetToExit();
@@ -359,7 +359,7 @@ void Pause::BackButton()
         }
         else if (b_mouseClick && !Application::IsMousePressed(0))
         {
-            SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
             b_mouseClick = false;
             //MM_STATE = M_MAIN;
         }

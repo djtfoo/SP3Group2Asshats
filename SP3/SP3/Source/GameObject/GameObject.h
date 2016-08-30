@@ -87,6 +87,8 @@ struct Bait_Script
 	float foundRadius;
 	float timeEatting;
 
+    bool b_PlayBaitSoundOnes;
+
     std::vector<GameObject> baitedMonsters;
     bool finishedBait;
 };

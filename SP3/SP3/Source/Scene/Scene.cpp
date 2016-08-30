@@ -15,6 +15,9 @@ Abstract class for scenes in gameplay
 #include "MyMath.h"
 
 #include "../GameObject/AI_Strategy.h"
+#include "../GameObject/ItemProjectiles.h"
+
+#include <sstream>
 
 Scene::LevelGenerationMap Scene::m_levelGenerationData = {};
 char** Scene::m_levelMap = 0;
@@ -437,7 +440,7 @@ void Scene::RenderGameObjects(World* world)
 
             pos = (world->position[GO]);
 
-
+            // Render HP and capture rate
 			float hpBar = world->monster[GO]->GetHealthStat() / 80.f;
 			float captureBar = world->monster[GO]->GetCaptureRateStat() / 100.f;
 
@@ -585,4 +588,703 @@ void Scene::RenderUI(Mesh* mesh, float sizex, float sizey, float sizez, float x,
     viewStack.PopMatrix();
     modelStack.PopMatrix();
     glEnable(GL_DEPTH_TEST);
+}
+
+void Scene::UpdatePlayer(double dt, World *world)
+{
+    SharedData::GetInstance()->inputManager->Update();
+    SharedData::GetInstance()->player->Update(dt);
+
+    bool collision = false;
+    for (GameObject obstacle = 0; obstacle < world->GAMEOBJECT_COUNT; ++obstacle)
+    {
+        if ((world->mask[obstacle] & COMPONENT_OBSTACLE) == COMPONENT_OBSTACLE)
+        {
+            Vector3 playerPos = SharedData::GetInstance()->player->GetPositionVector() + SharedData::GetInstance()->player->GetVelocityVector();
+            playerPos.y = 0.f;
+
+            if (world->hitbox[obstacle].CheckCollision(playerPos))
+            {
+                collision = true;
+                break;
+            }
+        }
+    }
+    if (!collision) {
+        SharedData::GetInstance()->player->Move(dt);
+    }
+    SharedData::GetInstance()->player->UpdateNoiseFactor();
+}
+
+void Scene::UpdateMonsters(double dt, World *world)
+{
+    for (GameObject ai = 0; ai < world->GAMEOBJECT_COUNT; ++ai)
+    {
+        if (world->monster[ai])
+        {
+            world->monster[ai]->m_position = world->position[ai];
+            world->monster[ai]->Update(dt);
+
+            if (world->monster[ai]->GetStrategyState() == AI_Strategy::STATE_ALERT)
+            {
+                world->monster[ai]->m_velocity.SetZero();
+            }
+
+            world->velocity[ai] = world->monster[ai]->m_velocity;
+        }
+    }
+}
+
+void Scene::DestroyText(World *world)
+{
+    for (GameObject text = 0; text < world->GAMEOBJECT_COUNT; ++text)
+    {
+        if ((world->mask[text] & COMPONENT_TEXT) == COMPONENT_TEXT)
+        {
+            if (world->position[text].y > 9.f)
+            {
+                destroyGO(world, text);
+            }
+        }
+
+    }
+}
+
+void Scene::UpdateRockProjectiles(World *world)
+{
+    if (ItemProjectile::RockProjectileList.size())
+    {
+        for (unsigned i = 0; i < ItemProjectile::RockProjectileList.size(); ++i)
+        {
+            for (GameObject ai = 0; ai < world->GAMEOBJECT_COUNT; ++ai)
+            {
+                if ((world->mask[ai] & COMPONENT_AI) == COMPONENT_AI)
+                {
+                    if (world->hitbox[ai].CheckCollision(ItemProjectile::RockProjectileList[i]->position))
+                    {
+                        // Get hit by rock
+                        //grass.velocity[ai] = (grass.position[ai] - camera.position).Normalized();
+                        //grass.velocity[ai].y = 0;
+                        ItemProjectile::RockProjectileList[i]->deleteBullet = true;
+                        if (world->monster[ai]->GetStrategyState() != AI_Strategy::STATE_CAPTURED) {
+                            world->monster[ai]->TakeDamage(SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetEffectiveness());
+                            std::cout << "HEALTH: " << world->monster[ai]->GetHealthStat() << std::endl;
+                            //SharedData::GetInstance()->sound->SoundEffect3D->setSoundVolume(1.0f);
+                            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//Hit.mp3",
+                                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                                irrklang::vec3df(world->position[ai].x, world->position[ai].y, world->position[ai].z));
+
+                            if (world->monster[ai]->GetHealthStat() == 0)
+                            {
+                                GameObject meat = createGO(world);
+                                world->mask[meat] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_MEAT;
+                                world->position[meat] = world->monster[ai]->m_position;
+                                world->appearance[meat].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT);
+                                world->appearance[meat].scale.Set(1, 1, 1);
+                                world->appearance[meat].angle = 0.f;
+
+                                destroyGO(world, ai);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Scene::UpdateNetProjectiles(World *world)
+{
+    if (ItemProjectile::NetProjectileList.size())
+    {
+        for (unsigned i = 0; i < ItemProjectile::NetProjectileList.size(); ++i)
+        {
+            for (GameObject ai = 0; ai < world->GAMEOBJECT_COUNT; ++ai)
+            {
+                if ((world->mask[ai] & COMPONENT_AI) == COMPONENT_AI && world->hitbox[ai].CheckCollision(ItemProjectile::NetProjectileList[i]->position)
+                    && world->monster[ai]->GetStrategyState() != AI_Strategy::STATE_CAPTURED)
+                {
+                    ItemProjectile::NetProjectileList[i]->deleteBullet = true;
+                    GameObject net = createGO(world);
+                    world->mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_CAPTURE;
+                    world->capture[net].capturingMonster = true;
+                    world->capture[net].capturedMonster = false;
+                    world->capture[net].timeBeforeCapture = 3;
+                    world->appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
+                    //world->appearance[net].scale.Set(2, 2, 2);
+                    world->appearance[net].scale = world->appearance[ai].scale;
+                    world->appearance[net].angle = 0.f;
+
+                    if (world->capture[net].capturingMonster == true)
+                    {
+                        world->position[net] = world->position[ai];
+                        int v1 = rand() % 100;
+                        std::cout << v1 << std::endl;
+                        if (v1 < world->monster[ai]->GetCaptureRateStat())
+                        {
+                            world->capture[net].capturedMonster = true;//Captured!
+                            GameObject text_C = createGO(world);
+                            world->mask[text_C] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_VELOCITY | COMPONENT_TEXT;
+                            world->appearance[text_C].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_CAPTURE);
+                            world->position[text_C] = world->position[net];
+                            world->position[text_C].y += 1;
+                            world->velocity[text_C] = (world->position[text_C] - camera.position).Normalized();
+                            world->velocity[text_C].y = 3;
+                            world->appearance[text_C].scale.Set(2, 2, 2);
+                            world->appearance[text_C].billboard = true;
+                            world->appearance[text_C].angle = 0.f;
+                        }
+                        else
+                        {
+                            std::cout << "HAHAHAHAHHA FAILED CAPTURED!" << std::endl;
+                            GameObject text_M = createGO(world);
+                            world->mask[text_M] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_VELOCITY | COMPONENT_TEXT;
+                            world->appearance[text_M].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_MISS);
+                            world->position[text_M] = world->position[net];
+                            world->position[text_M].y += 1;
+                            world->velocity[text_M] = (world->position[text_M] - camera.position).Normalized();
+                            world->velocity[text_M].y = 3;
+                            world->appearance[text_M].scale.Set(2, 2, 2);
+                            world->appearance[text_M].billboard = true;
+                            world->appearance[text_M].angle = 0.f;
+                            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//Escaped.wav",
+                                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                                irrklang::vec3df(world->position[ai].x, world->position[ai].y, world->position[ai].z));
+                            destroyGO(world, net);
+                            world->capture[net].capturingMonster = false;//fail capture
+
+                        }
+                    }
+                    if (world->capture[net].capturedMonster == true)
+                    {
+                        std::cout << "HAHAHAHAHHA CAPTURED!" << std::endl;
+                        world->velocity[ai].SetZero();
+                        world->monster[ai]->m_velocity = world->velocity[ai];
+                        world->monster[ai]->GetCaptured();
+                        world->position[net] = world->position[ai];
+                        world->capture[net].caughtMonster = ai;
+                        SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//NPC.wav",
+                            irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                            irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                            irrklang::vec3df(world->position[ai].x, world->position[ai].y, world->position[ai].z));
+                    }
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void Scene::UpdateBaitProjectiles(World *world)
+{
+    if (ItemProjectile::BaitProjectileList.size())
+    {
+        for (unsigned i = 0; i < ItemProjectile::BaitProjectileList.size(); ++i)
+        {
+            if (ItemProjectile::BaitProjectileList[i]->position.y <= 1)
+            {
+                Vector3 tempo = ItemProjectile::BaitProjectileList[i]->position;
+                ItemProjectile::BaitProjectileList[i]->deleteBullet = true;
+
+                GameObject bait = createGO(world);
+                world->mask[bait] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_BAIT;
+                world->position[bait] = tempo;
+                world->appearance[bait].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT);
+                world->appearance[bait].scale.Set(1, 1, 1);
+                world->bait[bait].scentRadius = 200;
+                world->bait[bait].foundRadius = 5;
+                world->bait[bait].eattingBait = false;
+                world->bait[bait].foundBait = false;
+                world->bait[bait].timeEatting = 3.0f;
+                world->bait[bait].b_PlayBaitSoundOnes = false;
+            }
+        }
+    }
+}
+
+void Scene::UpdateBait(World *world, double dt)
+{
+    for (GameObject bait = 0; bait < world->GAMEOBJECT_COUNT; ++bait)
+    {
+        if ((world->mask[bait] & COMPONENT_BAIT) == COMPONENT_BAIT)
+        {
+
+            for (GameObject ai = 0; ai < world->GAMEOBJECT_COUNT; ++ai)
+            {
+                if ((world->mask[ai] & COMPONENT_AI) == COMPONENT_AI && world->monster[ai])
+                {
+                    if (world->monster[ai]->GetStrategyState() == AI_Strategy::STATE_IDLE && (world->position[ai] - world->position[bait]).LengthSquared() < world->bait[bait].scentRadius && world->bait[bait].eattingBait == false)
+                    {
+                        world->bait[bait].foundBait = true;
+                        //std::cout << " FOUND BAIT " + grass.bait[bait].foundBait << std::endl;
+                        if (world->bait[bait].foundBait == true)
+                        {
+                            //world->velocity[ai] = (grass.position[bait] - grass.position[ai]).Normalized();
+                            //world->velocity[ai].y = 0;
+                            //world->monster[ai]->m_velocity = grass.velocity[ai];
+                            if (world->monster[ai]->GetStrategyState() == AI_Strategy::STATE_ALERT || world->monster[ai]->GetStrategyState() == AI_Strategy::STATE_IDLE || world->monster[ai]->GetStrategyState() == AI_Strategy::STATE_BAITED)
+                            {
+                                world->monster[ai]->GetBaited(world->position[bait]);
+                                world->bait[bait].baitedMonsters.push_back(ai);
+                            }
+                        }
+                    }
+                    if ((world->position[ai] - world->position[bait]).LengthSquared() < world->bait[bait].foundRadius)
+                    {
+                        std::cout << "EATING BAIT " + world->bait[bait].foundBait << std::endl;
+                        world->bait[bait].foundBait = false;
+                        world->bait[bait].eattingBait = true;
+                        world->velocity[ai].SetZero();
+                        world->monster[ai]->m_velocity.SetZero();
+                    }
+                    if (world->bait[bait].eattingBait == true && (world->position[ai] - world->position[bait]).LengthSquared() < world->bait[bait].foundRadius)
+                    {
+                        world->bait[bait].timeEatting -= (float)(dt);
+                        if (world->bait[bait].timeEatting > 0.1f) {
+                            float scale = world->bait[bait].timeEatting / 3.f;
+                            world->appearance[bait].scale.Set(scale, scale, scale);
+                        }
+                        if (!world->bait[bait].b_PlayBaitSoundOnes)
+                        {
+                            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//Eat1.wav",
+                                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                                irrklang::vec3df(world->position[bait].x, world->position[bait].y, world->position[bait].z), true);
+                            world->bait[bait].b_PlayBaitSoundOnes = true;
+                        }
+                    }
+
+                    if (world->bait[bait].timeEatting <= 0)
+                    {
+                        //world->bait[bait].eattingBait = false;
+                        world->bait[bait].finishedBait = true;
+                        //world->velocity[ai] = 2;
+                        //world->velocity[ai].y = 0;
+                        SharedData::GetInstance()->sound->StopSoundEffect3D();
+                        world->bait[bait].b_PlayBaitSoundOnes = false;
+                    }
+                }
+            }
+
+            if (world->bait[bait].finishedBait == true) {
+                //PUT WHATEVER THE RABBIT DO NORMALLY HERE :D (DONE EATTING BAIT)
+                for (unsigned i = 0; i < world->bait[bait].baitedMonsters.size(); ++i) {
+                    GameObject ai = world->bait[bait].baitedMonsters[i];
+                    world->monster[ai]->SetIdleState();
+                    world->velocity[ai] = world->monster[ai]->m_velocity;
+                }
+                destroyGO(world, bait);
+            }
+        }
+    }
+}
+
+void Scene::UpdateTrap(World *world, double dt)
+{
+    for (GameObject trap = 0; trap < world->GAMEOBJECT_COUNT; ++trap)
+    {
+        if ((world->mask[trap] & COMPONENT_TRAP) == COMPONENT_TRAP)
+        {
+            if (!world->trap[trap].activated)
+            {
+                for (GameObject ai = 0; ai < world->GAMEOBJECT_COUNT; ++ai)
+                {
+                    if ((world->mask[ai] & COMPONENT_AI) == COMPONENT_AI && world->monster[ai] && world->monster[ai]->GetStrategyState() != AI_Strategy::STATE_TRAPPED
+                        && world->monster[ai]->GetStrategyState() != AI_Strategy::STATE_CAPTURED)
+                    {
+                        if ((world->position[trap] - world->position[ai]).LengthSquared() < world->trap[trap].radius)
+                        {
+                            world->trap[trap].caughtMonsterVel = world->velocity[ai];
+                            world->trap[trap].caughtMonster = ai;
+                            world->trap[trap].activated = true;
+                            //grass.velocity[ai].SetZero();
+                            if (world->velocity[ai].LengthSquared() > Math::EPSILON) {
+                                world->velocity[ai] = world->velocity[ai].Normalized() * 0.01f;
+                                world->monster[ai]->m_velocity = world->velocity[ai];
+                                world->monster[ai]->GetTrapped();
+                            }
+                            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//TrapActive.wav",
+                                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                                irrklang::vec3df(world->position[ai].x, world->position[ai].y, world->position[ai].z));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (world->trap[trap].triggerTimer < world->trap[trap].triggerDuration)
+                {
+                    world->trap[trap].triggerTimer += dt;
+                }
+                else
+                {
+                    if (world->monster[world->trap[trap].caughtMonster]->GetStrategyState() != AI_Strategy::STATE_CAPTURED) {
+                        world->velocity[world->trap[trap].caughtMonster] = world->trap[trap].caughtMonsterVel;
+                        world->monster[world->trap[trap].caughtMonster]->m_velocity = world->trap[trap].caughtMonsterVel;
+                        world->monster[world->trap[trap].caughtMonster]->SetIdleState();
+                    }
+                    destroyGO(world, trap);
+                }
+            }
+        }
+    }
+}
+
+void Scene::CheckMonsterAttack(World *world)
+{
+    for (GameObject ai = 0; ai < world->GAMEOBJECT_COUNT; ++ai)
+    {
+        if ((world->mask[ai] & COMPONENT_AI) == COMPONENT_AI && world->monster[ai] && world->monster[ai]->GetStrategyState() == AI_Strategy::STATE_ATTACK)
+        {
+            //if ((grass.position[ai] - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() <
+            //    0.25f * (SharedData::GetInstance()->player->PlayerHitBox.m_scale.x + grass.hitbox[ai].m_scale.x) * (SharedData::GetInstance()->player->PlayerHitBox.m_scale.z + grass.hitbox[ai].m_scale.z))
+            if (world->hitbox[ai].CheckCollision(SharedData::GetInstance()->player->PlayerHitBox))
+            {
+                std::cout << "Distance:" << (world->hitbox[ai].m_origin - SharedData::GetInstance()->player->PlayerHitBox.m_origin).Length() << std::endl;
+                std::cout << std::endl;
+
+                world->monster[ai]->AttackPlayer();
+                world->monster[ai]->ResetAggression();
+                world->monster[ai]->SetIdleState();
+            }
+
+        }
+
+    }
+}
+
+void Scene::ShootRock()
+{
+    if (ItemProjectile::d_rockCounter > ItemProjectile::d_rockCooldown)
+    {
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Use())
+        {
+            ItemProjectile::RockProjectileList.push_back(new ItemProjectile(
+                Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+                Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                500,
+                50,
+                10
+                ));
+            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//Throwing.wav",
+                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
+
+            ItemProjectile::d_rockCounter = 0.0;
+        }
+    }
+}
+
+void Scene::ShootNet()
+{
+    if (ItemProjectile::d_netCounter > ItemProjectile::d_netCooldown)
+    {
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_NET].Use())
+        {
+            ItemProjectile::NetProjectileList.push_back(new ItemProjectile(
+                Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+                Vector3(SharedData::GetInstance()->player->GetViewVector().x, 0.5, SharedData::GetInstance()->player->GetViewVector().z),
+                500,
+                15,
+                10
+                ));
+            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//ThrowingNet.wav",
+                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
+
+            ItemProjectile::d_netCounter = 0.0;
+        }
+    }
+}
+
+void Scene::ShootBait()
+{
+    if (ItemProjectile::d_baitCounter > ItemProjectile::d_baitCooldown)
+    {
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].Use())
+        {
+            ItemProjectile::BaitProjectileList.push_back(new ItemProjectile(
+                Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+                Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                500,
+                50,
+                10
+                ));
+            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//Throwing.wav",
+                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
+
+            ItemProjectile::d_baitCounter = 0.0;
+        }
+    }
+}
+
+void Scene::PlaceTrap(World *world)
+{
+        GameObject trap = createGO(world);
+
+        world->mask[trap] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_TRAP;
+
+        world->position[trap].Set(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
+        world->appearance[trap].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP);
+        world->appearance[trap].scale.Set(3, 3, 3);
+        world->appearance[trap].angle = 0.f;
+
+        world->trap[trap].triggerDuration = 3.0f;
+        world->trap[trap].triggerTimer = 0.f;
+        world->trap[trap].radius = 2.5f;
+        world->trap[trap].activated = false;
+        world->trap[trap].caughtMonster = 0;
+        world->trap[trap].caughtMonsterVel.SetZero();
+
+        SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//SetTrap.wav",
+            irrklang::vec3df(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+            irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+            irrklang::vec3df(world->position[trap].x, world->position[trap].y, world->position[trap].z));
+
+        //counter = 0;
+}
+
+bool Scene::CheckPickUpCaughtMonster(World *world, GameObject GO)
+{
+    GameObject ai = world->capture[GO].caughtMonster;
+    if ((camera.position - world->position[ai]).LengthSquared() < 150)
+    {
+        if (ViewCheckPosition(world->position[ai], 45.f) == true)
+        {
+            std::cout << "CAUGHT THE MONSTER" << std::endl;
+            SharedData::GetInstance()->player->monsterList.push_back(world->monster[ai]->GetName());
+            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//Captured.mp3",
+                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                irrklang::vec3df(world->position[ai].x, world->position[ai].y, world->position[ai].z));
+            destroyGO(world, ai);
+            // destroy net
+            destroyGO(world, GO);
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Scene::CheckInteractMoneyTree(World *world, GameObject GO)
+{
+    if ((camera.position - world->position[GO]).LengthSquared() < 150)
+    {
+        if (ViewCheckPosition(world->position[GO], 45.f) == true)
+        {
+            std::cout << "MoneyTree Found" << std::endl;
+            world->mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_COIN;
+            world->appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN);
+            world->appearance[GO].scale.Set(5, 5, 5);
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Scene::CheckPickUpCoin(World *world, GameObject GO)
+{
+    if ((camera.position - world->position[GO]).LengthSquared() < 150)
+    {
+        if (ViewCheckPosition(world->position[GO], 45.f) == true)
+        {
+            std::cout << "coin picked up" << std::endl;
+            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//ItemFound.mp3",
+                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                irrklang::vec3df(world->position[GO].x, world->position[GO].y, world->position[GO].z));
+            destroyGO(world, GO);
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Scene::CheckPickUpMeat(World *world, GameObject GO)
+{
+    if ((camera.position - world->position[GO]).LengthSquared() < 150)
+    {
+        if (ViewCheckPosition(world->position[GO], 45.f) == true)
+        {
+            SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].Add(1);
+            std::cout << "meat picked up" << std::endl;
+            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//ItemFound.mp3",
+                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                irrklang::vec3df(world->position[GO].x, world->position[GO].y, world->position[GO].z));
+            destroyGO(world, GO);
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Scene::CheckPickUpRock(World *world, GameObject GO)
+{
+    if ((camera.position - world->position[GO]).LengthSquared() < 150)
+    {
+        if (ViewCheckPosition(world->position[GO], 45.f) == true)
+        {
+            std::cout << "rocks picked up" << std::endl;
+            destroyGO(world, GO);
+            SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Add(1);
+            // insert pick up rock sound
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Scene::ViewCheckPosition(Vector3 pos, float degree)
+{
+    if (pos != SharedData::GetInstance()->player->GetPositionVector())
+    {
+        Vector3 view = (pos - SharedData::GetInstance()->player->GetPositionVector()).Normalized();
+
+        float angleX = Math::RadianToDegree(acos(view.Dot(SharedData::GetInstance()->player->GetViewVector())));
+
+        if (angleX <= degree)
+        {
+            return true;
+        }
+        if (angleX > degree)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void Scene::RenderPressEText(World *world)
+{
+    for (GameObject GO = 0; GO < world->GAMEOBJECT_COUNT; ++GO)
+    {
+        if ((world->mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+        {
+            if ((camera.position - world->position[GO]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(world->position[GO], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO CUT DOWN", Color(1, 1, 0), 3, 30, 30);
+    
+                }
+            }
+        }
+        else if ((world->mask[GO] & COMPONENT_COIN) == COMPONENT_COIN)
+        {
+            if ((camera.position - world->position[GO]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(world->position[GO], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
+                }
+            }
+        }
+        else if ((world->mask[GO] & COMPONENT_CAPTURE) == COMPONENT_CAPTURE)   // net
+        {
+            GameObject ai = world->capture[GO].caughtMonster;
+            if ((camera.position - world->position[ai]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(world->position[ai], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
+                }
+            }
+        }
+        else if ((world->mask[GO] & COMPONENT_MEAT) == COMPONENT_MEAT)   // net
+        {
+            if ((camera.position - world->position[GO]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(world->position[GO], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
+                }
+            }
+        }
+        else if ((world->mask[GO] & COMPONENT_ROCKS) == COMPONENT_ROCKS)
+        {
+            if ((camera.position - world->position[GO]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(world->position[GO], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
+                }
+            }
+        }
+    
+    }
+    
+}
+
+void Scene::RenderHUD(World *world)
+{
+    glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), false);
+
+    SetHUD(true);
+
+    std::stringstream ss;
+    ss << "FPS: " << fps;
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 3);
+
+    ss.str("");
+    ss << "Noise factor:" << SharedData::GetInstance()->player->GetNoiseFactor();
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 6);
+
+    ss.str("");
+    ss << "PLAYER HEALTH:" << SharedData::GetInstance()->player->GetHealth();
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 9);
+
+    RenderPressEText(world);
+
+    std::stringstream ss1, ss2, ss3, ss4, ss5;
+    ss1 << "Rocks: " << SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetCount();
+    ss2 << "Nets: " << SharedData::GetInstance()->player->inventory[Item::TYPE_NET].GetCount();
+    ss3 << "Baits: " << SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].GetCount();
+    ss4 << "Traps: " << SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].GetCount();
+    ss5 << "Meat: " << SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].GetCount();
+
+    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), false, 11.f, 12.f, f_HighlightPos, -48);
+    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 80.f, 12.f, 0, -48);
+
+    // background
+    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 80.f, 12.f, 0, -48);
+
+    // 1: Rock
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2, 22.5f, 6.5f, f_RotateRock, f_RotateRock, 0, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss1.str(), Color(1, 1, 0), 1, 20.5f, 3.5f);
+    // 2: Net
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 1, 27.5f, 5.5f, 0, f_RotateNet, 0, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(1, 1, 0), 1, 25.5f, 3.5f);
+    // 3: Bait
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2, 32.5f, 6.5f, f_RotateBait, f_RotateBait, 0, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 1, 30.5f, 3.5f);
+    // 4: Trap
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2, 37.5f, 6.5f, 0, 0, 0, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss4.str(), Color(1, 1, 0), 1, 35.5f, 3.5f);
+    // 5: Meat
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT), 2, 42.5f, 6.2f, 45.f, 45.f, 0, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss5.str(), Color(1, 1, 0), 1, 40.5f, 3.5f);
+    //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), false, 30.f, 10, -30, false);
+    //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), true, 10.0f, 40, -48);
+
+    SetHUD(false);
 }

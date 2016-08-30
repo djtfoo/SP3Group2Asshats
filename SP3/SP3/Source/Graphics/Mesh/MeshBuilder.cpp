@@ -271,12 +271,12 @@ Mesh* MeshBuilder::GenerateRing(const std::string &meshName, Color color, unsign
 		float theta = slice * degreePerSlice;
 		v.color = color;
 		v.normal.Set(0, 1, 0);
-		v.pos.Set(outerR * cos(Math::DegreeToRadian(theta)), 0, outerR * sin(Math::DegreeToRadian(theta)));
+        v.pos.Set(outerR * cos(Math::DegreeToRadian(theta)), outerR * sin(Math::DegreeToRadian(theta)), 0);
 		vertex_buffer_data.push_back(v);
 		
 		v.color = color;
 		v.normal.Set(0, 1, 0);
-		v.pos.Set(innerR * cos(Math::DegreeToRadian(theta)), 0, innerR * sin(Math::DegreeToRadian(theta)));
+        v.pos.Set(innerR * cos(Math::DegreeToRadian(theta)), innerR * sin(Math::DegreeToRadian(theta)), 0);
 		vertex_buffer_data.push_back(v);
 	}
 	for(unsigned slice = 0; slice < numSlice + 1; ++slice)

@@ -21,11 +21,12 @@ public:
 	virtual void Init();
 	virtual void Update(double dt);
 	virtual void Render();
-	virtual void RenderLavaScene();
-	virtual void RenderHUD();
+	void RenderLavaScene();
 	virtual void Exit();
-    void RenderPressEText();
 	bool ViewCheckPosition(Vector3 pos, float degree);
+
+    virtual bool CheckInteractMoneyTree(World *world, GameObject GO);
+
 	//Test stuff
 	ItemProjectile* itemProjectile;
 	ItemProjectile* rockProjectile;
@@ -34,17 +35,6 @@ public:
 
 	//For placing traps
 	bool b_placing = false;
-
-	//Item Switch
-	bool b_Rocks;
-	bool b_Nets;
-	bool b_Baits;
-
-	float f_RotateRock;
-	float f_RotateNet;
-	float f_RotateBait;
-
-    float f_HighlightPos;
 
 	// check if collected
 	bool b_Collected;

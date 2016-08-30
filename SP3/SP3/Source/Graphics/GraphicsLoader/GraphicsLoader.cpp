@@ -258,7 +258,8 @@ void GraphicsLoader::Init()
 
 	// Bars above monsters
 	m_meshList[GEO_HPBAR] = MeshBuilder::GenerateQuad("HP BAR", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_CAPTUREBAR] = MeshBuilder::GenerateSphere("CAPTURE BAR", Color(0.5f, 0, 0.5f), 18, 36, 1.f);
+	//m_meshList[GEO_CAPTUREBAR] = MeshBuilder::GenerateSphere("CAPTURE BAR", Color(0.5f, 0, 0.5f), 18, 36, 1.f);
+    m_meshList[GEO_CAPTUREBAR] = MeshBuilder::GenerateRing("CAPTURE BAR", Color(0.5f, 0, 1.f), 36);
 
 	// Menu stuffs
 	m_meshList[GEO_START] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);

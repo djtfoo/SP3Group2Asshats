@@ -211,187 +211,35 @@ void SceneLava::Update(double dt)
 	UpdateGameObjects(&lava, dt);
 
 	//Player Update
-	SharedData::GetInstance()->inputManager->Update();
-	SharedData::GetInstance()->player->Update(dt);
-
-	bool collision = false;
-	for (GameObject obstacle = 0; obstacle < lava.GAMEOBJECT_COUNT; ++obstacle)
-	{
-		if ((lava.mask[obstacle] & COMPONENT_OBSTACLE) == COMPONENT_OBSTACLE)
-		{
-			Vector3 playerPos = SharedData::GetInstance()->player->GetPositionVector() + SharedData::GetInstance()->player->GetVelocityVector();
-			playerPos.y = 0.f;
-
-			if (lava.hitbox[obstacle].CheckCollision(playerPos))
-			{
-				collision = true;
-				break;
-			}
-		}
-	}
-	if (!collision) {
-		SharedData::GetInstance()->player->Move(dt);
-	}
-    SharedData::GetInstance()->player->UpdateNoiseFactor();
+    UpdatePlayer(dt, &lava);
 
 	//Camera Update
 	camera.Update();
 
 	// Check to see if text_C and text_M should be destroyed
-	for (GameObject text = 0; text < lava.GAMEOBJECT_COUNT; ++text)
-	{
-		if ((lava.mask[text] & COMPONENT_TEXT) == COMPONENT_TEXT)
-		{
-			if (lava.position[text].y > 9.f)
-			{
-				destroyGO(&lava, text);
-			}
-		}
-
-	}
+    DestroyText(&lava);
 
 	//===============================================================================================================================//
 	//                                                            Checks                                                             //
 	//===============================================================================================================================//
-	////////////////////////////////////////////////
-	////Projectile checks//////////////ROCKS////////
-	////////////////////////////////////////////////
+    ////////////////////////////////////////////////
+    ////Projectile checks//////////////ROCKS////////
+    ////////////////////////////////////////////////
 
-	if (ItemProjectile::RockProjectileList.size())
-	{
-		for (unsigned i = 0; i < ItemProjectile::RockProjectileList.size(); ++i)
-		{
-			for (GameObject ai = 0; ai < lava.GAMEOBJECT_COUNT; ++ai)
-			{
-				if ((lava.mask[ai] & COMPONENT_AI) == COMPONENT_AI)
-				{
-					if (lava.hitbox[ai].CheckCollision(ItemProjectile::RockProjectileList[i]->position))
-					{
-						ItemProjectile::RockProjectileList[i]->deleteBullet = true;
-						if (lava.monster[ai]->GetStrategyState() != AI_Strategy::STATE_CAPTURED) {
-							lava.monster[ai]->TakeDamage(SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetEffectiveness());
-							//std::cout << "HEALTH: " << lava.monster[ai]->GetHealthStat() << std::endl;
-                            //SharedData::GetInstance()->sound->SoundEffect3D->setSoundVolume(1.0f);
-                            SharedData::GetInstance()->sound->playSoundEffect3D("Sound//Hit.mp3",
-                                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
-                                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-                                irrklang::vec3df(lava .position[ai].x, lava.position[ai].y, lava.position[ai].z));
+    UpdateRockProjectiles(&lava);
 
-                            if (lava.monster[ai]->GetHealthStat() == 0)
-                            {
-                                GameObject meat = createGO(&lava);
-                                lava.mask[meat] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_MEAT;
-                                lava.position[meat] = lava.monster[ai]->m_position;
-                                lava.appearance[meat].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT);
-                                lava.appearance[meat].scale.Set(1, 1, 1);
-                                lava.appearance[meat].angle = 0.f;
+    //////////////////////////////////////////////
+    ////Projectile checks//////////////NET////////
+    //////////////////////////////////////////////
 
-                                destroyGO(&lava, ai);
-                            }
-						}
-						break;
-					}
-				}
-			}
-		}
-	}
+    UpdateNetProjectiles(&lava);
 
 
-	//////////////////////////////////////////////
-	////Projectile checks//////////////NET////////
-	//////////////////////////////////////////////
-	if (ItemProjectile::NetProjectileList.size())
-	{
-		for (unsigned i = 0; i < ItemProjectile::NetProjectileList.size(); ++i)
-		{
-			for (GameObject ai = 0; ai < lava.GAMEOBJECT_COUNT; ++ai)
-			{
-				if ((lava.mask[ai] & COMPONENT_AI) == COMPONENT_AI && lava.hitbox[ai].CheckCollision(ItemProjectile::NetProjectileList[i]->position)
-					&& lava.monster[ai]->GetStrategyState() != AI_Strategy::STATE_CAPTURED)
-				{
-					ItemProjectile::NetProjectileList[i]->deleteBullet = true;
-					net = createGO(&lava);
-					lava.mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_CAPTURE;
-					lava.capture[net].capturingMonster = true;
-					lava.capture[net].capturedMonster = false;
-					lava.capture[net].timeBeforeCapture = 3;
-					lava.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
-					//lava.appearance[net].scale.Set(2, 2, 2);
-                    lava.appearance[net].scale = lava.appearance[ai].scale;
-
-					if (lava.capture[net].capturingMonster == true)
-					{
-						lava.position[net] = lava.position[ai];
-						int v1 = rand() % 100;
-						//std::cout << v1 << std::endl;
-						if (v1 < lava.monster[ai]->GetCaptureRateStat())
-						{
-							lava.capture[net].capturedMonster = true;//Captured!
-							text_C = createGO(&lava);
-							lava.mask[text_C] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_VELOCITY | COMPONENT_TEXT;
-							lava.appearance[text_C].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_CAPTURE);
-							lava.position[text_C] = lava.position[net];
-							lava.position[text_C].y += 1;
-							lava.velocity[text_C] = (lava.position[text_C] - camera.position).Normalized();
-							lava.velocity[text_C].y = 3;
-							lava.appearance[text_C].scale.Set(2, 2, 2);
-							lava.appearance[text_C].billboard = true;
-						}
-						else
-						{
-							//std::cout << "HAHAHAHAHHA FAILED CAPTURED!" << std::endl;
-							text_M = createGO(&lava);
-							lava.mask[text_M] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_VELOCITY | COMPONENT_TEXT;
-							lava.appearance[text_M].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_MISS);
-							lava.position[text_M] = lava.position[net];
-							lava.position[text_M].y += 1;
-							lava.velocity[text_M] = (lava.position[text_M] - camera.position).Normalized();
-							lava.velocity[text_M].y = 3;
-							lava.appearance[text_M].scale.Set(2, 2, 2);
-							lava.appearance[text_M].billboard = true;
-							destroyGO(&lava, net);
-							lava.capture[net].capturingMonster = false;//fail capture
-						}
-					}
-					if (lava.capture[net].capturedMonster == true)
-					{
-						//std::cout << "HAHAHAHAHHA CAPTURED!" << std::endl;
-						lava.velocity[ai] = 0;
-						lava.monster[ai]->m_velocity = lava.velocity[ai];
-						lava.monster[ai]->GetCaptured();
-						lava.position[net] = lava.position[ai];
-						lava.capture[net].caughtMonster = ai;
-					}
-					break;
-				}
-			}
-		}
-	}
 	//////////////////////////////////////////////
 	////////BAIT /////////////////////////////////
 	//////////////////////////////////////////////
-	if (ItemProjectile::BaitProjectileList.size())
-	{
-		for (unsigned i = 0; i < ItemProjectile::BaitProjectileList.size(); ++i)
-		{
-			if (ItemProjectile::BaitProjectileList[i]->position.y <= 1)
-			{
-				Vector3 tempo = ItemProjectile::BaitProjectileList[i]->position;
-				ItemProjectile::BaitProjectileList[i]->deleteBullet = true;
 
-				bait = createGO(&lava);
-				lava.mask[bait] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_BAIT;
-				lava.position[bait] = tempo;
-				lava.appearance[bait].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT);
-				lava.appearance[bait].scale.Set(1, 1, 1);
-				lava.bait[bait].scentRadius = 200;
-				lava.bait[bait].foundRadius = 5;
-				lava.bait[bait].eattingBait = false;
-				lava.bait[bait].foundBait = false;
-				lava.bait[bait].timeEatting = 3.0f;
-			}
-		}
-	}
+    UpdateBaitProjectiles(&lava);
 
 
 	for (GameObject bait = 0; bait < lava.GAMEOBJECT_COUNT; ++bait)
@@ -535,28 +383,7 @@ void SceneLava::Update(double dt)
     //Place trap
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].Use())
     {
-        GameObject trap = createGO(&lava);
-
-        lava.mask[trap] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_TRAP;
-
-        lava.position[trap].Set(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
-        lava.appearance[trap].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP);
-        lava.appearance[trap].scale.Set(3, 3, 3);
-        lava.appearance[trap].angle = 0.f;
-
-        lava.trap[trap].triggerDuration = 3.0f;
-        lava.trap[trap].triggerTimer = 0.f;
-        lava.trap[trap].radius = 2.5f;
-        lava.trap[trap].activated = false;
-        lava.trap[trap].caughtMonster = 0;
-        lava.trap[trap].caughtMonsterVel.SetZero();
-
-        SharedData::GetInstance()->sound->playSoundEffect3D("Sound//SetTrap.wav",
-            irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
-            irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-            irrklang::vec3df(lava.position[trap].x, lava.position[trap].y, lava.position[trap].z));
-
-        //counter = 0;
+        PlaceTrap(&lava);
     }
     //Rocks
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].isPressed)
@@ -588,254 +415,59 @@ void SceneLava::Update(double dt)
     {
         //Rock projectile
         f_RotateRock += dt * 50;
-        if (ItemProjectile::d_rockCounter > ItemProjectile::d_rockCooldown)
-        {
-            if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Use())
-            {
-                ItemProjectile::RockProjectileList.push_back(new ItemProjectile(
-                    Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
-                    Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-                    500,
-                    50,
-                    10
-                    ));
-                SharedData::GetInstance()->sound->playSoundEffect3D("Sound//Throwing.wav",
-                    irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
-                    irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-                    irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
-
-                ItemProjectile::d_rockCounter = 0.0;
-            }
-        }
+        ShootRock();
     }
     if (b_Nets)
     {
         //Net projectile
         f_RotateNet += dt * 50;
-        if (ItemProjectile::d_netCounter > ItemProjectile::d_netCooldown)
-        {
-            if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_NET].Use())
-            {
-                ItemProjectile::NetProjectileList.push_back(new ItemProjectile(
-                    Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
-                    Vector3(SharedData::GetInstance()->player->GetViewVector().x, 0.5, SharedData::GetInstance()->player->GetViewVector().z),
-                    500,
-                    15,
-                    10
-                    ));
-                SharedData::GetInstance()->sound->playSoundEffect3D("Sound//ThrowingNet.wav",
-                    irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
-                    irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-                    irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
-
-                ItemProjectile::d_netCounter = 0.0;
-            }
-        }
+        ShootNet();
     }
     if (b_Baits)
     {
         //Bait Projectile
         f_RotateBait += dt * 50;
-        if (ItemProjectile::d_baitCounter > ItemProjectile::d_baitCooldown)
-        {
-            if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].Use())
-            {
-                ItemProjectile::BaitProjectileList.push_back(new ItemProjectile(
-                    Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
-                    Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-                    500,
-                    50,
-                    10
-                    ));
-                SharedData::GetInstance()->sound->playSoundEffect3D("Sound//Throwing.wav",
-                    irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
-                    irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-                    irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
-
-                ItemProjectile::d_baitCounter = 0.0;
-            }
-        }
+        ShootBait();
     }
-	// DEBUG: Spawn monster at origin
-	//if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_E].isPressed)
-	//{
-	//    monster = createGO(&grass);
-	//    grass.mask[monster] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
-	//    grass.position[monster].SetZero();
-	//    grass.velocity[monster].Set(0, 0, 1);
-	//    grass.hitbox[monster].m_origin = grass.position[monster] + Vector3(0, 0.75f, -0.3f);
-	//    grass.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
-	//    grass.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
-	//    grass.appearance[monster].scale.Set(1, 1, 1);
-	//
-	//    counter = 0;
-	//}
-
-	//Shoot projectile
-	/*if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].IsPressed() && counter > 0.2)
-	{
-	ItemProjectile::ItemProjectileList.push_back(new ItemProjectile(
-	Vector3(camera.position.x, camera.position.y, camera.position.z),
-	Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-	500,
-	25,
-	400
-	));
-
-	counter = 0;
-	}*/
 
 	// Check pick up monster
 	if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_E].isPressed)
 	{
-		//for (GameObject ai = 0; ai < grass.GAMEOBJECT_COUNT; ++ai)
-		//{
-		//	if ((grass.mask[ai] & COMPONENT_AI) == COMPONENT_AI && grass.monster[ai] && grass.monster[ai]->GetStrategyState() == static_cast<int>(AI_Strategy::STATE_CAPTURED))
-		//	{
-		//		if ((camera.position - grass.position[ai]).LengthSquared() < 150)
-		//		{
-		//			if (ViewCheckPosition(grass.position[ai], 45.f) == true)
-		//			{
-		//				std::cout << "CAUGHT THE MONSTER" << std::endl;
-		//                SharedData::GetInstance()->player->monsterList.push_back(grass.monster[ai]->GetName());
-		//                destroyGO(&grass, ai);
-		//                // destroy net
-		//                //destroyGO(&grass, );
-		//			}
-		//		}
-		//	}
-		//}
-
 		for (GameObject GO = 0; GO < lava.GAMEOBJECT_COUNT; ++GO)
 		{
 			// check for picking up net
 			if ((lava.mask[GO] & COMPONENT_CAPTURE) == COMPONENT_CAPTURE)
 			{
-				GameObject ai = lava.capture[GO].caughtMonster;
-				if ((camera.position - lava.position[ai]).LengthSquared() < 150)
-				{
-					if (ViewCheckPosition(lava.position[ai], 45.f) == true)
-					{
-						std::cout << "CAUGHT THE MONSTER" << std::endl;
-						SharedData::GetInstance()->player->monsterList.push_back(lava.monster[ai]->GetName());
-						destroyGO(&lava, ai);
-						// destroy net
-						destroyGO(&lava, GO);
-					}
-				}
+                if (CheckPickUpCaughtMonster(&lava, GO))
+                    break;
 			}
 
 			// check for interacting with money tree
-			if ((lava.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+			else if ((lava.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
 			{
-				if ((camera.position - lava.position[GO]).LengthSquared() < 250)
-				{
-					if (ViewCheckPosition(lava.position[GO], 45.f) == true)
-					{
-						//std::cout << "MoneyTree Found" << std::endl;
-						lava.appearance[GO].scale.y -= 1;
-						if (lava.appearance[GO].scale.y <= 0)
-						{
-							int loot = Math::RandIntMinMax(0, 2);
-							switch (loot)
-							{
-							case 0:
-								{
-									lava.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_COIN;
-									lava.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN);
-									lava.appearance[GO].scale.Set(5, 5, 5);
-								}
-								break;
-							case 1:
-								{
-									lava.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_ROCKS;
-									lava.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1);
-									lava.appearance[GO].scale.Set(2, 2, 2);
-								}
-								break;
-							case 2:
-								break;
-								//{
-								//	//lava.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI | COMPONENT_OBSTACLE;
-								//	//lava.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_MAGMA);
-								//	//lava.appearance[GO].scale.Set(2.5f, 2.5f, 2.5f);
-								//	//lava.monster[GO] = MonsterFactory::CreateMonster("Magma");
-								//	//lava.hitbox[GO].m_scale.Set(5.f, 8.5f, 5.f);
-								//}
-								//break;
-							}
-						}
-						break;
-					}
-				}
+                if (CheckInteractMoneyTree(&lava, GO))
+                    break;
 			}
 
 			// check for interacting with coin
 			if ((lava.mask[GO] & COMPONENT_COIN) == COMPONENT_COIN)
 			{
-				if ((camera.position - lava.position[GO]).LengthSquared() < 150)
-				{
-					if (ViewCheckPosition(lava.position[GO], 45.f) == true)
-					{
-						std::cout << "coin picked up" << std::endl;
-						destroyGO(&lava, GO);
-						f_RampageTimer = 0.f;
-						b_Collected = true;
-						//std::cout << "KILL HIM" << std::endl;
-						for (GameObject GO = 0; GO < lava.GAMEOBJECT_COUNT; ++GO)
-						{
-							if ((lava.mask[GO] & COMPONENT_AI) == COMPONENT_AI)
-							{
-								//lava.monster[GO]->m_velocity = lava.velocity[GO];
-								//lava.monster[GO]->m_strategy->SetState(AI_Strategy::STATE_ALERT);
-								//lava.monster[GO]->m_strategy->SetDestination(SharedData::GetInstance()->player->GetPositionVector());
-								////lava.monster[GO]->Update(dt);
-								//lava.velocity[GO].x = lava.monster[GO]->m_velocity.x * 50.f;
-								//lava.velocity[GO].z = lava.monster[GO]->m_velocity.z * 50.f;
-								lava.monster[GO]->SetRampageState();
-								lava.velocity[GO] = lava.monster[GO]->m_velocity;
-							}
-						}
-						break;
-					}
-				}
+                if (CheckPickUpCoin(&lava, GO))
+                    break;
 			}
 
             // check for interacting with coin
 			else if ((lava.mask[GO] & COMPONENT_ROCKS) == COMPONENT_ROCKS)
-			{
-				if ((camera.position - lava.position[GO]).LengthSquared() < 150)
-				{
-					if (ViewCheckPosition(lava.position[GO], 45.f) == true)
-					{
-						std::cout << "rocks picked up" << std::endl;
-						destroyGO(&lava, GO);
-						b_Collected = true;
-						SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Add(1);
-						//std::cout << "KILL HIM" << std::endl;
-						break;
-					}
-				}
+            {
+                if (CheckPickUpRock(&lava, GO))
+                    break;
 			}
 
             // check for interacting with meat
             else if ((lava.mask[GO] & COMPONENT_MEAT) == COMPONENT_MEAT)
             {
-                if ((camera.position - lava.position[GO]).LengthSquared() < 150)
-                {
-                    if (ViewCheckPosition(lava.position[GO], 45.f) == true)
-                    {
-                        SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].Add(1);
-                        std::cout << "meat picked up" << std::endl;
-                        SharedData::GetInstance()->sound->playSoundEffect3D("Sound//ItemFound.mp3",
-                            irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
-                            irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-                            irrklang::vec3df(lava.position[GO].x, lava.position[GO].y, lava.position[GO].z));
-                        destroyGO(&lava, GO);
-
-                        break;
-                    }
-                }
+                if (CheckPickUpMeat(&lava, GO))
+                    break;
             }
 
 		}
@@ -849,7 +481,6 @@ void SceneLava::Update(double dt)
 		{
 			if ((lava.mask[GO] & COMPONENT_AI) == COMPONENT_AI)
 			{
-				//
 				//lava.monster[GO]->m_velocity = lava.velocity[GO];
 				//lava.monster[GO]->m_strategy->SetState(AI_Strategy::STATE_ALERT);
 				//lava.monster[GO]->m_strategy->SetDestination(SharedData::GetInstance()->player->GetPositionVector());
@@ -1001,24 +632,6 @@ void SceneLava::Render()
     // HUD THINGS
     if (SharedData::GetInstance()->sceneManager->GetGameState() == SceneManager::GAMESTATE_GAMEPLAY)
     {
-        glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), false);
-
-        std::stringstream ss;
-        ss << "RampageTimer: " << f_RampageTimer;
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 12);
-
-        ss.str("");
-        ss << "FPS: " << fps;
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 3);
-
-        ss.str("");
-        ss << "Noise factor:" << SharedData::GetInstance()->player->GetNoiseFactor();
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 6);
-
-        ss.str("");
-        ss << "PLAYER HEALTH:" << SharedData::GetInstance()->player->GetHealth();
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 9);
-
         // hitboxes
         for (GameObject tallGrass = 0; tallGrass < lava.GAMEOBJECT_COUNT; ++tallGrass)
         {
@@ -1034,11 +647,7 @@ void SceneLava::Render()
             }
         }
 
-        RenderPressEText();
-
-        SetHUD(true);
-        RenderHUD();
-        SetHUD(false);
+        RenderHUD(&lava);
     }
 }
 
@@ -1066,53 +675,6 @@ void SceneLava::RenderLavaScene()
 	modelStack.PopMatrix();
 
     RenderGameObjects(&lava);
-}
-
-void SceneLava::RenderHUD()
-{
-    std::stringstream ss, ss2, ss3, ss4, ss5;
-    ss << "Rocks: " << SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetCount();
-    ss2 << "Nets: " << SharedData::GetInstance()->player->inventory[Item::TYPE_NET].GetCount();
-    ss3 << "Baits: " << SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].GetCount();
-    ss4 << "Traps: " << SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].GetCount();
-    ss5 << "Meat: " << SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].GetCount();
-
-    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), false, 11.f, 12.f, f_HighlightPos, -48);
-    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 80.f, 12.f, 0, -48);
-
-    // background
-    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 80.f, 12.f, 0, -48);
-
-    float scale = 2.f;   // default
-    // 1: Rock
-    if (b_Rocks)
-        scale = 2.5f;
-    else
-        scale = 2.f;
-    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), scale, 22.5f, 6.5f, f_RotateRock, f_RotateRock, 0, false);
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 1, 20.5f, 3.5f);
-    // 2: Net
-    if (b_Nets)
-        scale = 1.25f;
-    else
-        scale = 1.f;
-    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), scale, 27.5f, 5.5f, 0, f_RotateNet, 0, false);
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(1, 1, 0), 1, 25.5f, 3.5f);
-    // 3: Bait
-    if (b_Baits)
-        scale = 2.5f;
-    else
-        scale = 2.f;
-    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), scale, 32.5f, 6.5f, f_RotateBait, f_RotateBait, 0, false);
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 1, 30.5f, 3.5f);
-    // 4: Trap
-    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2, 37.5f, 6.5f, 0, 0, 0, false);
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss4.str(), Color(1, 1, 0), 1, 35.5f, 3.5f);
-    // 5: Meat
-    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT), 2, 42.5f, 6.2f, 45.f, 45.f, 0, false);
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss5.str(), Color(1, 1, 0), 1, 40.5f, 3.5f);
-    //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), false, 30.f, 10, -30, false);
-    //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), true, 10.0f, 40, -48);
 }
 
 bool SceneLava::ViewCheckPosition(Vector3 pos, float degree)
@@ -1151,63 +713,49 @@ void SceneLava::Exit()
 
 }
 
-void SceneLava::RenderPressEText()
+bool SceneLava::CheckInteractMoneyTree(World *world, GameObject GO)
 {
-    for (GameObject GO = 0; GO < lava.GAMEOBJECT_COUNT; ++GO)
+    if ((camera.position - lava.position[GO]).LengthSquared() < 250)
     {
-        if ((lava.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+        if (ViewCheckPosition(lava.position[GO], 45.f) == true)
         {
-            if ((camera.position - lava.position[GO]).LengthSquared() < 150)
+            //std::cout << "MoneyTree Found" << std::endl;
+            lava.appearance[GO].scale.y -= 1;
+            if (lava.appearance[GO].scale.y <= 0)
             {
-                if (ViewCheckPosition(lava.position[GO], 45.f) == true)
+                int loot = Math::RandIntMinMax(0, 2);
+                switch (loot)
                 {
-                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO CUT DOWN", Color(1, 1, 0), 3, 30, 30);
+                case 0:
+                {
+                          lava.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_COIN;
+                          lava.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN);
+                          lava.appearance[GO].scale.Set(5, 5, 5);
+                }
+                    break;
+                case 1:
+                {
+                          lava.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_ROCKS;
+                          lava.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1);
+                          lava.appearance[GO].scale.Set(2, 2, 2);
+                }
+                    break;
+                case 2:
+                    break;
+                    //{
+                    //	//lava.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI | COMPONENT_OBSTACLE;
+                    //	//lava.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_MAGMA);
+                    //	//lava.appearance[GO].scale.Set(2.5f, 2.5f, 2.5f);
+                    //	//lava.monster[GO] = MonsterFactory::CreateMonster("Magma");
+                    //	//lava.hitbox[GO].m_scale.Set(5.f, 8.5f, 5.f);
+                    //}
+                    //break;
+                }
+            }
 
-                }
-            }
+            return true;
         }
-        else if ((lava.mask[GO] & COMPONENT_COIN) == COMPONENT_COIN)
-        {
-            if ((camera.position - lava.position[GO]).LengthSquared() < 150)
-            {
-                if (ViewCheckPosition(lava.position[GO], 45.f) == true)
-                {
-                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
-                }
-            }
-        }
-        else if ((lava.mask[GO] & COMPONENT_CAPTURE) == COMPONENT_CAPTURE)   // net
-        {
-            GameObject ai = lava.capture[GO].caughtMonster;
-            if ((camera.position - lava.position[ai]).LengthSquared() < 150)
-            {
-                if (ViewCheckPosition(lava.position[ai], 45.f) == true)
-                {
-                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
-                }
-            }
-        }
-        else if ((lava.mask[GO] & COMPONENT_MEAT) == COMPONENT_MEAT)   // net
-        {
-            if ((camera.position - lava.position[GO]).LengthSquared() < 150)
-            {
-                if (ViewCheckPosition(lava.position[GO], 45.f) == true)
-                {
-                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
-                }
-            }
-        }
-        else if ((lava.mask[GO] & COMPONENT_ROCKS) == COMPONENT_ROCKS)
-        {
-            if ((camera.position - lava.position[GO]).LengthSquared() < 150)
-            {
-                if (ViewCheckPosition(lava.position[GO], 45.f) == true)
-                {
-                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
-                }
-            }
-        }
-
     }
 
+    return false;
 }

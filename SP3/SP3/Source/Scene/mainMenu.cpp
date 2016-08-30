@@ -246,7 +246,7 @@ void MainMenu::MainMenuButton()
 			}
 			else if (b_mouseClick && !Application::IsMousePressed(0))
 			{
-                SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+                SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
                 b_mouseClick = false;
                 MM_STATE = M_INSTRUCTION;
 			}
@@ -269,7 +269,7 @@ void MainMenu::MainMenuButton()
 			}
 			else if (b_mouseClick && !Application::IsMousePressed(0))
 			{
-				SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+				SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
 				b_mouseClick = false;
 					MM_STATE = M_STORY;
 			}
@@ -292,7 +292,7 @@ void MainMenu::MainMenuButton()
 		}
 		else if (b_mouseClick && !Application::IsMousePressed(0))
 		{
-			SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
 			b_mouseClick = false;
 				MM_STATE = M_OPTION;
 		}
@@ -315,7 +315,7 @@ void MainMenu::MainMenuButton()
 		}
 		else if (b_mouseClick && !Application::IsMousePressed(0))
 		{
-			SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
 			b_mouseClick = false;
 				MM_STATE = M_CREDITS;
 		}
@@ -338,7 +338,7 @@ void MainMenu::MainMenuButton()
 		}
 		else if (b_mouseClick && !Application::IsMousePressed(0))
 		{
-			SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
 			b_mouseClick = false;
             std::cout << "EXIT" << std::endl;
             SharedData::GetInstance()->sceneManager->SetToExit();
@@ -385,7 +385,7 @@ void MainMenu::BackButton()
 		}
 		else if (b_mouseClick && !Application::IsMousePressed(0))
 		{
-			SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
 			b_mouseClick = false;
 				MM_STATE = M_MAIN;
 		}
