@@ -155,7 +155,6 @@ void SceneLava::Init()
 	glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_TYPE), fog.type);
 	glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), fog.enabled);
 
-	counter = 3;
 	b_Rocks = true;
 	b_Nets = false;
 	b_Baits = false;
@@ -879,7 +878,9 @@ void SceneLava::Update(double dt)
 	}
 
 	// for buffer time between projectile launches
-	counter += dt;
+	ItemProjectile::d_rockCounter += dt;
+	ItemProjectile::d_netCounter += dt;
+	ItemProjectile::d_baitCounter += dt;
 }
 
 void SceneLava::Render()

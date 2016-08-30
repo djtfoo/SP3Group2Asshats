@@ -152,7 +152,6 @@ void SceneGrass::Init()
 	//HITBOX.m_origin = Vector3(0, 5, 0);
 	//HITBOX.m_scale = Vector3(10, 10, 10);
 
-    counter = 3;
 	b_Rocks = true;
 	b_Nets = false;
 	b_Baits = false;
@@ -568,7 +567,7 @@ void SceneGrass::Update(double dt)
 			irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
 			irrklang::vec3df(grass.position[trap].x, grass.position[trap].y, grass.position[trap].z));
 
-		counter = 0;
+		//counter = 0;
 	}
 	//Rocks
 	if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].isPressed)
@@ -600,27 +599,31 @@ void SceneGrass::Update(double dt)
 	{
 		//Rock projectile
 		f_RotateRock += dt * 50;
-		if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Use())
+		if (ItemProjectile::d_rockCounter > ItemProjectile::d_rockCooldown)
 		{
-			ItemProjectile::RockProjectileList.push_back(new ItemProjectile(
-				Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
-				Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-				500,
-				50,
-				10
-				));
-			SharedData::GetInstance()->sound->playSoundEffect3D("Sound//Throwing.wav",
-				irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
-				irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-				irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
+			if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Use())
+			{
+				ItemProjectile::RockProjectileList.push_back(new ItemProjectile(
+					Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+					Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+					500,
+					50,
+					10
+					));
+				SharedData::GetInstance()->sound->playSoundEffect3D("Sound//Throwing.wav",
+					irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+					irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+					irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
 
+				ItemProjectile::d_rockCounter = 0.0;
+			}
 		}
 	}
 	if (b_Nets)
 	{
 		//Net projectile
 		f_RotateNet += dt * 50;
-		if (counter > 3.0)
+		if (ItemProjectile::d_netCounter > ItemProjectile::d_netCooldown)
 		{
 			if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_NET].Use())
 			{
@@ -635,7 +638,8 @@ void SceneGrass::Update(double dt)
 					irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
 					irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
 					irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
-				counter = 0;
+
+				ItemProjectile::d_netCounter = 0.0;
 			}
 		}
 	}
@@ -643,19 +647,24 @@ void SceneGrass::Update(double dt)
 	{
 		//Bait Projectile
 		f_RotateBait += dt * 50;
-		if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].Use())
+		if (ItemProjectile::d_baitCounter > ItemProjectile::d_baitCooldown)
 		{
-			ItemProjectile::BaitProjectileList.push_back(new ItemProjectile(
-				Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
-				Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-				500,
-				50,
-				10
-				));
-			SharedData::GetInstance()->sound->playSoundEffect3D("Sound//Throwing.wav",
-				irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
-				irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-				irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
+			if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].Use())
+			{
+				ItemProjectile::BaitProjectileList.push_back(new ItemProjectile(
+					Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+					Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+					500,
+					50,
+					10
+					));
+				SharedData::GetInstance()->sound->playSoundEffect3D("Sound//Throwing.wav",
+					irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+					irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+					irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
+
+				ItemProjectile::d_baitCounter = 0.0;
+			}
 		}
 	}
 	// DEBUG: Spawn monster at origin
@@ -802,7 +811,9 @@ void SceneGrass::Update(double dt)
 	}
 
 	// for buffer time between projectile launches
-	counter += dt;
+	ItemProjectile::d_rockCounter += dt;
+	ItemProjectile::d_netCounter += dt;
+	ItemProjectile::d_baitCounter += dt;
 }
 
 void SceneGrass::Render()

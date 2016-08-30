@@ -53,6 +53,7 @@ void Monster_Bird::Update(double dt)
 void Monster_Bird::TakeDamage(const int damage)
 {
     changeHealthStat(m_healthStat - damage);
+	changeCaptureRateStat(m_captureRateStat + 0.2f * damage);
     
     AggressionLevel = 5.f;
     changeAggressionStat(m_aggressionStat + AggressionLevel);

@@ -62,6 +62,7 @@ void Monster_Grimejam::Update(double dt)
 void Monster_Grimejam::TakeDamage(const int damage)
 {
     changeHealthStat(m_healthStat - damage);
+	changeCaptureRateStat(m_captureRateStat + 0.1f * damage);
 }
 
 void Monster_Grimejam::PlaySoundEffect()

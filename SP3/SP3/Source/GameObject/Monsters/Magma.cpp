@@ -52,6 +52,7 @@ void Monster_Magma::Update(double dt)
 void Monster_Magma::TakeDamage(const int damage)
 {
 	changeHealthStat(m_healthStat - damage);
+	changeCaptureRateStat(m_captureRateStat + 0.1f * damage);
 
 	AggressionLevel = 5.f;
 	changeAggressionStat(m_aggressionStat + AggressionLevel);

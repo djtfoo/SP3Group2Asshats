@@ -59,7 +59,6 @@ public:
 	World lava;
 
 	AABB HITBOX;
-	double counter;
 	GameObject monster, rock, net, bait, text_C, text_M;
 
 };

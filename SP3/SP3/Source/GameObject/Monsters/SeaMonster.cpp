@@ -62,6 +62,7 @@ void Monster_SeaMonster::Update(double dt)
 void Monster_SeaMonster::TakeDamage(const int damage)
 {
     changeHealthStat(m_healthStat - damage);
+	changeCaptureRateStat(m_captureRateStat + 0.1f * damage);
 }
 
 void Monster_SeaMonster::PlaySoundEffect()

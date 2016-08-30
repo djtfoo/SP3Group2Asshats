@@ -14,6 +14,15 @@ vector<ItemProjectile*> ItemProjectile::ItemProjectileList;
 vector<ItemProjectile*> ItemProjectile::RockProjectileList;
 vector<ItemProjectile*> ItemProjectile::NetProjectileList;
 vector<ItemProjectile*> ItemProjectile::BaitProjectileList;
+
+double ItemProjectile::d_rockCounter = 0.1;
+double ItemProjectile::d_netCounter = 3.0;
+double ItemProjectile::d_baitCounter = 0.1;
+
+double ItemProjectile::d_rockCooldown = 0.1;
+double ItemProjectile::d_netCooldown = 3.0;
+double ItemProjectile::d_baitCooldown = 0.1;
+
 /****************************************************************************/
 /*!
 \brief 

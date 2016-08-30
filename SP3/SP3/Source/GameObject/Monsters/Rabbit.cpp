@@ -50,6 +50,7 @@ void Monster_Rabbit::Update(double dt)
 void Monster_Rabbit::TakeDamage(const int damage)
 {
     changeHealthStat(m_healthStat - damage);
+	changeCaptureRateStat(m_captureRateStat + 0.4f * damage);
 
     FearLevel = 5.f;
     changeFearStat(m_fearStat + FearLevel);

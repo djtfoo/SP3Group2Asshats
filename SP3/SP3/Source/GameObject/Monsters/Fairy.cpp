@@ -52,6 +52,7 @@ void Boss_Fairy::Update(double dt)
 void Boss_Fairy::TakeDamage(const int damage)
 {
     changeHealthStat(m_healthStat - damage);
+	changeCaptureRateStat(m_captureRateStat + 0.1f * damage);
 }
 
 void Boss_Fairy::PlaySoundEffect()

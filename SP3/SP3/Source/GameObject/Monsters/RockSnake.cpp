@@ -62,6 +62,7 @@ void Boss_RockSnake::Update(double dt)
 void Boss_RockSnake::TakeDamage(const int damage)
 {
     changeHealthStat(m_healthStat - damage);
+	changeCaptureRateStat(m_captureRateStat + 0.1f * damage);
 }
 
 void Boss_RockSnake::PlaySoundEffect()

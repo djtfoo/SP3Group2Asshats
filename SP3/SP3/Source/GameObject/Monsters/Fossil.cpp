@@ -62,6 +62,7 @@ void Monster_Fossil::Update(double dt)
 void Monster_Fossil::TakeDamage(const int damage)
 {
     changeHealthStat(m_healthStat - damage);
+	changeCaptureRateStat(m_captureRateStat + 0.1f * damage);
 }
 
 void Monster_Fossil::PlaySoundEffect()
