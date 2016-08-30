@@ -28,8 +28,10 @@ public:
     int GetCount();
 
     bool Use();
-    bool Add(int addCount);
+    bool Add(const int addCount);
     bool Upgrade();
+    bool Buy(const int count);
+    bool Sell(const int count);
 
     Item();
     Item(std::string name, TYPE type, int buyCost, int upgradeCost, int effectiveness);

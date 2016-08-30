@@ -7,6 +7,19 @@
 #include "../../General/MousePicker.h"
 #include "../../GameObject/Items.h"
 
+struct PopUpMessage
+{
+    std::string m_message;
+
+    float m_posX;
+    float m_posY;
+
+    float direction;
+
+    double m_duration;
+    double m_lifetime;
+};
+
 class SceneZoo : public Scene
 {
 public:
@@ -24,6 +37,7 @@ public:
     World zooWorld;
     ZooCamera zooCamera;
 
+    //
     std::vector<GameObject> grassZone;
     std::vector<GameObject> fireZone;
     std::vector<GameObject> rockZone;
@@ -70,9 +84,27 @@ public:
         NUM_SHOP
     };
 
+    enum SHOPKEEPER_TEXT
+    {
+        TEXT_NONE,
+
+        TEXT_TIP_1,
+        TEXT_TIP_2,
+        TEXT_TIP_3,
+        TEXT_TIP_4,
+        TEXT_TIP_5,
+
+        TEXT_THANK,
+        TEXT_INSUFFICIENT_COINS,
+        TEXT_AT_MAX_UPGRADE,
+
+        NUM_TEXT
+    };
+
     STATE currentState;
     AREA currentArea;
     SHOP currentShop;
+    Item::TYPE currentItem;
 
     bool isFollowingMonster;
     GameObject targetedMonster;
@@ -80,17 +112,29 @@ public:
 
     void DisplayMonsterStats(Monster* monster);
     void CycleThroughZoneArea(std::vector<GameObject> area);
-    void UpgradeEnclosureSize(AREA area);
+    bool UpgradeEnclosureSize(AREA area);
     void RenderEnclosures();
-
-    void PurchaseItem(Item item);
-    void SellItem(Item item);
-
-    void RenderShopInterface();
     void RenderEnclosureInterface();
+    
+    int transactionCounter;
+    bool isInTransaction;
+    void RenderTransactionInterface();
+    void RenderShopInterface();
+
+    void RenderUpgradeInterface(Item::TYPE item);
+
+    short shopKeeperTextChoice;
     void RenderShopkeeperText();
 
+    //Upgrade enclosure values
+    int upgradeCost;
+
+    //shit for debugging
     float updown, leftright;
+    
+    //HUD stuff
+    void RenderHUD();
+    float f_Rotate;
 };
 
 #endif

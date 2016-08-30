@@ -1,5 +1,5 @@
 #include "Items.h"
-
+#include "../General/SharedData.h"
 
 Item::Item() : 
 m_type(NUM_TYPE),
@@ -28,24 +28,29 @@ Item::~Item()
 }
 bool Item::Upgrade()
 {
-    if (this->m_currentUpgradeLevel == MAX_UPGRADE_LEVEL)
+    if (this->m_currentUpgradeLevel >= MAX_UPGRADE_LEVEL)
         return false;
     else
         switch (this->m_type)
         {
             case TYPE_NET:
                 this->m_effectiveness += 5;
+                this->m_currentUpgradeLevel++;
                 return true;
             case TYPE_BAIT:
                 this->m_effectiveness += 5;
+                this->m_currentUpgradeLevel++;
+                return true;
             case TYPE_MEAT:
                 //You cannot upgrade meat
                 return false;
             case TYPE_TRAP:
                 this->m_effectiveness += 200;
+                this->m_currentUpgradeLevel++;
                 return true;
             case TYPE_ROCK:
                 this->m_effectiveness += 5;
+                this->m_currentUpgradeLevel++;
                 return true;
 
             default:
@@ -103,4 +108,28 @@ bool Item::Add(int addCount)
 int Item::GetCount()
 {
     return this->m_count;
+}
+
+bool Item::Buy(int count)
+{
+    if (SharedData::GetInstance()->player->m_currency >= count * this->m_buyCost)
+    {
+        this->m_count += count;
+        SharedData::GetInstance()->player->m_currency -= count * this->m_buyCost;
+        return true;
+    }
+    
+    return false;
+}
+
+bool Item::Sell(int count)
+{
+    if (this->m_count >= count)
+    {
+        this->m_count -= count;
+        SharedData::GetInstance()->player->m_currency += count * this->m_buyCost;
+        return true;
+    }
+    
+    return false;
 }
