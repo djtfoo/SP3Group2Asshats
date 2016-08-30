@@ -96,7 +96,7 @@ void SceneLava::Init()
 					lava.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_MAGMA);
                     lava.appearance[go].scale.Set(2.5f, 2.5f, 2.5f);
 					lava.monster[go] = MonsterFactory::CreateMonster("Magma");
-					lava.hitbox[go].m_scale.Set(5.f, 8.5f, 5.f);
+					lava.hitbox[go].m_scale.Set(5.f, 9.5f, 5.f);
 					break;
 
 				case '2':
@@ -716,17 +716,42 @@ void SceneLava::Update(double dt)
 			// check for interacting with money tree
 			if ((lava.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
 			{
-				if ((camera.position - lava.position[GO]).LengthSquared() < 150)
+				if ((camera.position - lava.position[GO]).LengthSquared() < 250)
 				{
 					if (ViewCheckPosition(lava.position[GO], 45.f) == true)
 					{
-						std::cout << "MoneyTree Found" << std::endl;
+						//std::cout << "MoneyTree Found" << std::endl;
 						lava.appearance[GO].scale.y -= 1;
 						if (lava.appearance[GO].scale.y <= 0)
 						{
-							lava.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_COIN;
-							lava.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN);
-							lava.appearance[GO].scale.Set(5, 5, 5);
+							int loot = Math::RandIntMinMax(0, 2);
+							switch (loot)
+							{
+							case 0:
+								{
+									lava.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_COIN;
+									lava.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN);
+									lava.appearance[GO].scale.Set(5, 5, 5);
+								}
+								break;
+							case 1:
+								{
+									lava.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_ROCKS;
+									lava.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1);
+									lava.appearance[GO].scale.Set(5, 5, 5);
+								}
+								break;
+							case 2:
+								break;
+								//{
+								//	//lava.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI | COMPONENT_OBSTACLE;
+								//	//lava.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_MAGMA);
+								//	//lava.appearance[GO].scale.Set(2.5f, 2.5f, 2.5f);
+								//	//lava.monster[GO] = MonsterFactory::CreateMonster("Magma");
+								//	//lava.hitbox[GO].m_scale.Set(5.f, 8.5f, 5.f);
+								//}
+								//break;
+							}
 						}
 						break;
 					}
@@ -749,7 +774,6 @@ void SceneLava::Update(double dt)
 						{
 							if ((lava.mask[GO] & COMPONENT_AI) == COMPONENT_AI)
 							{
-								//
 								//lava.monster[GO]->m_velocity = lava.velocity[GO];
 								//lava.monster[GO]->m_strategy->SetState(AI_Strategy::STATE_ALERT);
 								//lava.monster[GO]->m_strategy->SetDestination(SharedData::GetInstance()->player->GetPositionVector());
@@ -760,6 +784,23 @@ void SceneLava::Update(double dt)
 								lava.velocity[GO] = lava.monster[GO]->m_velocity;
 							}
 						}
+						break;
+					}
+				}
+			}
+
+			if ((lava.mask[GO] & COMPONENT_ROCKS) == COMPONENT_ROCKS)
+			{
+				if ((camera.position - lava.position[GO]).LengthSquared() < 150)
+				{
+					if (ViewCheckPosition(lava.position[GO], 45.f) == true)
+					{
+						std::cout << "rocks picked up" << std::endl;
+						destroyGO(&lava, GO);
+						f_RampageTimer = 0.f;
+						b_Collected = true;
+						SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Add(1);
+						//std::cout << "KILL HIM" << std::endl;
 						break;
 					}
 				}

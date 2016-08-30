@@ -6,6 +6,6 @@ tree2,grass,C,displacement,appearance,hitbox,obstacle,
 tree4,grass,D,displacement,appearance,hitbox,obstacle,
 swamp plant,swamp,E,displacement,appearance,hitbox,obstacle,
 swamp deadtree,swamp,F,displacement,appearance,hitbox,obstacle,
-MoneyTree,grass,G,displacement,appearance,hitbox,obstacle,moneytree
+MoneyTree,grass,G,displacement,appearance,hitbox,obstacle,moneytree,
 lava crystal,lava,H,displacement,appearance,hitbox,obstacle,
 swamp root,swamp,I,displacement,appearance,hitbox,obstacle,
