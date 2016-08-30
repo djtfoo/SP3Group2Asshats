@@ -277,7 +277,7 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_OPTIONS]->textureID = LoadTGA("Image//MenuText/Options.tga");
 
 	m_meshList[GEO_OPTIONS_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_OPTIONS_HL]->textureID = LoadTGA("Image//MenuText/Options.tga");
+	m_meshList[GEO_OPTIONS_HL]->textureID = LoadTGA("Image//MenuText/OptionsHL.tga");
 
 	m_meshList[GEO_STORY] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
 	m_meshList[GEO_STORY]->textureID = LoadTGA("Image//MenuText/Story.tga");

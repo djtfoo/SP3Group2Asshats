@@ -14,8 +14,12 @@
 #include <vector>
 #include <map>
 
+//#include "mainMenu.h"
+
 class Scene
 {
+    friend class MainMenu;
+
 public:
     typedef std::map<char, std::pair<GraphicsLoader::GEOMETRY_TYPE, std::vector<COMPONENTS>> > LevelGenerationMap;
     static LevelGenerationMap m_levelGenerationData;

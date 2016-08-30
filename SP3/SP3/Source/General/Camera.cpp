@@ -33,7 +33,7 @@ void Camera::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 
 static const float CAMERA_SPEED = 5.0f;
 
-void Camera::Update(double dt)
+void Camera::Update()
 {
     position = SharedData::GetInstance()->player->GetPositionVector();
     target = position + SharedData::GetInstance()->player->GetViewVector() * 5.f;

@@ -44,7 +44,6 @@ public:
     World swamp;
 
     AABB HITBOX;
-    double counter;
     GameObject monster, rock, net, bait;
 };
 

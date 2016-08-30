@@ -315,6 +315,12 @@ void Player::Move(const double dt)
     }
     m_position.y = m_eyeLevel + m_jumpHeight;
 
+    PlayerHitBox.m_origin = m_position;
+}
+
+void Player::UpdateNoiseFactor()
+{
+    // UPDATE NOISE FACTOR
     if (m_speed <= 0.f)
     {
         m_noiseFactor = 0.f;
@@ -323,8 +329,6 @@ void Player::Move(const double dt)
     {
         m_noiseFactor = 0.6f;
     }
-
-    PlayerHitBox.m_origin = m_position;
 }
 
 void Player::crouch()

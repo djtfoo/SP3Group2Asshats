@@ -3,9 +3,7 @@
 
 #include "Scene.h"
 
-using std::string;
-
-class mainMenu : public Scene
+class MainMenu
 {
 	enum MAINMENU_STATE
 	{
@@ -20,8 +18,10 @@ class mainMenu : public Scene
 		M_TOTAL
 	};
 	public:
-		mainMenu();
-		~mainMenu();
+        Scene* scene; // to render on top
+
+		MainMenu();
+		~MainMenu();
 
 		virtual void Init();
 		virtual void Update(double dt);

@@ -329,6 +329,9 @@
     <ClCompile Include="Source\Scene\mainMenu.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene\Pause.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\shader.hpp">
@@ -488,6 +491,9 @@
       <Filter>Header Files\GameObject\Monsters</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\mainMenu.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Pause.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
   </ItemGroup>

@@ -17,6 +17,7 @@ void SharedData::Init()
     inputManager = new InputManager();
     graphicsLoader->Init();
     sound = new Sound();
+    sceneManager = new SceneManager();
 
     MonsterFactory::LoadMonsterData("GameData/MonstersData.csv");
     Scene::LoadLevelGenerationData("GameData/LevelGenerationData.csv");
@@ -38,4 +39,10 @@ void SharedData::Exit()
 
 	if (sound)
 		delete sound;
+
+    if (sceneManager)
+    {
+        sceneManager->Exit();
+        delete sceneManager;
+    }
 }

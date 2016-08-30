@@ -89,8 +89,8 @@ void SceneRock::Init()
     b_capturing = false;
     b_captured = false;
     captureCounter = 0;
-    counter = 0;
 
+    camera.Update();
 }
 static double counter = 0;
 
@@ -110,7 +110,7 @@ void SceneRock::Update(double dt)
     UpdateGameObjects(&rockWorld, dt);
 
     //Camera Update
-    camera.Update(dt);
+    camera.Update();
 
     //Player Update
     SharedData::GetInstance()->player->Update(dt);

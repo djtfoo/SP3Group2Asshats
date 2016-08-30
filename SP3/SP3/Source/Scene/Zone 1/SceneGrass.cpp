@@ -164,6 +164,8 @@ void SceneGrass::Init()
 
     // disable fog
     glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), false);
+
+    camera.Update();
 }
 
 void SceneGrass::Update(double dt)
@@ -226,9 +228,10 @@ void SceneGrass::Update(double dt)
     if (!collision) {
         SharedData::GetInstance()->player->Move(dt);
     }
+    SharedData::GetInstance()->player->UpdateNoiseFactor();
 
     //Camera Update
-    camera.Update(dt);
+    camera.Update();
 	UpdateParticle(dt);
 
 	// Check to see if text_C and text_M should be destroyed
@@ -917,40 +920,41 @@ void SceneGrass::Render()
     RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
     modelStack.PopMatrix();
 
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isPressed)
-        std::cout << "asd" << std::endl;
+    // HUD THINGS
+    if (SharedData::GetInstance()->sceneManager->GetGameState() == SceneManager::GAMESTATE_GAMEPLAY)
+    {
+        std::stringstream ss;
+        ss << "FPS: " << fps;
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 3);
 
-    std::stringstream ss;
-    ss << "FPS: " << fps;
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 3);
+        ss.str("");
+        ss << "Noise factor:" << SharedData::GetInstance()->player->GetNoiseFactor();
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 6);
 
-    ss.str("");
-    ss << "Noise factor:" << SharedData::GetInstance()->player->GetNoiseFactor();
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 6);
+        ss.str("");
+        ss << "PLAYER HEALTH:" << SharedData::GetInstance()->player->GetHealth();
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 9);
 
-    ss.str("");
-    ss << "PLAYER HEALTH:" << SharedData::GetInstance()->player->GetHealth();
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 9);
+        RenderPressEText();
 
-    RenderPressEText();
+        //for (GameObject tallGrass = 0; tallGrass < grass.GAMEOBJECT_COUNT; ++tallGrass)
+        //{
+        //    if ((grass.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
+        //    {
+        //        modelStack.PushMatrix();
+        //        modelStack.Translate(grass.hitbox[tallGrass].m_origin.x, grass.hitbox[tallGrass].m_origin.y, grass.hitbox[tallGrass].m_origin.z);
+        //        modelStack.Scale(grass.hitbox[tallGrass].m_scale.x, grass.hitbox[tallGrass].m_scale.y, grass.hitbox[tallGrass].m_scale.z);
+        //        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+        //        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        //        modelStack.PopMatrix();
+        //    }
+        //}
 
-    //for (GameObject tallGrass = 0; tallGrass < grass.GAMEOBJECT_COUNT; ++tallGrass)
-    //{
-    //    if ((grass.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
-    //    {
-    //        modelStack.PushMatrix();
-    //        modelStack.Translate(grass.hitbox[tallGrass].m_origin.x, grass.hitbox[tallGrass].m_origin.y, grass.hitbox[tallGrass].m_origin.z);
-    //        modelStack.Scale(grass.hitbox[tallGrass].m_scale.x, grass.hitbox[tallGrass].m_scale.y, grass.hitbox[tallGrass].m_scale.z);
-    //        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    //        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
-    //        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //        modelStack.PopMatrix();
-    //    }
-    //}
-
-	SetHUD(true);
-	RenderHUD();
-	SetHUD(false);
+        SetHUD(true);
+        RenderHUD();
+        SetHUD(false);
+    }
 }
 
 void SceneGrass::RenderGrassScene()
@@ -1223,6 +1227,16 @@ void SceneGrass::RenderPressEText()
             }
         }
         else if ((grass.mask[GO] & COMPONENT_MEAT) == COMPONENT_MEAT)   // net
+        {
+            if ((camera.position - grass.position[GO]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(grass.position[GO], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
+                }
+            }
+        }
+        else if ((grass.mask[GO] & COMPONENT_ROCKS) == COMPONENT_ROCKS)
         {
             if ((camera.position - grass.position[GO]).LengthSquared() < 150)
             {
