@@ -82,10 +82,15 @@ SoundEffect3D->play3D(Music.c_str(), pos); Gets the music and your position
 SoundEffect3D->setListenerPosition(pos, TargetPos); Listen to TargetPos from your pos
 */
 /****************************************************************************/
-void Sound::playSoundEffect3D(string Music, irrklang::vec3df pos, irrklang::vec3df view, irrklang::vec3df TargetPos)
+void Sound::playSoundEffect3D(string Music, irrklang::vec3df pos, irrklang::vec3df view, irrklang::vec3df TargetPos,bool repeat)
 {
 	SoundEffect3D->play3D(Music.c_str(), TargetPos);
 	SoundEffect3D->setListenerPosition(pos, view);
+}
+
+void Sound::stopSoundEffect3D()
+{
+	SoundEffect3D->stopAllSounds();
 }
 
 /****************************************************************************/

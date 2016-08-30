@@ -56,3 +56,11 @@ void Boss_MagmaBerzeker::TakeDamage(const int damage)
 	AggressionLevel = 5.f;
 	changeAggressionStat(m_aggressionStat + AggressionLevel);
 }
+
+void Boss_MagmaBerzeker::PlaySoundEffect()
+{
+	SharedData::GetInstance()->sound->playSoundEffect3D("Sound//Bird2.wav",
+		irrklang::vec3df(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+		irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+		irrklang::vec3df(m_position.x, m_position.y, m_position.z));
+}

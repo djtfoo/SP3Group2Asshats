@@ -150,10 +150,12 @@ void Monster::updateStats(double dt)
 		if (FearLevel > Math::EPSILON) {
 			FearLevel /= 2.f;
 		}
+		
 	}
 
 	else if (m_strategy->GetState() == AI_Strategy::STATE_ALERT)
 	{
+
 		if (AggressionLevel <= Math::EPSILON && m_aggressionStat > m_originalAggression) {
 			AggressionLevel = -5 * dt;
 		}

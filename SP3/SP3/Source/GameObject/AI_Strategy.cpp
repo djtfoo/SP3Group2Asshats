@@ -57,6 +57,8 @@ void AI_Strategy::SetState(AI_Strategy::STRATEGY_MODE currentState)
 		SetRampageStateDestination();
 		break;
     }
+
+	monster->PlaySoundEffect();
 }
 
 bool AI_Strategy::CheckDestinationReached()

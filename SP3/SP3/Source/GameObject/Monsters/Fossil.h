@@ -13,6 +13,7 @@ public:
 	//Monster Movement update
 	virtual void Update(double dt);
     virtual void TakeDamage(const int damage);
+	virtual void PlaySoundEffect();
 };
 
 #endif
