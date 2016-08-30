@@ -258,7 +258,8 @@ void GraphicsLoader::Init()
 
 	// Bars above monsters
 	m_meshList[GEO_HPBAR] = MeshBuilder::GenerateQuad("HP BAR", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_CAPTUREBAR] = MeshBuilder::GenerateQuad("CAPTURE BAR", Color(0.5f, 0, 0.5f), 1.f);
+	//m_meshList[GEO_CAPTUREBAR] = MeshBuilder::GenerateSphere("CAPTURE BAR", Color(0.5f, 0, 0.5f), 18, 36, 1.f);
+    m_meshList[GEO_CAPTUREBAR] = MeshBuilder::GenerateRing("CAPTURE BAR", Color(0.5f, 0, 1.f), 36);
 
 	// Menu stuffs
 	m_meshList[GEO_START] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
@@ -277,7 +278,7 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_OPTIONS]->textureID = LoadTGA("Image//MenuText/Options.tga");
 
 	m_meshList[GEO_OPTIONS_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_OPTIONS_HL]->textureID = LoadTGA("Image//MenuText/Options.tga");
+	m_meshList[GEO_OPTIONS_HL]->textureID = LoadTGA("Image//MenuText/OptionsHL.tga");
 
 	m_meshList[GEO_STORY] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
 	m_meshList[GEO_STORY]->textureID = LoadTGA("Image//MenuText/Story.tga");
@@ -317,6 +318,10 @@ void GraphicsLoader::Init()
     m_meshList[GEO_SHOP_BACKGROUND] = MeshBuilder::GenerateQuad("Rock Terrain", Color(0.5f, 0.5f, 0.5f), 1.f, 100);
     m_meshList[GEO_SHOP_SELECTION] = MeshBuilder::GenerateQuad("Rock Terrain", Color(0, 0, 0), 1.f, 100);
     m_meshList[GEO_SHOP_SELECTION_ALT] = MeshBuilder::GenerateQuad("Rock Terrain", Color(1, 1, 1), 1.f, 100);
+
+	// Particle Loading
+	m_meshList[GEO_HIDDENBONUS_PARTICLE] = MeshBuilder::GenerateQuad("Hidden Bonus", Color(0, 1, 0), 1.f);
+	m_meshList[GEO_HIDDENBONUS_PARTICLE]->textureArray[0] = LoadTGA("Image//Particles/HiddenBonus.tga");
 
     // Fonts
     m_meshList[GEO_TEXT_IMPACT] = MeshBuilder::GenerateText("Font - Impact", 16, 16);

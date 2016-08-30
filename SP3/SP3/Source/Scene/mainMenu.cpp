@@ -7,25 +7,17 @@
 
 #include <sstream>
 
-mainMenu::mainMenu()
+MainMenu::MainMenu()
 {
-	
 }
 
-mainMenu::~mainMenu()
+MainMenu::~MainMenu()
 {
-
 }
 
-void mainMenu::Init()
+void MainMenu::Init()
 {
-	Mtx44 perspective;
-	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
-	projectionStack.LoadMatrix(perspective);
-
-	camera.Init(Vector3(1, 1, 0), Vector3(0, 0, 0), Vector3(0, 1, 0));
-
-	MM_STATE = M_MAIN;
+    MM_STATE = M_MAIN;
 
 	Application::GetCursorPos(&Application::cursorXPos, &Application::cursorYPos);
 	Application::SetCursorPos(Application::GetWindowWidth() / 2.f, Application::GetWindowHeight() / 2.f);
@@ -38,10 +30,10 @@ void mainMenu::Init()
 	b_mouseClick = false;
 }
 
-void mainMenu::Update(double dt)
+void MainMenu::Update(double dt)
 {
-	double x, y;
-	Application::GetCursorPos(&x, &y);
+	//double x, y;
+	//Application::GetCursorPos(&x, &y);
 
 	switch (MM_STATE)
 	{
@@ -51,42 +43,42 @@ void mainMenu::Update(double dt)
 		}
 		case M_INSTRUCTION:
 		{
-			//BackButton();
+			BackButton();
 		}
 		case M_STORY:
 		{
-			//BackButton();
+			BackButton();
 		}
 		case M_OPTION:
 		{
-			//BackButton();
+			BackButton();
 		}
 		case M_CREDITS:
 		{
-			//BackButton();
+			BackButton();
 		}
 	}
 }
 
-void mainMenu::Render()
+void MainMenu::Render()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	Mtx44 perspective;
-	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
-	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
-	projectionStack.LoadMatrix(perspective);
-
-	m_worldHeight = 100.f;
-	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
-
-	// Camera matrix
-	viewStack.LoadIdentity();
-	viewStack.LookAt(
-		camera.position.x, camera.position.y, camera.position.z,
-		camera.target.x, camera.target.y, camera.target.z,
-		camera.up.x, camera.up.y, camera.up.z
-		);
-	modelStack.LoadIdentity();
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //Mtx44 perspective;
+    //perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
+    ////perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
+    //scene->projectionStack.LoadMatrix(perspective);
+    //
+    //m_worldHeight = 100.f;
+    //m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
+    //
+    //// Camera matrix
+    //scene->viewStack.LoadIdentity();
+    //scene->viewStack.LookAt(
+    //    scene->camera.position.x, scene->camera.position.y, scene->camera.position.z,
+    //    scene->camera.target.x, scene->camera.target.y, scene->camera.target.z,
+    //    scene->camera.up.x, scene->camera.up.y, scene->camera.up.z
+    //	);
+    //scene->modelStack.LoadIdentity();
 
 	//double x, y;
 	//Application::GetCursorPos(&x, &y);
@@ -100,7 +92,7 @@ void mainMenu::Render()
 	//ss << "Y: " << y << "   m_worldHeight " << m_worldHeight << "b_mouseClick " << b_mouseClick;
 	//RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 9);
 
-	SetHUD(true);
+	scene->SetHUD(true);
 	switch (MM_STATE)
 	{
 		case M_MAIN:
@@ -119,88 +111,88 @@ void mainMenu::Render()
 			RenderCreditState();
 			break;
 	}
-	SetHUD(false);
+    scene->SetHUD(false);
 }
 
-void mainMenu::RenderMainMenuState()
+void MainMenu::RenderMainMenuState()
 {
 	// Buttons
 		if (button_highlighted[0])
 		{
-			RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_START_HL), false, 30.f, 10.f, -60, 35);
+            scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_START_HL), false, 30.f, 10.f, -60, 35);
 		}
 		else
 		{
-			RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_START), false, 24.f, 6.f, -60, 35);
+            scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_START), false, 24.f, 6.f, -60, 35);
 		}
 
 		if (button_highlighted[1])
 		{
-			RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS_HL), false, 30.f, 10.f, -60, 25);
+            scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS_HL), false, 30.f, 10.f, -60, 25);
 		}
 		else
 		{
-			RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS), false, 24.f, 6.f, -60, 25);
+            scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS), false, 24.f, 6.f, -60, 25);
 		}
 
 		if (button_highlighted[2])
 		{
-			RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_STORY_HL), false, 30.f, 10.f, -60, 15);
+            scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_STORY_HL), false, 30.f, 10.f, -60, 15);
 		}
 		else
 		{
-			RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_STORY), false, 24.f, 6.f, -60, 15);
+            scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_STORY), false, 24.f, 6.f, -60, 15);
 		}
 
 		if (button_highlighted[3])
 		{
-			RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS_HL), false, 30.f, 10.f, -60, 5);
+            scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS_HL), false, 30.f, 10.f, -60, 5);
 		}
 		else
 		{
-			RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS), false, 24.f, 6.f, -60, 5);
+            scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS), false, 24.f, 6.f, -60, 5);
 		}
 
 		if (button_highlighted[4])
 		{
-			RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CREDITS_HL), false, 30.f, 10.f, -60, -5);
+            scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CREDITS_HL), false, 30.f, 10.f, -60, -5);
 		}
 		else
 		{
-			RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CREDITS), false, 24.f, 6.f, -60, -5);
+            scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CREDITS), false, 24.f, 6.f, -60, -5);
 		} 
 
 		if (button_highlighted[5])
 		{
-			RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_EXIT_HL), false, 30.f, 10.f, -60, -15);
+            scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_EXIT_HL), false, 30.f, 10.f, -60, -15);
 		}
 		else
 		{
-			RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_EXIT), false, 24.f, 6.f, -60, -15);
+            scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_EXIT), false, 24.f, 6.f, -60, -15);
 		}
 }
 
-void mainMenu::RenderInstructionState()
+void MainMenu::RenderInstructionState()
 {
-	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS), false, 48.f, 12.f, 0, 45);
+    scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS), false, 48.f, 12.f, 0, 45);
 	RenderBackButton();
 }
 
-void mainMenu::RenderStoryState()
+void MainMenu::RenderStoryState()
 {
-	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_STORY), false, 48.f, 12.f, 0, 45);
+    scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_STORY), false, 48.f, 12.f, 0, 45);
 	RenderBackButton();
 }
 
-void mainMenu::RenderCreditState()
+void MainMenu::RenderCreditState()
 {
-	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CREDITS), false, 48.f, 12.f, 0, 45);
+    scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CREDITS), false, 48.f, 12.f, 0, 45);
 	RenderBackButton();
 }
 
-void mainMenu::RenderOptionState()
+void MainMenu::RenderOptionState()
 {
-	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS), false, 48.f, 12.f, 0, 45);
+    scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS), false, 48.f, 12.f, 0, 45);
 	RenderBackButton();
 }
 
@@ -208,7 +200,7 @@ void mainMenu::RenderOptionState()
 /////BUTTON STUFFS///////
 /////////////////////////
 
-void mainMenu::MainMenuButton()
+void MainMenu::MainMenuButton()
 {
 	double x, y;
 	Application::GetCursorPos(&x, &y);
@@ -233,11 +225,11 @@ void mainMenu::MainMenuButton()
 			b_mouseClick = false;
 			//SharedData::GetInstance()->sound->playSoundEffect("Sound//Click.mp3");
 				std::cout << "STARTGAME" << std::endl;
-				Application::GetInstance().sceneManager->ChangeScene(1);
+				SharedData::GetInstance()->sceneManager->SetGameState();
 		}
 	}
 
-	/*if (x > 105 && x < 370 && y > 290 && y < 330)
+	if (x > 105 && x < 370 && y > 290 && y < 330)
 	{
 		button_highlighted[1] = true;
 	}
@@ -254,9 +246,9 @@ void mainMenu::MainMenuButton()
 			}
 			else if (b_mouseClick && !Application::IsMousePressed(0))
 			{
-				SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
-				b_mouseClick = false;
-					MM_STATE = M_INSTRUCTION;
+                SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
+                b_mouseClick = false;
+                MM_STATE = M_INSTRUCTION;
 			}
 		}
 
@@ -277,7 +269,7 @@ void mainMenu::MainMenuButton()
 			}
 			else if (b_mouseClick && !Application::IsMousePressed(0))
 			{
-				SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+				SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
 				b_mouseClick = false;
 					MM_STATE = M_STORY;
 			}
@@ -300,7 +292,7 @@ void mainMenu::MainMenuButton()
 		}
 		else if (b_mouseClick && !Application::IsMousePressed(0))
 		{
-			SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
 			b_mouseClick = false;
 				MM_STATE = M_OPTION;
 		}
@@ -323,7 +315,7 @@ void mainMenu::MainMenuButton()
 		}
 		else if (b_mouseClick && !Application::IsMousePressed(0))
 		{
-			SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
 			b_mouseClick = false;
 				MM_STATE = M_CREDITS;
 		}
@@ -346,31 +338,31 @@ void mainMenu::MainMenuButton()
 		}
 		else if (b_mouseClick && !Application::IsMousePressed(0))
 		{
-			SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
 			b_mouseClick = false;
-				std::cout << "EXIT" << std::endl;
-				Application::GetInstance().Exit();
+            std::cout << "EXIT" << std::endl;
+            SharedData::GetInstance()->sceneManager->SetToExit();
 		}
-	}*/
+	}
 }
 
 /////////////////////////
 //RENDER BUTTON STUFFS///
 /////////////////////////
 
-void mainMenu::RenderBackButton()
+void MainMenu::RenderBackButton()
 {
 	if (button_highlighted[6])
 	{
-		RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACK_HL), false, 30.f, 10.f, 60, -45);
+        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACK_HL), false, 30.f, 10.f, 60, -45);
 	}
 	else
 	{
-		RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACK), false, 24.f, 6.f, 60, -45);
+        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACK), false, 24.f, 6.f, 60, -45);
 	}
 }
 
-void mainMenu::BackButton()
+void MainMenu::BackButton()
 {
 	bool b_StartBtnHL;
 	bool b_BackBtnHL;
@@ -393,14 +385,14 @@ void mainMenu::BackButton()
 		}
 		else if (b_mouseClick && !Application::IsMousePressed(0))
 		{
-			SharedData::GetInstance()->sound->playSoundEffect("Sound//NPC.wav");
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
 			b_mouseClick = false;
 				MM_STATE = M_MAIN;
 		}
 	}
 }
 
-void mainMenu::Exit()
+void MainMenu::Exit()
 {
 
 }

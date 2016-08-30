@@ -51,7 +51,7 @@ playMusic(string Music)
 a string to take in music file to play.
 */
 /****************************************************************************/
-void Sound::playMusic(string Music)
+void Sound::PlayMusic(string Music)
 {
 	Song = musicEngine->play2D(Music.c_str(), true, false, true);
 }
@@ -63,7 +63,7 @@ playSoundEffect(string Music)
 a string to take in music file to play.
 */
 /****************************************************************************/
-void Sound::playSoundEffect(string Music)
+void Sound::PlaySoundEffect(string Music)
 {
 	SoundEffect = musicEngine->play2D(Music.c_str(), false, false, false);
 }
@@ -82,10 +82,15 @@ SoundEffect3D->play3D(Music.c_str(), pos); Gets the music and your position
 SoundEffect3D->setListenerPosition(pos, TargetPos); Listen to TargetPos from your pos
 */
 /****************************************************************************/
-void Sound::playSoundEffect3D(string Music, irrklang::vec3df pos, irrklang::vec3df view, irrklang::vec3df TargetPos)
+void Sound::PlaySoundEffect3D(string Music, irrklang::vec3df pos, irrklang::vec3df view, irrklang::vec3df TargetPos,bool repeat)
 {
 	SoundEffect3D->play3D(Music.c_str(), TargetPos);
 	SoundEffect3D->setListenerPosition(pos, view);
+}
+
+void Sound::StopSoundEffect3D()
+{
+	SoundEffect3D->stopAllSounds();
 }
 
 /****************************************************************************/
@@ -96,7 +101,7 @@ playSoundEffect(string Music)
 a string to take in music file to stop.
 */
 /****************************************************************************/
-void Sound::stopMusic(string Music)
+void Sound::StopMusic(string Music)
 {
 	Song->stop();
 }

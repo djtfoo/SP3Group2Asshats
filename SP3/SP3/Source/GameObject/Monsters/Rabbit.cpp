@@ -50,7 +50,16 @@ void Monster_Rabbit::Update(double dt)
 void Monster_Rabbit::TakeDamage(const int damage)
 {
     changeHealthStat(m_healthStat - damage);
+	changeCaptureRateStat(m_captureRateStat + 0.4f * damage);
 
     FearLevel = 5.f;
     changeFearStat(m_fearStat + FearLevel);
+}
+
+void Monster_Rabbit::PlaySoundEffect()
+{
+	SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//Rabbit.wav",
+		irrklang::vec3df(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+		irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+		irrklang::vec3df(m_position.x, m_position.y, m_position.z));
 }

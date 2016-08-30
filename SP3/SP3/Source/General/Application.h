@@ -3,8 +3,6 @@
 
 #include "timer.h"
 #include "../Scene/Scene.h"
-#include "SceneManager.h"
-#include "InputManager.h"
 
 class Application
 {
@@ -39,9 +37,6 @@ public:
 
     static double mouseWheelX;
     static double mouseWheelY;
-
-    // Game Scenes
-    SceneManager *sceneManager;
 
 private:
 	Application();

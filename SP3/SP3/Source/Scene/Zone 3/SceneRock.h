@@ -38,7 +38,6 @@ public:
     World rockWorld;
 
     AABB HITBOX;
-    double counter;
     GameObject monster, rock, net, bait;
 };
 

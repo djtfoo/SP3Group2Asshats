@@ -39,6 +39,14 @@ public:
 	static vector<ItemProjectile*> NetProjectileList;
 	static vector<ItemProjectile*> BaitProjectileList;
 
+	static double d_rockCounter;
+	static double d_netCounter;
+	static double d_baitCounter;
+
+	static double d_rockCooldown;
+	static double d_netCooldown;
+	static double d_baitCooldown;
+
 	Vector3 position;
 	bool deleteBullet;
 private:

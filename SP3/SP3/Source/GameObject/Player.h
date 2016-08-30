@@ -92,6 +92,7 @@ public:
     bool m_bHiding;
 
     void Move(const double dt);
+    void UpdateNoiseFactor();
 
     float GetNoiseFactor();
     void SetToHiding();

@@ -52,7 +52,16 @@ void Monster_Magma::Update(double dt)
 void Monster_Magma::TakeDamage(const int damage)
 {
 	changeHealthStat(m_healthStat - damage);
+	changeCaptureRateStat(m_captureRateStat + 0.1f * damage);
 
 	AggressionLevel = 5.f;
 	changeAggressionStat(m_aggressionStat + AggressionLevel);
+}
+
+void Monster_Magma::PlaySoundEffect()
+{
+	SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//Bird2.wav",
+		irrklang::vec3df(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+		irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+		irrklang::vec3df(m_position.x, m_position.y, m_position.z));
 }

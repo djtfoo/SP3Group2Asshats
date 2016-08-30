@@ -14,6 +14,15 @@ vector<ItemProjectile*> ItemProjectile::ItemProjectileList;
 vector<ItemProjectile*> ItemProjectile::RockProjectileList;
 vector<ItemProjectile*> ItemProjectile::NetProjectileList;
 vector<ItemProjectile*> ItemProjectile::BaitProjectileList;
+
+double ItemProjectile::d_rockCounter = 0.1;
+double ItemProjectile::d_netCounter = 3.0;
+double ItemProjectile::d_baitCounter = 0.1;
+
+double ItemProjectile::d_rockCooldown = 0.1;
+double ItemProjectile::d_netCooldown = 3.0;
+double ItemProjectile::d_baitCooldown = 0.1;
+
 /****************************************************************************/
 /*!
 \brief 
@@ -94,7 +103,7 @@ void ItemProjectile::Update(double dt)
 /****************************************************************************/
 void ItemProjectile::UpdateProjectile(double dt)
 {
-	for (vector<ItemProjectile*>::iterator it = ItemProjectileList.begin(); it != ItemProjectileList.end();){
+	for (vector<ItemProjectile*>::iterator it = ItemProjectileList.begin(); it != ItemProjectileList.end();) {
 		if ((*it)->deleteBullet == true){
 			delete *it;
 			it = ItemProjectile::ItemProjectileList.erase(it);

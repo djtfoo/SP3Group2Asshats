@@ -63,6 +63,7 @@ void destroyGO(World *world, GameObject GO)
 		world->bait[GO].foundRadius = 0;
 		world->bait[GO].timeEatting = 0;
         world->bait[GO].finishedBait = false;
+        world->bait[GO].b_PlayBaitSoundOnes = false;
     }
 
     if (world->monster[GO])

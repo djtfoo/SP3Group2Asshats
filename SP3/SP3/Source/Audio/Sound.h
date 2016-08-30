@@ -31,11 +31,12 @@ public:
 	Sound();
 	~Sound();
 	void Init();
-	void playMusic(string Music);
-	void stopMusic(string Music);
-	void playSoundEffect(string Music);
+	void PlayMusic(string Music);
+	void StopMusic(string Music);
+	void PlaySoundEffect(string Music);
 	//void playSoundEffect3D(string Music, irrklang::vec3df pos, irrklang::vec3df TargetPos);
-	void playSoundEffect3D(string Music, irrklang::vec3df pos, irrklang::vec3df view, irrklang::vec3df TargetPos);
+	void PlaySoundEffect3D(string Music, irrklang::vec3df pos, irrklang::vec3df view, irrklang::vec3df TargetPos,bool repeat = 0);
+	void StopSoundEffect3D();
 private: 
 	irrklang::ISoundEngine* musicEngine;
 	irrklang::ISoundEngine* SoundEffect3D;

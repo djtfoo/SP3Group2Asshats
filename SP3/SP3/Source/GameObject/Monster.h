@@ -53,6 +53,8 @@ public:
 	void SetRampageState();
     void AttackPlayer();
 
+	virtual void PlaySoundEffect() = 0;
+
 protected:
     Monster() {}
     Monster(std::string name, const std::vector<int>& stats);

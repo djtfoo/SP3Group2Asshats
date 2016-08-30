@@ -22,12 +22,12 @@ public:
 
 	virtual void Init();
 	virtual void Update(double dt);
-	virtual void Render();
-	virtual void RenderGrassScene();
-	virtual void RenderHUD();
-	virtual void Exit();
-    void RenderPressEText();
-	bool ViewCheckPosition(Vector3 pos, float degree);
+    virtual void Render();
+    virtual void Exit();
+	void RenderGrassScene();
+
+	//virtual void RenderHUD();
+	//bool ViewCheckPosition(Vector3 pos, float degree);
 	void UpdateParticle(double dt);
 	ParticleObject* GetParticle(void);
 	void RenderParticle(ParticleObject* particle);
@@ -41,19 +41,6 @@ public:
     //For placing traps
     bool b_placing = false;
 
-	//Item Switch
-	bool b_Rocks;
-	bool b_Nets;
-	bool b_Baits;
-
-	float f_RotateRock;
-	float f_RotateNet;
-	float f_RotateBait;
-
-	float f_HighlightPos;
-	
-	bool b_PlayBaitSoundOnes;	// Sound for bait
-
     std::vector<Vector3> placedTraps;
 
 	//AABB HITBOX;
@@ -61,7 +48,6 @@ public:
     World grass;
 
     AABB HITBOX;
-    double counter;
     GameObject monster, rock, net, bait,text_C,text_M;
 };
 
