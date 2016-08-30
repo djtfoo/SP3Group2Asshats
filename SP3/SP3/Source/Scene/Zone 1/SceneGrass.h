@@ -26,6 +26,7 @@ public:
 	virtual void RenderGrassScene();
 	virtual void RenderHUD();
 	virtual void Exit();
+    void RenderPressEText();
 	bool ViewCheckPosition(Vector3 pos, float degree);
 	void UpdateParticle(double dt);
 	ParticleObject* GetParticle(void);

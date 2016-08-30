@@ -227,9 +227,6 @@
     <ClCompile Include="Source\Scene\Scene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene\Zone 1\SceneSP3.cpp">
-      <Filter>Source Files\Scene\Zone 1</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Graphics\ParticleManager\Particle.cpp">
       <Filter>Source Files\Graphics\ParticleManager</Filter>
     </ClCompile>
@@ -381,9 +378,6 @@
     </ClInclude>
     <ClInclude Include="Source\General\SceneManager.h">
       <Filter>Header Files\General</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene\Zone 1\SceneSP3.h">
-      <Filter>Header Files\Scene\Zone 1</Filter>
     </ClInclude>
     <ClInclude Include="Source\General\SharedData.h">
       <Filter>Header Files\General</Filter>

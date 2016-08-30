@@ -11,8 +11,6 @@
 #include <stdlib.h>
 
 #include "SharedData.h"
-#include "../Scene/Zone 1/SceneSP3.h"
-#include "../Scene/Zone 1/SceneGrass.h"
 
 GLFWwindow* m_window;
 const unsigned char FPS = 60; // FPS of this game

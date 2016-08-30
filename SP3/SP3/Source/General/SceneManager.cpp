@@ -10,7 +10,6 @@ A Class that handles the different scenes
 #include "Application.h"
 //#include "SceneManager.h"
 //#include "../Scene/MainMenu/MenuScene.h"
-#include "../Scene/Zone 1/SceneSP3.h"
 
 #include "../Scene/Zone 1/SceneGrass.h"
 #include "../Scene/Zone 2/SceneSwamp.h"

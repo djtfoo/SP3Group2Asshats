@@ -30,6 +30,7 @@ public:
     float GetCaptureRateStat();
     float GetAggressionStat();
     float GetFearStat();
+    float GetSpeedStat();
     bool CheckCapture();
 
     Vector3 m_position;
@@ -66,6 +67,8 @@ protected:
     float m_captureRateStat;
     float m_aggressionStat;
     float m_fearStat;
+
+    float m_speedStat;
 
 	float m_originalAggression;
 	float m_originalFear;

@@ -87,21 +87,21 @@ void SceneGrass::Init()
                     grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
                     grass.monster[go] = MonsterFactory::CreateMonster("Rabbit");
                     grass.hitbox[go].m_scale.Set(3.f, 4.f, 3.5f);
-                    grass.appearance[go].scale.Set(1, 1, 1);
+                    grass.appearance[go].scale.Set(1.25f, 1.25f, 1.25f);
                     break;
                 
                 case '2':
                     grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_BIRD);
                     grass.monster[go] = MonsterFactory::CreateMonster("Bird");
                     grass.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
-                    grass.appearance[go].scale.Set(1, 1, 1);
+                    grass.appearance[go].scale.Set(1.25f, 1.25f, 1.25f);
                     break;
                 
                 case '3':
                     grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_FAIRY);
                     grass.monster[go] = MonsterFactory::CreateMonster("Fairy");
                     grass.hitbox[go].m_scale.Set(5.f, 5.f, 5.f);
-                    grass.appearance[go].scale.Set(3, 3, 3);
+                    grass.appearance[go].scale.Set(4, 4, 4);
                     break;
                 }
                 grass.monster[go]->m_position = grass.position[go];
@@ -118,7 +118,7 @@ void SceneGrass::Init()
                 Vector3 RNGdestination(randCol * Scene::tileSize + Scene::tileSize * 0.5f, 0, randRow * Scene::tileSize + Scene::tileSize * 0.5f);
 
                 grass.monster[go]->m_destination = RNGdestination;
-                grass.velocity[go] = (RNGdestination - grass.position[go]).Normalized() * 2.f;
+                grass.velocity[go] = (RNGdestination - grass.position[go]).Normalized() * grass.monster[go]->GetSpeedStat();
                 grass.monster[go]->m_velocity = grass.velocity[go];
 
             }
@@ -157,9 +157,14 @@ void SceneGrass::Init()
 	b_Nets = false;
 	b_Baits = false;
 
-	f_RotateRock = 0;
-	f_RotateNet = 0;
-	f_RotateBait = 0;
+	f_RotateRock = 0.f;
+	f_RotateNet = 0.f;
+	f_RotateBait = 0.f;
+
+    f_HighlightPos = -34.7f;
+
+    // disable fog
+    glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), false);
 }
 
 void SceneGrass::Update(double dt)
@@ -269,6 +274,18 @@ void SceneGrass::Update(double dt)
 								irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
 								irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
 								irrklang::vec3df(grass.position[ai].x, grass.position[ai].y, grass.position[ai].z));
+
+                            if (grass.monster[ai]->GetHealthStat() == 0)
+                            {
+                                GameObject meat = createGO(&grass);
+                                grass.mask[meat] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_MEAT;
+                                grass.position[meat] = grass.monster[ai]->m_position;
+                                grass.appearance[meat].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT);
+                                grass.appearance[meat].scale.Set(1, 1, 1);
+                                grass.appearance[meat].angle = 0.f;
+
+                                destroyGO(&grass, ai);
+                            }
                         }
                         break;
 					}
@@ -297,7 +314,8 @@ void SceneGrass::Update(double dt)
 					grass.capture[net].capturedMonster = false;
 					grass.capture[net].timeBeforeCapture = 3;
 					grass.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
-					grass.appearance[net].scale.Set(2, 2, 2);
+					//grass.appearance[net].scale.Set(2, 2, 2);
+                    grass.appearance[net].scale = grass.appearance[ai].scale;
                     grass.appearance[net].angle = 0.f;
 
 					if (grass.capture[net].capturingMonster == true)
@@ -344,7 +362,7 @@ void SceneGrass::Update(double dt)
 					if (grass.capture[net].capturedMonster == true)
 					{
 						std::cout << "HAHAHAHAHHA CAPTURED!" << std::endl;
-						grass.velocity[ai] = 0;
+						grass.velocity[ai].SetZero();
 						grass.monster[ai]->m_velocity = grass.velocity[ai];
 						grass.monster[ai]->GetCaptured();
 						grass.position[net] = grass.position[ai];
@@ -490,9 +508,11 @@ void SceneGrass::Update(double dt)
 				}
 				else
 				{
-					grass.velocity[grass.trap[trap].caughtMonster] = grass.trap[trap].caughtMonsterVel;
-					grass.monster[grass.trap[trap].caughtMonster]->m_velocity = grass.trap[trap].caughtMonsterVel;
-					grass.monster[grass.trap[trap].caughtMonster]->SetIdleState();
+                    if (grass.monster[grass.trap[trap].caughtMonster]->GetStrategyState() != AI_Strategy::STATE_CAPTURED) {
+                        grass.velocity[grass.trap[trap].caughtMonster] = grass.trap[trap].caughtMonsterVel;
+                        grass.monster[grass.trap[trap].caughtMonster]->m_velocity = grass.trap[trap].caughtMonsterVel;
+                        grass.monster[grass.trap[trap].caughtMonster]->SetIdleState();
+                    }
 					destroyGO(&grass, trap);
 				}
 			}
@@ -600,7 +620,7 @@ void SceneGrass::Update(double dt)
 	{
 		//Net projectile
 		f_RotateNet += dt * 50;
-		if (counter > 0.05)
+		if (counter > 3.0)
 		{
 			if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_NET].Use())
 			{
@@ -712,17 +732,16 @@ void SceneGrass::Update(double dt)
 			}
 
 			// check for interacting with money tree
-			if ((grass.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+			else if ((grass.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
 			{
 				if ((camera.position - grass.position[GO]).LengthSquared() < 150)
 				{
-					if (ViewCheckPosition(grass.position[GO], 180.f) == true)
+					if (ViewCheckPosition(grass.position[GO], 45.f) == true)
 					{
 						std::cout << "MoneyTree Found" << std::endl;
 						grass.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_COIN;
-						grass.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COINS);
+						grass.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN);
 						grass.appearance[GO].scale.Set(5, 5, 5);
-
 
 						break;
 					}
@@ -730,11 +749,11 @@ void SceneGrass::Update(double dt)
 			}
 
 			// check for interacting with coin
-			if ((grass.mask[GO] & COMPONENT_COIN) == COMPONENT_COIN)
+			else if ((grass.mask[GO] & COMPONENT_COIN) == COMPONENT_COIN)
 			{
 				if ((camera.position - grass.position[GO]).LengthSquared() < 150)
 				{
-					if (ViewCheckPosition(grass.position[GO], 180.f) == true)
+					if (ViewCheckPosition(grass.position[GO], 45.f) == true)
 					{
 						std::cout << "coin picked up" << std::endl;
 						SharedData::GetInstance()->sound->playSoundEffect3D("Sound//ItemFound.mp3",
@@ -747,12 +766,27 @@ void SceneGrass::Update(double dt)
 					}
 				}
 			}
+
+            // check for interacting with meat
+            else if ((grass.mask[GO] & COMPONENT_MEAT) == COMPONENT_MEAT)
+            {
+                if ((camera.position - grass.position[GO]).LengthSquared() < 150)
+                {
+                    if (ViewCheckPosition(grass.position[GO], 45.f) == true)
+                    {
+                        SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].Add(1);
+                        std::cout << "meat picked up" << std::endl;
+                        SharedData::GetInstance()->sound->playSoundEffect3D("Sound//ItemFound.mp3",
+                            irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                            irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                            irrklang::vec3df(grass.position[GO].x, grass.position[GO].y, grass.position[GO].z));
+                        destroyGO(&grass, GO);
+
+                        break;
+                    }
+                }
+            }
 		}
-
-		//for (GameObject MoneyTree = 0; MoneyTree < grass.GAMEOBJECT_COUNT; ++MoneyTree)
-		//{
-
-		//}
 
 	}
 
@@ -798,7 +832,7 @@ void SceneGrass::Render()
 		glUniform3fv(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_LIGHT0_POSITION), 1, &lightDirection_cameraspace.x);
 	}
 
-	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_AXES), false);
+	//RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_AXES), false);
 
 	//for (vector<ItemProjectile*>::iterator it = ItemProjectile::ItemProjectileList.begin(); it != ItemProjectile::ItemProjectileList.end(); ++it){
 	//	modelStack.PushMatrix();
@@ -887,30 +921,7 @@ void SceneGrass::Render()
     ss << "PLAYER HEALTH:" << SharedData::GetInstance()->player->GetHealth();
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 9);
 
-	for (GameObject GO = 0; GO < grass.GAMEOBJECT_COUNT; ++GO)
-	{
-		if ((grass.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
-		{
-			if ((camera.position - grass.position[GO]).LengthSquared() < 150)
-			{
-				if (ViewCheckPosition(grass.position[GO], 45.f) == true)
-				{
-					RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO CUT DOWN", Color(1, 1, 0), 3, 30, 30);
-
-				}
-			}
-		}
-		if ((grass.mask[GO] & COMPONENT_COIN) == COMPONENT_COIN)
-		{
-			if ((camera.position - grass.position[GO]).LengthSquared() < 150)
-			{
-				if (ViewCheckPosition(grass.position[GO], 45.f) == true)
-				{
-					RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
-				}
-			}
-		}
-	}
+    RenderPressEText();
 
     //for (GameObject tallGrass = 0; tallGrass < grass.GAMEOBJECT_COUNT; ++tallGrass)
     //{
@@ -940,14 +951,14 @@ void SceneGrass::RenderGrassScene()
 	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_TERRAIN), true);
 	modelStack.PopMatrix();
 
-	RenderGameObjects(&grass);
-
 	//Skyplane
 	modelStack.PushMatrix();
 	modelStack.Translate(500, 2800, -500);
 	//modelStack.Rotate(0, 0,0,0);
 	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_SKYPLANE), false);
 	modelStack.PopMatrix();
+
+    RenderGameObjects(&grass);
 
 	for (std::vector<ParticleObject*>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
@@ -961,24 +972,34 @@ void SceneGrass::RenderGrassScene()
 
 void SceneGrass::RenderHUD()
 {
-	std::stringstream ss, ss2, ss3, ss4;
+	std::stringstream ss, ss2, ss3, ss4, ss5;
 	ss << "Rocks: " << SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetCount();
 	ss2 << "Nets: " << SharedData::GetInstance()->player->inventory[Item::TYPE_NET].GetCount();
 	ss3 << "Baits: " << SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].GetCount();
 	ss4 << "Traps: " << SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].GetCount();
+    ss5 << "Meat: " << SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].GetCount();
 
 	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), false, 11.f, 12.f, f_HighlightPos, -48);
 	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 80.f, 12.f, 0, -48);
 
+    // background
+    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 80.f, 12.f, 0, -48);
 
+    // 1: Rock
 	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2, 22.5f, 6.5f, f_RotateRock, f_RotateRock, 0, false);
 	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 1, 20.5f, 3.5f);
-	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 2, 27.5f, 5.5f, 0, f_RotateNet, 0, false);
+    // 2: Net
+	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 1, 27.5f, 5.5f, 0, f_RotateNet, 0, false);
 	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(1, 1, 0), 1, 25.5f, 3.5f);
-	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2, 32.5f, 6.5f, f_RotateBait, f_RotateBait, 0, false);
+	// 3: Bait
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2, 32.5f, 6.5f, f_RotateBait, f_RotateBait, 0, false);
 	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 1, 30.5f, 3.5f);
-	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2, 37.5f, 6.5f, 0, 0, 0, false);
+	// 4: Trap
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2, 37.5f, 6.5f, 0, 0, 0, false);
 	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss4.str(), Color(1, 1, 0), 1, 35.5f, 3.5f);
+    // 5: Meat
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT), 2, 42.5f, 6.2f, 45.f, 45.f, 0, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss5.str(), Color(1, 1, 0), 1, 40.5f, 3.5f);
 	//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), false, 30.f, 10, -30, false);
 	//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), true, 10.0f, 40, -48);
 }
@@ -1152,4 +1173,55 @@ void SceneGrass::RenderParticle(ParticleObject* particle)
 	default:
 		break;
 	}
+}
+
+void SceneGrass::RenderPressEText()
+{
+    for (GameObject GO = 0; GO < grass.GAMEOBJECT_COUNT; ++GO)
+    {
+        if ((grass.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+        {
+            if ((camera.position - grass.position[GO]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(grass.position[GO], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO CUT DOWN", Color(1, 1, 0), 3, 30, 30);
+
+                }
+            }
+        }
+        else if ((grass.mask[GO] & COMPONENT_COIN) == COMPONENT_COIN)
+        {
+            if ((camera.position - grass.position[GO]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(grass.position[GO], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
+                }
+            }
+        }
+        else if ((grass.mask[GO] & COMPONENT_CAPTURE) == COMPONENT_CAPTURE)   // net
+        {
+            GameObject ai = grass.capture[GO].caughtMonster;
+            if ((camera.position - grass.position[ai]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(grass.position[ai], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
+                }
+            }
+        }
+        else if ((grass.mask[GO] & COMPONENT_MEAT) == COMPONENT_MEAT)   // net
+        {
+            if ((camera.position - grass.position[GO]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(grass.position[GO], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
+                }
+            }
+        }
+
+    }
+
 }

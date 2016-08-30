@@ -94,7 +94,7 @@ void SceneLava::Init()
 				{
 				case '1':
 					lava.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_MAGMA);
-                    lava.appearance[go].scale.Set(1.8f, 1.8f, 1.8f);
+                    lava.appearance[go].scale.Set(2.5f, 2.5f, 2.5f);
 					lava.monster[go] = MonsterFactory::CreateMonster("Magma");
 					lava.hitbox[go].m_scale.Set(5.f, 8.5f, 5.f);
 					break;
@@ -108,7 +108,7 @@ void SceneLava::Init()
 
 				case '3':
 					lava.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_MAGMA_BERZEKER);
-					lava.appearance[go].scale.Set(3.5f, 3.5f, 3.5f);
+					lava.appearance[go].scale.Set(5.f, 5.f, 5.f);
 					lava.monster[go] = MonsterFactory::CreateMonster("MagmaBerzeker");
 					lava.hitbox[go].m_scale.Set(9.f, 25.5f, 9.f);
 					break;
@@ -126,7 +126,7 @@ void SceneLava::Init()
 				Vector3 RNGdestination(randCol * Scene::tileSize + Scene::tileSize * 0.5f, 0, randRow * Scene::tileSize + Scene::tileSize * 0.5f);
 
 				lava.monster[go]->m_destination = RNGdestination;
-				lava.velocity[go] = (RNGdestination - lava.position[go]).Normalized() * 2.f;
+                lava.velocity[go] = (RNGdestination - lava.position[go]).Normalized() * lava.monster[go]->GetSpeedStat();
 				lava.monster[go]->m_velocity = lava.velocity[go];
 			}
 		}
@@ -160,11 +160,13 @@ void SceneLava::Init()
 	b_Nets = false;
 	b_Baits = false;
 	b_Collected = false;
-	f_RampageTimer = 0;
+    f_RampageTimer = 0.f;
 
-	f_RotateRock = 0;
-	f_RotateNet = 0;
-	f_RotateBait = 0;
+	f_RotateRock = 0.f;
+	f_RotateNet = 0.f;
+	f_RotateBait = 0.f;
+
+    f_HighlightPos = -34.7f;
 }
 
 void SceneLava::Update(double dt)
@@ -267,6 +269,23 @@ void SceneLava::Update(double dt)
 						if (lava.monster[ai]->GetStrategyState() != AI_Strategy::STATE_CAPTURED) {
 							lava.monster[ai]->TakeDamage(SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetEffectiveness());
 							//std::cout << "HEALTH: " << lava.monster[ai]->GetHealthStat() << std::endl;
+                            //SharedData::GetInstance()->sound->SoundEffect3D->setSoundVolume(1.0f);
+                            SharedData::GetInstance()->sound->playSoundEffect3D("Sound//Hit.mp3",
+                                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                                irrklang::vec3df(lava .position[ai].x, lava.position[ai].y, lava.position[ai].z));
+
+                            if (lava.monster[ai]->GetHealthStat() == 0)
+                            {
+                                GameObject meat = createGO(&lava);
+                                lava.mask[meat] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_MEAT;
+                                lava.position[meat] = lava.monster[ai]->m_position;
+                                lava.appearance[meat].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT);
+                                lava.appearance[meat].scale.Set(1, 1, 1);
+                                lava.appearance[meat].angle = 0.f;
+
+                                destroyGO(&lava, ai);
+                            }
 						}
 						break;
 					}
@@ -295,7 +314,8 @@ void SceneLava::Update(double dt)
 					lava.capture[net].capturedMonster = false;
 					lava.capture[net].timeBeforeCapture = 3;
 					lava.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
-					lava.appearance[net].scale.Set(2, 2, 2);
+					//lava.appearance[net].scale.Set(2, 2, 2);
+                    lava.appearance[net].scale = lava.appearance[ai].scale;
 
 					if (lava.capture[net].capturingMonster == true)
 					{
@@ -408,7 +428,10 @@ void SceneLava::Update(double dt)
 					if (lava.bait[bait].eattingBait == true && (lava.position[ai] - lava.position[bait]).LengthSquared() < lava.bait[bait].foundRadius)
 					{
 						lava.bait[bait].timeEatting -= dt;
-						//std::cout << lava.bait[bait].timeEatting << std::endl;
+                        if (lava.bait[bait].timeEatting > 0.1f) {
+                            float scale = lava.bait[bait].timeEatting / 3.f;
+                            lava.appearance[bait].scale.Set(scale, scale, scale);
+                        }
 					}
 
 					if (lava.bait[bait].timeEatting <= 0)
@@ -503,104 +526,124 @@ void SceneLava::Update(double dt)
 
 	}
 
-	//===============================================================================================================================//
-	//                                                            Key Inputs                                                         //
-	//===============================================================================================================================//
+    //===============================================================================================================================//
+    //                                                            Key Inputs                                                         //
+    //===============================================================================================================================//
 
-	//Place trap
-	if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].Use())
-	{
-		GameObject trap = createGO(&lava);
+    //Place trap
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].Use())
+    {
+        GameObject trap = createGO(&lava);
 
-		lava.mask[trap] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_TRAP;
+        lava.mask[trap] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_TRAP;
 
-		lava.position[trap].Set(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
-		lava.appearance[trap].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP);
-		lava.appearance[trap].scale.Set(3, 3, 3);
+        lava.position[trap].Set(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
+        lava.appearance[trap].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP);
+        lava.appearance[trap].scale.Set(3, 3, 3);
+        lava.appearance[trap].angle = 0.f;
 
-		lava.trap[trap].triggerDuration = 3.0f;
-		lava.trap[trap].triggerTimer = 0.f;
-		lava.trap[trap].radius = 2.5f;
-		lava.trap[trap].activated = false;
-		lava.trap[trap].caughtMonster = 0;
-		lava.trap[trap].caughtMonsterVel.SetZero();
+        lava.trap[trap].triggerDuration = 3.0f;
+        lava.trap[trap].triggerTimer = 0.f;
+        lava.trap[trap].radius = 2.5f;
+        lava.trap[trap].activated = false;
+        lava.trap[trap].caughtMonster = 0;
+        lava.trap[trap].caughtMonsterVel.SetZero();
 
-		counter = 0;
-	}
-	//Rocks
-	if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].isPressed)
-	{
-		b_Rocks = true;
-		b_Baits = false;
-		b_Nets = false;
-	}
-	//Nets
-	if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_2].isPressed)
-	{
-		b_Nets = true;
-		b_Rocks = false;
-		b_Baits = false;
-	}
-	//Baits
-	if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_3].isPressed)
-	{
-		b_Baits = true;
-		b_Rocks = false;
-		b_Nets = false;
-	}
+        SharedData::GetInstance()->sound->playSoundEffect3D("Sound//SetTrap.wav",
+            irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+            irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+            irrklang::vec3df(lava.position[trap].x, lava.position[trap].y, lava.position[trap].z));
 
-	if (b_Rocks)
-	{
-		//Rock projectile
-		f_RotateRock += dt * 50;
-		if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Use())
-		{
-			ItemProjectile::RockProjectileList.push_back(new ItemProjectile(
-				Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
-				Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-				500,
-				50,
-				10
-				));
+        counter = 0;
+    }
+    //Rocks
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].isPressed)
+    {
+        b_Rocks = true;
+        b_Baits = false;
+        b_Nets = false;
+        f_HighlightPos = -34.7f;
+    }
+    //Nets
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_2].isPressed)
+    {
+        b_Nets = true;
+        b_Rocks = false;
+        b_Baits = false;
+        f_HighlightPos = -24.8f;
+    }
+    //Baits
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_3].isPressed)
+    {
+        b_Baits = true;
+        b_Rocks = false;
+        b_Nets = false;
 
-		}
-	}
-	if (b_Nets)
-	{
-		//Net projectile
-		f_RotateNet += dt * 50;
-		if (counter > 0.05)
-		{
-			if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_NET].Use())
-			{
-				ItemProjectile::NetProjectileList.push_back(new ItemProjectile(
-					Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
-					Vector3(SharedData::GetInstance()->player->GetViewVector().x, 0.5, SharedData::GetInstance()->player->GetViewVector().z),
-					500,
-					15,
-					10
-					));
+        f_HighlightPos = -14.9f;
+    }
 
-				counter = 0;
-			}
-		}
-	}
-	if (b_Baits)
-	{
-		//Bait Projectile
-		f_RotateBait += dt * 50;
-		if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].Use())
-		{
-			ItemProjectile::BaitProjectileList.push_back(new ItemProjectile(
-				Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
-				Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-				500,
-				50,
-				10
-				));
+    if (b_Rocks)
+    {
+        //Rock projectile
+        f_RotateRock += dt * 50;
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Use())
+        {
+            ItemProjectile::RockProjectileList.push_back(new ItemProjectile(
+                Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+                Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                500,
+                50,
+                10
+                ));
+            SharedData::GetInstance()->sound->playSoundEffect3D("Sound//Throwing.wav",
+                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
 
-		}
-	}
+        }
+    }
+    if (b_Nets)
+    {
+        //Net projectile
+        f_RotateNet += dt * 50;
+        if (counter > 3.0)
+        {
+            if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_NET].Use())
+            {
+                ItemProjectile::NetProjectileList.push_back(new ItemProjectile(
+                    Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+                    Vector3(SharedData::GetInstance()->player->GetViewVector().x, 0.5, SharedData::GetInstance()->player->GetViewVector().z),
+                    500,
+                    15,
+                    10
+                    ));
+                SharedData::GetInstance()->sound->playSoundEffect3D("Sound//ThrowingNet.wav",
+                    irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                    irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                    irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
+                counter = 0;
+            }
+        }
+    }
+    if (b_Baits)
+    {
+        //Bait Projectile
+        f_RotateBait += dt * 50;
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].Use())
+        {
+            ItemProjectile::BaitProjectileList.push_back(new ItemProjectile(
+                Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+                Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                500,
+                50,
+                10
+                ));
+            SharedData::GetInstance()->sound->playSoundEffect3D("Sound//Throwing.wav",
+                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z));
+        }
+    }
 	// DEBUG: Spawn monster at origin
 	//if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_E].isPressed)
 	//{
@@ -682,7 +725,7 @@ void SceneLava::Update(double dt)
 						if (lava.appearance[GO].scale.y <= 0)
 						{
 							lava.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_COIN;
-							lava.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COINS);
+							lava.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN);
 							lava.appearance[GO].scale.Set(5, 5, 5);
 						}
 						break;
@@ -721,12 +764,28 @@ void SceneLava::Update(double dt)
 					}
 				}
 			}
+
+            // check for interacting with meat
+            else if ((lava.mask[GO] & COMPONENT_MEAT) == COMPONENT_MEAT)
+            {
+                if ((camera.position - lava.position[GO]).LengthSquared() < 150)
+                {
+                    if (ViewCheckPosition(lava.position[GO], 45.f) == true)
+                    {
+                        SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].Add(1);
+                        std::cout << "meat picked up" << std::endl;
+                        SharedData::GetInstance()->sound->playSoundEffect3D("Sound//ItemFound.mp3",
+                            irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                            irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                            irrklang::vec3df(lava.position[GO].x, lava.position[GO].y, lava.position[GO].z));
+                        destroyGO(&lava, GO);
+
+                        break;
+                    }
+                }
+            }
+
 		}
-
-		//for (GameObject MoneyTree = 0; MoneyTree < grass.GAMEOBJECT_COUNT; ++MoneyTree)
-		//{
-
-		//}
 
 	}
 
@@ -808,7 +867,7 @@ void SceneLava::Render()
 		glUniform3fv(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_LIGHT0_POSITION), 1, &lightDirection_cameraspace.x);
 	}
 
-	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_AXES), false);
+	//RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_AXES), false);
 
 	//for (vector<ItemProjectile*>::iterator it = ItemProjectile::ItemProjectileList.begin(); it != ItemProjectile::ItemProjectileList.end(); ++it){
 	//	modelStack.PushMatrix();
@@ -821,6 +880,8 @@ void SceneLava::Render()
 	//	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), false);
 	//	modelStack.PopMatrix();
 	//}
+
+    glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), fog.enabled);
 
 	for (vector<ItemProjectile*>::iterator it = ItemProjectile::RockProjectileList.begin(); it != ItemProjectile::RockProjectileList.end(); ++it){
 		modelStack.PushMatrix();
@@ -882,8 +943,7 @@ void SceneLava::Render()
 	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
 	modelStack.PopMatrix();
 
-	if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isPressed)
-		std::cout << "asd" << std::endl;
+    glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), false);
 
 	std::stringstream ss;
 	ss << "RampageTimer: " << f_RampageTimer;
@@ -901,6 +961,7 @@ void SceneLava::Render()
 	ss << "PLAYER HEALTH:" << SharedData::GetInstance()->player->GetHealth();
 	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 9);
 
+    // hitboxes
 	for (GameObject tallGrass = 0; tallGrass < lava.GAMEOBJECT_COUNT; ++tallGrass)
 	{
 		if ((lava.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
@@ -915,31 +976,7 @@ void SceneLava::Render()
 	    }
 	}
 
-	for (GameObject GO = 0; GO < lava.GAMEOBJECT_COUNT; ++GO)
-	{
-		if ((lava.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
-		{
-			if ((camera.position - lava.position[GO]).LengthSquared() < 150)
-			{
-				if (ViewCheckPosition(lava.position[GO], 45.f) == true)
-				{
-					RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO CUT DOWN", Color(1, 1, 0), 3, 30, 30);
-
-				}
-			}
-		}
-		if ((lava.mask[GO] & COMPONENT_COIN) == COMPONENT_COIN)
-		{
-			if ((camera.position - lava.position[GO]).LengthSquared() < 150)
-			{
-				if (ViewCheckPosition(lava.position[GO], 45.f) == true)
-				{
-					RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
-
-				}
-			}
-		}
-	}
+    RenderPressEText();
 
 	SetHUD(true);
 	RenderHUD();
@@ -962,36 +999,61 @@ void SceneLava::RenderLavaScene()
 	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_LAVA), false);
 	modelStack.PopMatrix();
 
-	RenderGameObjects(&lava);
-
 	//Skyplane
 	modelStack.PushMatrix();
 	modelStack.Translate(500, 2800, -500);
 	//modelStack.Rotate(0, 0,0,0);
 	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_LAVA_SKYPLANE), false);
 	modelStack.PopMatrix();
+
+    RenderGameObjects(&lava);
 }
 
 void SceneLava::RenderHUD()
 {
-	std::stringstream ss, ss2, ss3, ss4;
-	ss << "Rocks: " << SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetCount();
-	ss2 << "Nets: " << SharedData::GetInstance()->player->inventory[Item::TYPE_NET].GetCount();
-	ss3 << "Baits: " << SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].GetCount();
-	ss4 << "Traps: " << SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].GetCount();
+    std::stringstream ss, ss2, ss3, ss4, ss5;
+    ss << "Rocks: " << SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetCount();
+    ss2 << "Nets: " << SharedData::GetInstance()->player->inventory[Item::TYPE_NET].GetCount();
+    ss3 << "Baits: " << SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].GetCount();
+    ss4 << "Traps: " << SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].GetCount();
+    ss5 << "Meat: " << SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].GetCount();
 
-	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 80.f, 12.f, 0, -48);
+    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), false, 11.f, 12.f, f_HighlightPos, -48);
+    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 80.f, 12.f, 0, -48);
 
-	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2, 22.5f, 6.5f, f_RotateRock, f_RotateRock, 0, false);
-	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 1, 20.5f, 3.5f);
-	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 2, 27.5f, 5.5f, 0, f_RotateNet, 0, false);
-	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(1, 1, 0), 1, 25.5f, 3.5f);
-	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2, 32.5f, 6.5f, f_RotateBait, f_RotateBait, 0, false);
-	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 1, 30.5f, 3.5f);
-	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2, 37.5f, 6.5f, 0, 0, 0, false);
-	RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss4.str(), Color(1, 1, 0), 1, 35.5f, 3.5f);
-	//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), false, 30.f, 10, -30, false);
-	//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), true, 10.0f, 40, -48);
+    // background
+    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 80.f, 12.f, 0, -48);
+
+    float scale = 2.f;   // default
+    // 1: Rock
+    if (b_Rocks)
+        scale = 2.5f;
+    else
+        scale = 2.f;
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), scale, 22.5f, 6.5f, f_RotateRock, f_RotateRock, 0, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 1, 20.5f, 3.5f);
+    // 2: Net
+    if (b_Nets)
+        scale = 1.25f;
+    else
+        scale = 1.f;
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), scale, 27.5f, 5.5f, 0, f_RotateNet, 0, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(1, 1, 0), 1, 25.5f, 3.5f);
+    // 3: Bait
+    if (b_Baits)
+        scale = 2.5f;
+    else
+        scale = 2.f;
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), scale, 32.5f, 6.5f, f_RotateBait, f_RotateBait, 0, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 1, 30.5f, 3.5f);
+    // 4: Trap
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2, 37.5f, 6.5f, 0, 0, 0, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss4.str(), Color(1, 1, 0), 1, 35.5f, 3.5f);
+    // 5: Meat
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT), 2, 42.5f, 6.2f, 45.f, 45.f, 0, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss5.str(), Color(1, 1, 0), 1, 40.5f, 3.5f);
+    //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), false, 30.f, 10, -30, false);
+    //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), true, 10.0f, 40, -48);
 }
 
 bool SceneLava::ViewCheckPosition(Vector3 pos, float degree)
@@ -1027,5 +1089,56 @@ void SceneLava::Exit()
 		// call destroyGO instead
 		destroyGO(&lava, GO);
 	}
+
+}
+
+void SceneLava::RenderPressEText()
+{
+    for (GameObject GO = 0; GO < lava.GAMEOBJECT_COUNT; ++GO)
+    {
+        if ((lava.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+        {
+            if ((camera.position - lava.position[GO]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(lava.position[GO], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO CUT DOWN", Color(1, 1, 0), 3, 30, 30);
+
+                }
+            }
+        }
+        else if ((lava.mask[GO] & COMPONENT_COIN) == COMPONENT_COIN)
+        {
+            if ((camera.position - lava.position[GO]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(lava.position[GO], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
+                }
+            }
+        }
+        else if ((lava.mask[GO] & COMPONENT_CAPTURE) == COMPONENT_CAPTURE)   // net
+        {
+            GameObject ai = lava.capture[GO].caughtMonster;
+            if ((camera.position - lava.position[ai]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(lava.position[ai], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
+                }
+            }
+        }
+        else if ((lava.mask[GO] & COMPONENT_MEAT) == COMPONENT_MEAT)   // net
+        {
+            if ((camera.position - lava.position[GO]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(lava.position[GO], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
+                }
+            }
+        }
+
+    }
 
 }

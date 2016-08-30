@@ -70,7 +70,7 @@ bool AI_Strategy::CheckDestinationReached()
 void AI_Strategy::setDestination(const Vector3& destination)
 {
     this->monster->m_destination = destination;
-    this->monster->m_velocity = (destination - this->monster->m_position).Normalized();
+    this->monster->m_velocity = (destination - this->monster->m_position).Normalized() * this->monster->GetSpeedStat();
 
     if (currentState == STATE_ATTACK || currentState == STATE_RUN || currentState == STATE_RAMPAGE)
     {

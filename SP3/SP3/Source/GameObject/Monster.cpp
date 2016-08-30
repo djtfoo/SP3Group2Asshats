@@ -18,9 +18,10 @@ Monster::Monster(std::string name, const std::vector<int>& stats) : m_name(name)
     FearLevel = 0.f;
 
     this->m_healthStat = stats[0];
-    this->m_captureRateStat = stats[1];
-    this->m_aggressionStat = stats[2];
-    this->m_fearStat = stats[3];
+    this->m_captureRateStat = (float)(stats[1]);
+    this->m_aggressionStat = (float)(stats[2]);
+    this->m_fearStat = (float)(stats[3]);
+    this->m_speedStat = (float)(stats[4]);
     //this->m_strategy = (AI_Strategy *)(stats[4]);  //aggressive, bossfairy, etc.?
 }
 
@@ -53,6 +54,11 @@ float Monster::GetFearStat()
     return m_fearStat;
 }
 
+float Monster::GetSpeedStat()
+{
+    return m_speedStat;
+}
+
 bool Monster::CheckCapture()
 {
     return false;
@@ -60,6 +66,7 @@ bool Monster::CheckCapture()
 
 void Monster::move()
 {
+    // THIS FUNCTION IS NOT USED.
     m_position += m_velocity;   // * dt
 }
 
@@ -147,12 +154,18 @@ void Monster::updateStats(double dt)
 
 	else if (m_strategy->GetState() == AI_Strategy::STATE_ALERT)
 	{
-		if (AggressionLevel <= Math::EPSILON) {
+		if (AggressionLevel <= Math::EPSILON && m_aggressionStat > m_originalAggression) {
 			AggressionLevel = -5 * dt;
 		}
-		if (FearLevel <= Math::EPSILON) {
+        else if (AggressionLevel <= Math::EPSILON && m_aggressionStat < m_originalAggression) {
+            AggressionLevel = 5 * dt;
+        }
+        if (FearLevel <= Math::EPSILON && m_fearStat > m_originalFear) {
 			FearLevel = -5 * dt;
 		}
+        else if (FearLevel <= Math::EPSILON && m_fearStat < m_originalFear) {
+            FearLevel = 5 * dt;
+        }
 	}
 
 	changeAggressionStat(m_aggressionStat + AggressionLevel);

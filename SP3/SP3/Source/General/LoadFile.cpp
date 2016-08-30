@@ -77,8 +77,9 @@ void LoadMonsterData(std::ifstream& fileStream)
         // first content is name of monster
         std::string tempName = data;
 
+        // remaining content are monster stats: health, capture rate, aggression, fear, speed
         std::vector<int> stats;
-        for (int i = 0; i < 4; ++i)
+        for (int i = 0; i < 5; ++i)
         {
             std::getline(dataStream, data, ',');
             stats.push_back(std::stoi(data));
@@ -102,11 +103,13 @@ void LoadLevelGenerationData(std::ifstream& fileStream)
 
         std::stringstream dataStream(line);
         std::string data;
-        std::getline(dataStream, data, ',');
 
         // first content is name of tile - ignore
+        // second content is zone it's from - ignore
+        std::getline(dataStream, data, ',');
+        std::getline(dataStream, data, ',');
 
-        // second content is tile count
+        // third content is tile count
         std::getline(dataStream, data, ',');
         char tempTileCount = data[0];
 
@@ -134,14 +137,15 @@ void LoadLevelGenerationData(std::ifstream& fileStream)
 GraphicsLoader::GEOMETRY_TYPE AssignMeshType(int num)
 {
     GraphicsLoader::GEOMETRY_TYPE list[GraphicsLoader::NUM_GEOMETRY] = {    // legend size
-        GraphicsLoader::GEO_GRASS1,
-        GraphicsLoader::GEO_GRASS2,
-        GraphicsLoader::GEO_TREE1,
-        GraphicsLoader::GEO_TREE2,
-        GraphicsLoader::GEO_SWAMP_PLANT,
-        GraphicsLoader::GEO_SWAMP_ROOT,
-		GraphicsLoader::GEO_MONEY_TREE,
-		GraphicsLoader::GEO_RED_CRYSTAL,
+        GraphicsLoader::GEO_GRASS1,     //SceneGrass
+        GraphicsLoader::GEO_GRASS2,     //SceneGrass
+        GraphicsLoader::GEO_TREE1,      //SceneGrass
+        GraphicsLoader::GEO_TREE2,      //SceneGrass
+        GraphicsLoader::GEO_SWAMP_PLANT,    //SceneSwamp
+        GraphicsLoader::GEO_SWAMP_DEADTREE, //SceneSwamp
+		GraphicsLoader::GEO_MONEY_TREE,     //SceneGrass
+		GraphicsLoader::GEO_RED_CRYSTAL,    //SceneLava
+        GraphicsLoader::GEO_SWAMP_ROOT,     //SceneSwamp
     };
 
     return list[num];

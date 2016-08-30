@@ -48,7 +48,19 @@ Player::Player()
     for (unsigned i = 0; i < Item::NUM_TYPE; ++i)
     {
         inventory[i] = tempInventory[i];
-        inventory[i].Add(100);
+        switch (inventory[i].GetItemType())
+        {
+        case Item::TYPE_NET:
+        case Item::TYPE_BAIT:
+        case Item::TYPE_TRAP:
+        case Item::TYPE_ROCK:
+            inventory[i].Add(50);
+            break;
+
+        default:
+            inventory[i].Add(0);
+            break;
+        }
     }
 
     m_currency = 1000000;

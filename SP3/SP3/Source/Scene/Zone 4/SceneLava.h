@@ -24,6 +24,7 @@ public:
 	virtual void RenderLavaScene();
 	virtual void RenderHUD();
 	virtual void Exit();
+    void RenderPressEText();
 	bool ViewCheckPosition(Vector3 pos, float degree);
 	//Test stuff
 	ItemProjectile* itemProjectile;
@@ -42,6 +43,8 @@ public:
 	float f_RotateRock;
 	float f_RotateNet;
 	float f_RotateBait;
+
+    float f_HighlightPos;
 
 	// check if collected
 	bool b_Collected;

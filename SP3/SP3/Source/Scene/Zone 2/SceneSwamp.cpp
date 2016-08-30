@@ -83,21 +83,21 @@ void SceneSwamp::Init()
                     swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_SEAMONSTER);
                     swamp.monster[go] = MonsterFactory::CreateMonster("SeaMonster");
                     swamp.hitbox[go].m_scale.Set(1.5f, 2.f, 1.75f);
-                    swamp.appearance[go].scale.Set(1, 1, 1);
+                    swamp.appearance[go].scale.Set(1.5f, 1.5f, 1.5f);
                     break;
 
                 case '2':
                     swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_GRIMEJAM);
                     swamp.monster[go] = MonsterFactory::CreateMonster("Grimejam");
                     swamp.hitbox[go].m_scale.Set(2.f, 2.f, 2.f);
-                    swamp.appearance[go].scale.Set(1, 1, 1);
+                    swamp.appearance[go].scale.Set(2.f, 2.f, 2.f);
                     break;
 
                 case '3':
                     swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_MUKBOSS);
                     swamp.monster[go] = MonsterFactory::CreateMonster("MukBoss");
                     swamp.hitbox[go].m_scale.Set(3.f, 3.f, 3.f);
-                    swamp.appearance[go].scale.Set(3, 3, 3);
+                    swamp.appearance[go].scale.Set(6, 6, 6);
                     break;
                 }
                 swamp.monster[go]->m_position = swamp.position[go];
