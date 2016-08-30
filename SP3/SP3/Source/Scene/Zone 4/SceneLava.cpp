@@ -738,7 +738,7 @@ void SceneLava::Update(double dt)
 								{
 									lava.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_ROCKS;
 									lava.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1);
-									lava.appearance[GO].scale.Set(5, 5, 5);
+									lava.appearance[GO].scale.Set(2, 2, 2);
 								}
 								break;
 							case 2:
@@ -789,7 +789,8 @@ void SceneLava::Update(double dt)
 				}
 			}
 
-			if ((lava.mask[GO] & COMPONENT_ROCKS) == COMPONENT_ROCKS)
+            // check for interacting with coin
+			else if ((lava.mask[GO] & COMPONENT_ROCKS) == COMPONENT_ROCKS)
 			{
 				if ((camera.position - lava.position[GO]).LengthSquared() < 150)
 				{
@@ -1170,6 +1171,16 @@ void SceneLava::RenderPressEText()
             }
         }
         else if ((lava.mask[GO] & COMPONENT_MEAT) == COMPONENT_MEAT)   // net
+        {
+            if ((camera.position - lava.position[GO]).LengthSquared() < 150)
+            {
+                if (ViewCheckPosition(lava.position[GO], 45.f) == true)
+                {
+                    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "PRESS E TO COLLECT", Color(1, 1, 0), 3, 30, 30);
+                }
+            }
+        }
+        else if ((lava.mask[GO] & COMPONENT_ROCKS) == COMPONENT_ROCKS)
         {
             if ((camera.position - lava.position[GO]).LengthSquared() < 150)
             {
