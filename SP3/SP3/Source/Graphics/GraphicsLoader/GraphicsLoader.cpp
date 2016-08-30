@@ -319,6 +319,10 @@ void GraphicsLoader::Init()
     m_meshList[GEO_SHOP_SELECTION] = MeshBuilder::GenerateQuad("Rock Terrain", Color(0, 0, 0), 1.f, 100);
     m_meshList[GEO_SHOP_SELECTION_ALT] = MeshBuilder::GenerateQuad("Rock Terrain", Color(1, 1, 1), 1.f, 100);
 
+	// Particle Loading
+	m_meshList[GEO_HIDDENBONUS_PARTICLE] = MeshBuilder::GenerateQuad("Hidden Bonus", Color(0, 1, 0), 1.f);
+	m_meshList[GEO_HIDDENBONUS_PARTICLE]->textureArray[0] = LoadTGA("Image//Particles/HiddenBonus.tga");
+
     // Fonts
     m_meshList[GEO_TEXT_IMPACT] = MeshBuilder::GenerateText("Font - Impact", 16, 16);
     m_meshList[GEO_TEXT_IMPACT]->textureID = LoadTGA("Image//Fonts/Font_Impact.tga");

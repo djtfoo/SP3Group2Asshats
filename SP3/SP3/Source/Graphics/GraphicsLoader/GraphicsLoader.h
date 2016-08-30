@@ -179,6 +179,9 @@ public:
 		GEO_EXIT,
 		GEO_EXIT_HL,
 
+		// Particles
+		GEO_HIDDENBONUS_PARTICLE,
+
         // Monster states
         GEO_MONSTERSTATE_EXCLAMATION_MARK,
         GEO_MONSTERSTATE_QUESTION_MARK,

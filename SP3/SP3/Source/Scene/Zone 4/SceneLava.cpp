@@ -241,6 +241,18 @@ void SceneLava::Update(double dt)
 
     UpdateBaitProjectiles(&lava);
 
+	//////////////////////////////////////////////
+	////////PARTICLES ////////////////////////////
+	//////////////////////////////////////////////
+	for (GameObject GO = 0; GO < lava.GAMEOBJECT_COUNT; ++GO)
+	{
+		if ((lava.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+		{
+			SharedData::GetInstance()->particle->UpdateParticle(dt, lava.position[GO], ParticleObject_TYPE::P_HIDDENBONUS);
+		}
+	}
+
+
 
 	for (GameObject bait = 0; bait < lava.GAMEOBJECT_COUNT; ++bait)
 	{
@@ -649,6 +661,15 @@ void SceneLava::Render()
 
         RenderHUD(&lava);
     }
+
+	for (std::vector<ParticleObject* >::iterator it = SharedData::GetInstance()->particle->particleList.begin(); it != SharedData::GetInstance()->particle->particleList.end(); ++it)
+	{
+		ParticleObject* particle = (ParticleObject*)*it;
+		if (particle->active)
+		{
+			RenderParticle(particle);
+		}
+	}
 }
 
 void SceneLava::RenderLavaScene()
@@ -758,4 +779,24 @@ bool SceneLava::CheckInteractMoneyTree(World *world, GameObject GO)
     }
 
     return false;
+}
+
+void SceneLava::RenderParticle(ParticleObject* particle)
+{
+	glBlendFunc(GL_ONE, GL_ONE);
+	switch (particle->type)
+	{
+	case ParticleObject_TYPE::P_HIDDENBONUS:
+		modelStack.PushMatrix();
+		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
+		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
+		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
+		RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HIDDENBONUS_PARTICLE), false);
+		modelStack.PopMatrix();
+		break;
+
+	default:
+		break;
+	}
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

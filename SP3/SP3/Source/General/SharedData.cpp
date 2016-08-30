@@ -18,6 +18,7 @@ void SharedData::Init()
     graphicsLoader->Init();
     sound = new Sound();
     sceneManager = new SceneManager();
+	particle = new ParticleObject();
 
     MonsterFactory::LoadMonsterData("GameData/MonstersData.csv");
     Scene::LoadLevelGenerationData("GameData/LevelGenerationData.csv");

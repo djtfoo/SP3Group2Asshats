@@ -525,7 +525,7 @@ ParticleObject* SceneGrass::GetParticle()
 
 	for (unsigned i = 0; i < 10; ++i)
 	{
-		ParticleObject* particle = new ParticleObject(ParticleObject_TYPE::P_WATER);
+		ParticleObject* particle = new ParticleObject();
 		particleList.push_back(particle);
 	}
 
