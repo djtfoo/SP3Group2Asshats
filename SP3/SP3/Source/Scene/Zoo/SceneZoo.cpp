@@ -658,7 +658,7 @@ void SceneZoo::DisplayMonsterInterface(Monster* monster)
     {
         rotateEnclosureIcon1 += 2.f;
 
-        if (Application::IsMousePressed(0) && grassZone.size())
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && grassZone.size())
         {
             SellMonster();
         }
@@ -901,7 +901,7 @@ void SceneZoo::RenderShopInterface()
             if (currentShop == SHOP_UPGRADE)
                 RenderUpgradeInterface(Item::TYPE_NET);
 
-            if (/*Application::IsMousePressed(0)*/SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+            if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
                 switch (currentShop)
             {
                 case SHOP_MAIN:
@@ -1250,7 +1250,7 @@ void SceneZoo::RenderTransactionInterface()
         Application::cursorYPos / Application::m_height >= 0.568519)
     {
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 3.5f, 3.5f, 3.5f, 54.5f, 23.f, 0.f, 0.f, 0.f, false);
-        if (Application::IsMousePressed(0))
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
             transactionCounter++;
         if (currentShop == SHOP_SELL && transactionCounter >= SharedData::GetInstance()->player->inventory[currentItem].GetCount())
             transactionCounter = SharedData::GetInstance()->player->inventory[currentItem].GetCount();
@@ -1264,7 +1264,7 @@ void SceneZoo::RenderTransactionInterface()
         Application::cursorYPos / Application::m_height >= 0.639815)
     {
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 12.5f, 3.5f, 3.5f, 50.f, 18.5f, 0.f, 0.f, 0.f, false);
-        if (Application::IsMousePressed(0))
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
             switch (currentShop)
             {
             case SHOP_BUY:
@@ -1631,7 +1631,7 @@ void SceneZoo::RenderHuntingScenesInterface()
     {
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 22.5f, 17.5f, 1.f, 26.5f, 38.f, 0, 0, 0, false);
 
-        if (Application::IsMousePressed(0))
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
             changeSceneTo = AREA_GRASS;
     }
     else
@@ -1645,7 +1645,7 @@ void SceneZoo::RenderHuntingScenesInterface()
     {
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 22.5f, 17.5f, 1.f, 53.5f, 38.f, 0, 0, 0, false);
 
-        if (Application::IsMousePressed(0))
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
             changeSceneTo = AREA_SWAMP;
     }
     else
@@ -1659,7 +1659,7 @@ void SceneZoo::RenderHuntingScenesInterface()
     {
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 22.5f, 17.5f, 1.f, 26.5f, 18.f, 0, 0, 0, false);
 
-        if (Application::IsMousePressed(0))
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
             changeSceneTo = AREA_ROCK;
 
     }
@@ -1674,7 +1674,7 @@ void SceneZoo::RenderHuntingScenesInterface()
     {
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 22.5f, 17.5f, 1.f, 53.5f, 18.f, 0, 0, 0, false);
 
-        if (Application::IsMousePressed(0))
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
             changeSceneTo = AREA_FIRE;
     }
     else 

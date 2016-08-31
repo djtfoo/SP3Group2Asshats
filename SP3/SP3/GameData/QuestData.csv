@@ -1,0 +1,13 @@
+#Serial Number,Required Monster,Required Quantity,Zone
+1,Rabbit,2,Grass
+2,Bird,3,Grass
+3,Fairy,1,Grass
+4,Grimejam,5,Swamp
+5,Sea Monster,5,Swamp
+6,MukBoss,1,Swamp
+7,Fossil,5,Rock
+8,Golem,10,Rock
+9,RockSnake,2,Rock
+10,FireBug,7,Lava
+11,Magma,7,Lava
+12,MagmaBerzeker,2,Lava

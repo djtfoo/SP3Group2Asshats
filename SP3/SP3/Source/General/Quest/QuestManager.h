@@ -8,6 +8,8 @@ class QuestManager
 {
     std::queue<Quest*> m_questList;
 
+    bool b_questActive;     // have to "accept" next quest
+
 public:
     QuestManager();
     ~QuestManager();
