@@ -104,7 +104,7 @@ public:
     float GetHealth();
     void TakeDamage(const int damage);
 
-    unsigned m_currency;
+    int m_currency;
 };
 
 #endif

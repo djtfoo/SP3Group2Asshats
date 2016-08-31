@@ -7,19 +7,6 @@
 #include "../../General/MousePicker.h"
 #include "../../GameObject/Items.h"
 
-struct PopUpMessage
-{
-    std::string m_message;
-
-    float m_posX;
-    float m_posY;
-
-    float direction;
-
-    double m_duration;
-    double m_lifetime;
-};
-
 class SceneZoo : public Scene
 {
 public:
@@ -37,12 +24,6 @@ public:
     World zooWorld;
     ZooCamera zooCamera;
 
-    //
-    std::vector<GameObject> grassZone;
-    std::vector<GameObject> fireZone;
-    std::vector<GameObject> rockZone;
-    std::vector<GameObject> swampZone;
-
     Vector3 grassAreaPosition;
     Vector3 fireAreaPosition;
     Vector3 rockAreaPosition;
@@ -55,6 +36,11 @@ public:
     float fireAreaSize;
     float rockAreaSize;
     float swampAreaSize;
+
+    std::vector<GameObject> grassZone;
+    std::vector<GameObject> fireZone;
+    std::vector<GameObject> rockZone;
+    std::vector<GameObject> swampZone;
 
     enum AREA
     {
@@ -71,7 +57,10 @@ public:
     {
         STATE_ZOO,
         STATE_ENCLOSURE,
-        STATE_SHOP
+        STATE_SHOP,
+        STATE_CHANGE_SCENE,
+
+        NUM_STATE
     };
     
     enum SHOP
@@ -105,16 +94,20 @@ public:
     AREA currentArea;
     SHOP currentShop;
     Item::TYPE currentItem;
+    AREA changeSceneTo;
 
     bool isFollowingMonster;
     GameObject targetedMonster;
-    GameObject iter;
+    GameObject cycleIter;
 
-    void DisplayMonsterStats(Monster* monster);
+    void DisplayMonsterInterface(Monster* monster);
     void CycleThroughZoneArea(std::vector<GameObject> area);
     bool UpgradeEnclosureSize(AREA area);
     void RenderEnclosures();
     void RenderEnclosureInterface();
+
+    void SellMonster();
+    void SlaughterMonster();
     
     int transactionCounter;
     bool isInTransaction;
@@ -123,11 +116,13 @@ public:
 
     void RenderUpgradeInterface(Item::TYPE item);
 
-    short shopKeeperTextChoice;
+    SHOPKEEPER_TEXT shopKeeperTextChoice;
     void RenderShopkeeperText();
 
     //Upgrade enclosure values
     int upgradeCost;
+
+    void RenderHuntingScenesInterface();
 
     //shit for debugging
     float updown, leftright;
@@ -135,6 +130,8 @@ public:
     //HUD stuff
     void RenderHUD();
     float f_Rotate;
+    float rotateEnclosureIcon1;
+    float rotateEnclosureIcon2;
 };
 
 #endif

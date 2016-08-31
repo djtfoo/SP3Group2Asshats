@@ -36,7 +36,7 @@ void SceneZoo::Init()
     swampAreaPosition.Set(50.f, 0.f, -50.f);
 
     //For now, some random monsters
-    for (unsigned i = 0; i < 40; ++i)
+    /*for (unsigned i = 0; i < 40; ++i)
     switch (Math::RandIntMinMax(0, 11))
     {
     case 0:
@@ -75,7 +75,7 @@ void SceneZoo::Init()
     case 11:
         SharedData::GetInstance()->player->monsterList.push_back("MagmaBerzeker");
         break;
-    }
+    }*/
 
     memset(&zooWorld, 0, sizeof(zooWorld));
 
@@ -87,9 +87,9 @@ void SceneZoo::Init()
     populateMonsterList();
 
     isFollowingMonster = false;
-    iter = 0;
+    cycleIter = 0;
 
-    currentState = STATE_SHOP;
+    currentState = STATE_ZOO;
 
     //debug stuff
     updown = 0.15f;
@@ -97,17 +97,19 @@ void SceneZoo::Init()
 
     currentShop = SHOP_MAIN;
     isInTransaction = false;
-    shopKeeperTextChoice = 2359078;
+    shopKeeperTextChoice = TEXT_NONE;
     transactionCounter = 1;
     upgradeCost = 1000;
 
     f_Rotate = 0.f;
+    rotateEnclosureIcon1 = 45.f;
+    rotateEnclosureIcon2 = 45.f;
+    changeSceneTo = AREA_OVERVIEW;
 }
 
 void SceneZoo::Update(double dt)
 {
     fps = (float)(1.f / dt);
-
     //===============================================================================================================================//
     //                                                            Updates                                                            //
     //===============================================================================================================================//
@@ -137,8 +139,7 @@ void SceneZoo::Update(double dt)
     case STATE_SHOP:
 
         break;
-    }
-    
+    }    
 
     //Inputmanager Update
     SharedData::GetInstance()->inputManager->Update();
@@ -194,96 +195,72 @@ void SceneZoo::Update(double dt)
         zooCamera.position = grassAreaPosition + Vector3(0, 75, -50);
         zooCamera.target = grassAreaPosition;
 
-        if (currentArea == AREA_GRASS)
-        {
-            currentArea = AREA_OVERVIEW;
-            currentState = STATE_ZOO;
-            zooCamera.Reset();
-        }
-        else
-            currentArea = AREA_GRASS;
+        currentArea = AREA_GRASS;
 
         isFollowingMonster = false;
         currentState = STATE_ENCLOSURE;
     }
     else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_2].isPressed)
     {
-        zooCamera.position = fireAreaPosition + Vector3(0, 50, -50);
+        zooCamera.position = fireAreaPosition + Vector3(0, 75, -50);
         zooCamera.target = fireAreaPosition;
 
-        if (currentArea == AREA_FIRE)
-        {
-            currentArea = AREA_OVERVIEW;
-            currentState = STATE_ZOO;
-            zooCamera.Reset();
-        }
-        else
-            currentArea = AREA_FIRE;
+        currentArea = AREA_FIRE;
 
         isFollowingMonster = false;
         currentState = STATE_ENCLOSURE;
     }
     else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_3].isPressed)
     {
-        zooCamera.position = rockAreaPosition + Vector3(0, 50, -50);
+        zooCamera.position = rockAreaPosition + Vector3(0, 75, -50);
         zooCamera.target = rockAreaPosition;
 
-        if (currentArea == AREA_ROCK)
-        {
-            currentArea = AREA_OVERVIEW;
-            currentState = STATE_ZOO;
-            zooCamera.Reset();
-        }
-        else
-            currentArea = AREA_ROCK;
+        currentArea = AREA_ROCK;
 
         isFollowingMonster = false;
         currentState = STATE_ENCLOSURE;
     }
     else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_4].isPressed)
     {
-        zooCamera.position = swampAreaPosition + Vector3(0, 50, -50);
+        zooCamera.position = swampAreaPosition + Vector3(0, 75, -50);
         zooCamera.target = swampAreaPosition;
 
-        if (currentArea == AREA_SWAMP)
-        {
-            currentArea = AREA_OVERVIEW;
-            currentState = STATE_ZOO;
-            zooCamera.Reset();
-        }
-        else
-            currentArea = AREA_SWAMP;
+        currentArea = AREA_SWAMP;
 
         isFollowingMonster = false;
         currentState = STATE_ENCLOSURE;
     }
 
     //Cycle thru Monsters in the area
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_TAB].isPressed)
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_TAB].isPressed && currentState == STATE_ENCLOSURE)
     {
         switch (currentArea)
         {
         case AREA_GRASS:
 
-            CycleThroughZoneArea(grassZone);
+            if (grassZone.size())
+                CycleThroughZoneArea(grassZone);
 
             break;
 
         case AREA_FIRE:
 
-            CycleThroughZoneArea(fireZone);
+            if (fireZone.size())
+                CycleThroughZoneArea(fireZone);
 
             break;
 
         case AREA_ROCK:
 
-            CycleThroughZoneArea(rockZone);
+            if (rockZone.size())
+                CycleThroughZoneArea(rockZone);
 
             break;
 
         case AREA_SWAMP:
 
-            CycleThroughZoneArea(swampZone);
+            if (swampZone.size())
+                CycleThroughZoneArea(swampZone);
 
             break;
         }
@@ -291,13 +268,16 @@ void SceneZoo::Update(double dt)
 
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isPressed)
     {
-
+        isFollowingMonster = false;
+        currentArea = AREA_OVERVIEW;
+        currentState = STATE_SHOP;
     }
-
 
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed)
     {
-        currentState = STATE_SHOP;
+        isFollowingMonster = false;
+        currentArea = AREA_OVERVIEW;
+        currentState = STATE_CHANGE_SCENE;
     }
 
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_UP].isHeldDown)
@@ -318,7 +298,35 @@ void SceneZoo::Update(double dt)
         leftright += 0.5f * dt;
     }
 
-    f_Rotate += 10.f * dt;
+    f_Rotate += 10.f * (float)dt;
+
+
+    switch (changeSceneTo)
+    {
+    case AREA_GRASS:
+
+        SharedData::GetInstance()->sceneManager->ChangeScene(1);
+
+        break;
+
+    case AREA_FIRE:
+
+        SharedData::GetInstance()->sceneManager->ChangeScene(4);
+
+        break;
+
+    case AREA_ROCK:
+
+        SharedData::GetInstance()->sceneManager->ChangeScene(3);
+
+        break;
+
+    case AREA_SWAMP:
+
+        SharedData::GetInstance()->sceneManager->ChangeScene(2);
+
+        break;
+    }
 }
 
 void SceneZoo::Render()
@@ -364,25 +372,31 @@ void SceneZoo::Render()
     //If cycling thru monsters in zone display their stats
     if (isFollowingMonster)
     {
-        DisplayMonsterStats(zooWorld.monster[targetedMonster]);
-        //Should have somesort of interface for the frame of the monsterstats
+        DisplayMonsterInterface(zooWorld.monster[targetedMonster]);
     }
+
     //Else if just in enclosure view, display enclosure interface
     else if (currentState == STATE_ENCLOSURE)
     {
-        RenderHUD();
         RenderEnclosureInterface();
     }
 
     //Render Shop Interface
     if (currentState == STATE_SHOP)
+    {
         RenderShopInterface();
+        RenderHUD();
 
-    if (isInTransaction)
-        RenderTransactionInterface();
+        if (isInTransaction)
+            RenderTransactionInterface();
 
-    RenderShopkeeperText();
-
+        RenderShopkeeperText();
+    }
+    
+    if (currentState == STATE_CHANGE_SCENE)
+        RenderHuntingScenesInterface();
+    
+    std::cout << Application::cursorXPos / Application::m_width << " | " << Application::cursorYPos / Application::m_height << std::endl;
 }
 
 void SceneZoo::RenderZooScene()
@@ -404,7 +418,10 @@ void SceneZoo::RenderZooScene()
 
 void SceneZoo::Exit()
 {
-
+    for (unsigned GO = 0; GO < zooWorld.GAMEOBJECT_COUNT; ++GO)
+    {
+        destroyGO(&zooWorld, GO);
+    }
 }
 
 void SceneZoo::populateMonsterList()
@@ -577,8 +594,10 @@ void SceneZoo::populateMonsterList()
     }
 }
 
-void SceneZoo::DisplayMonsterStats(Monster* monster)
+void SceneZoo::DisplayMonsterInterface(Monster* monster)
 {
+    SetHUD(true);
+
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), monster->GetName(), Color(1, 1, 0), 3, 35, 55);
 
     std::stringstream ss;
@@ -596,21 +615,59 @@ void SceneZoo::DisplayMonsterStats(Monster* monster)
     std::stringstream ss3;
     ss3 << "Fear: " << monster->GetFearStat();
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 3, 0, 15);
+
+    //Slaughter button
+    if (Application::cursorXPos / Application::m_width >= 0.804688 &&
+        Application::cursorXPos / Application::m_width <= 0.955208 &&
+        Application::cursorYPos / Application::m_height >= 0.361111 &&
+        Application::cursorYPos / Application::m_height <= 0.436111
+        )
+    {
+        rotateEnclosureIcon2 += 2.f;
+
+        if (Application::IsMousePressed(0))
+        {
+            SlaughterMonster();
+        }
+    }
+
+    // Sell button
+    if (Application::cursorXPos / Application::m_width >= 0.804688 &&
+        Application::cursorXPos / Application::m_width <= 0.955208 &&
+        Application::cursorYPos / Application::m_height >= 0.510185 &&
+        Application::cursorYPos / Application::m_height <= 0.568519
+        )
+    {
+        rotateEnclosureIcon1 += 2.f;
+
+        if (Application::IsMousePressed(0) && grassZone.size())
+        {
+            SellMonster();
+        }
+    }
+  
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN), 8, 75.0f, 25.f, 0, rotateEnclosureIcon1, 0, false);
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT), 2, 75.0f, 35.f, 90, 45.f, rotateEnclosureIcon2, false);
+
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Sell", Color(1, 1, 0), 2, 65.0f, 25.f);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Slaughter", Color(1, 1, 0), 2, 65.0f, 35.f);
+
+    SetHUD(false);
 }
 
 void SceneZoo::CycleThroughZoneArea(std::vector<GameObject> area)
 {
     if (isFollowingMonster)
     {
-        if (++iter >= area.size())
-            iter = 0;
+        if (++cycleIter >= area.size())
+            cycleIter = 0;
         else
-            targetedMonster = area[iter];
+            targetedMonster = area[cycleIter];
     }
     else
     {
         if (area.size())
-            targetedMonster = area[iter];
+            targetedMonster = area[cycleIter];
 
         isFollowingMonster = true;
     }
@@ -830,7 +887,7 @@ void SceneZoo::RenderShopInterface()
                 switch (currentShop)
             {
                 case SHOP_MAIN:
-                    shopKeeperTextChoice = Math::RandIntMinMax(1, 5);
+                    shopKeeperTextChoice = static_cast<SHOPKEEPER_TEXT>(Math::RandIntMinMax(1, 5));
                     break;
                 case SHOP_BUY:
                     isInTransaction = true;
@@ -972,7 +1029,7 @@ void SceneZoo::RenderShopInterface()
                     {
                         if (SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Upgrade())
                         {
-                            SharedData::GetInstance()->player->m_currency > SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetUpgradeCost();
+                            SharedData::GetInstance()->player->m_currency -= SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetUpgradeCost();
                             shopKeeperTextChoice = TEXT_THANK;
                         }
                         else
@@ -1051,8 +1108,9 @@ void SceneZoo::RenderEnclosureInterface()
 {
     SetHUD(true);
 
-    std::cout << Application::cursorXPos / Application::m_width << " " << Application::cursorYPos / Application::m_height << std::endl;
+    //std::cout << Application::cursorXPos / Application::m_width << " " << Application::cursorYPos / Application::m_height << std::endl;
 
+    //Upgrade button
     if (Application::cursorXPos / Application::m_width >= 0.434896 &&
         Application::cursorXPos / Application::m_width <= 0.595833 &&
         Application::cursorYPos / Application::m_height >= 0.833333 &&
@@ -1077,6 +1135,7 @@ void SceneZoo::RenderEnclosureInterface()
     else
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 13.f, 3.5f, 3.5f, 41.5f, 6.5f, 0.f, 0.f, 0.f, false);
 
+    //Back button
     if (Application::cursorXPos / Application::m_width >= 0.853646 &&
         Application::cursorXPos / Application::m_width <= 0.958838 &&
         Application::cursorYPos / Application::m_height >= 0.833333 &&
@@ -1090,6 +1149,7 @@ void SceneZoo::RenderEnclosureInterface()
             currentArea = AREA_OVERVIEW;
             currentState = STATE_ZOO;
             zooCamera.Reset();
+            cycleIter = 0;
         }
     }
     else
@@ -1265,6 +1325,346 @@ void SceneZoo::RenderHUD()
     RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT), 2, 55.0f, 5.2f, 45.f, 45.f, 0, false);
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss5.str(), Color(1, 1, 0), 1, 53.5f, 2.5f);
 
+}
+
+void SceneZoo::SellMonster()
+{
+    std::vector<GameObject> temp;
+
+    switch (currentArea)
+    {
+    case AREA_GRASS:
+
+        for (unsigned i = 0; i < grassZone.size(); ++i)
+        {
+            if (i == cycleIter)
+                destroyGO(&zooWorld, grassZone[cycleIter]);
+            else
+                temp.push_back(grassZone[i]);
+        }
+
+        grassZone.clear();
+
+        if (temp.size())
+        {
+            grassZone = temp;
+            cycleIter = 0;
+            targetedMonster = grassZone[cycleIter];
+        }
+        else
+        {
+            cycleIter = 0;
+            zooCamera.position = grassAreaPosition + Vector3(0, 75, -50);
+            zooCamera.target = grassAreaPosition;
+            currentArea = AREA_GRASS;
+            targetedMonster = NULL;
+
+            isFollowingMonster = false;
+            currentState = STATE_ENCLOSURE;
+        }
+
+        break;
+    case AREA_FIRE:
+
+        for (unsigned i = 0; i < fireZone.size(); ++i)
+        {
+            if (i == cycleIter)
+                destroyGO(&zooWorld, fireZone[cycleIter]);
+            else
+                temp.push_back(fireZone[i]);
+        }
+
+        fireZone.clear();
+
+        if (temp.size())
+        {
+            fireZone = temp;
+            cycleIter = 0;
+            targetedMonster = fireZone[cycleIter];
+        }
+        else
+        {
+            cycleIter = 0;
+            zooCamera.position = fireAreaPosition + Vector3(0, 75, -50);
+            zooCamera.target = fireAreaPosition;
+            currentArea = AREA_FIRE;
+            targetedMonster = NULL;
+
+            isFollowingMonster = false;
+            currentState = STATE_ENCLOSURE;
+        }
+
+        break;
+    case AREA_ROCK:
+
+        for (unsigned i = 0; i < rockZone.size(); ++i)
+        {
+            if (i == cycleIter)
+                destroyGO(&zooWorld, rockZone[cycleIter]);
+            else
+                temp.push_back(rockZone[i]);
+        }
+
+        rockZone.clear();
+
+        if (temp.size())
+        {
+            rockZone = temp;
+            cycleIter = 0;
+            targetedMonster = rockZone[cycleIter];
+        }
+        else
+        {
+            cycleIter = 0;
+            zooCamera.position = rockAreaPosition + Vector3(0, 75, -50);
+            zooCamera.target = rockAreaPosition;
+            currentArea = AREA_ROCK;
+            targetedMonster = NULL;
+
+            isFollowingMonster = false;
+            currentState = STATE_ENCLOSURE;
+        }
+
+        break;
+    case AREA_SWAMP:
+
+        for (unsigned i = 0; i < swampZone.size(); ++i)
+        {
+            if (i == cycleIter)
+                destroyGO(&zooWorld, swampZone[cycleIter]);
+            else
+                temp.push_back(swampZone[i]);
+        }
+
+        swampZone.clear();
+
+        if (temp.size())
+        {
+            swampZone = temp;
+            cycleIter = 0;
+            targetedMonster = swampZone[cycleIter];
+        }
+        else
+        {
+            cycleIter = 0;
+            zooCamera.position = swampAreaPosition + Vector3(0, 75, -50);
+            zooCamera.target = swampAreaPosition;
+            currentArea = AREA_SWAMP;
+            targetedMonster = NULL;
+
+            isFollowingMonster = false;
+            currentState = STATE_ENCLOSURE;
+        }
+
+        break;
+    }
+
+    SharedData::GetInstance()->player->m_currency += 100; //Edit with monster's value
+    
+}
+
+void SceneZoo::SlaughterMonster()
+{
+    std::vector<GameObject> temp;
+
+    switch (currentArea)
+    {
+    case AREA_GRASS:
+
+        for (unsigned i = 0; i < grassZone.size(); ++i)
+        {
+            if (i == cycleIter)
+                destroyGO(&zooWorld, grassZone[cycleIter]);
+            else
+                temp.push_back(grassZone[i]);
+        }
+
+        grassZone.clear();
+
+        if (temp.size())
+        {
+            grassZone = temp;
+            cycleIter = 0;
+            targetedMonster = grassZone[cycleIter];
+        }
+        else
+        {
+            cycleIter = 0;
+            zooCamera.position = grassAreaPosition + Vector3(0, 75, -50);
+            zooCamera.target = grassAreaPosition;
+            currentArea = AREA_GRASS;
+            targetedMonster = NULL;
+
+            isFollowingMonster = false;
+            currentState = STATE_ENCLOSURE;
+        }
+
+        break;
+    case AREA_FIRE:
+
+        for (unsigned i = 0; i < fireZone.size(); ++i)
+        {
+            if (i == cycleIter)
+                destroyGO(&zooWorld, fireZone[cycleIter]);
+            else
+                temp.push_back(fireZone[i]);
+        }
+
+        fireZone.clear();
+
+        if (temp.size())
+        {
+            fireZone = temp;
+            cycleIter = 0;
+            targetedMonster = fireZone[cycleIter];
+        }
+        else
+        {
+            cycleIter = 0;
+            zooCamera.position = fireAreaPosition + Vector3(0, 75, -50);
+            zooCamera.target = fireAreaPosition;
+            currentArea = AREA_FIRE;
+            targetedMonster = NULL;
+
+            isFollowingMonster = false;
+            currentState = STATE_ENCLOSURE;
+        }
+
+        break;
+    case AREA_ROCK:
+
+        for (unsigned i = 0; i < rockZone.size(); ++i)
+        {
+            if (i == cycleIter)
+                destroyGO(&zooWorld, rockZone[cycleIter]);
+            else
+                temp.push_back(rockZone[i]);
+        }
+
+        rockZone.clear();
+
+        if (temp.size())
+        {
+            rockZone = temp;
+            cycleIter = 0;
+            targetedMonster = rockZone[cycleIter];
+        }
+        else
+        {
+            cycleIter = 0;
+            zooCamera.position = rockAreaPosition + Vector3(0, 75, -50);
+            zooCamera.target = rockAreaPosition;
+            currentArea = AREA_ROCK;
+            targetedMonster = NULL;
+
+            isFollowingMonster = false;
+            currentState = STATE_ENCLOSURE;
+        }
+
+        break;
+    case AREA_SWAMP:
+
+        for (unsigned i = 0; i < swampZone.size(); ++i)
+        {
+            if (i == cycleIter)
+                destroyGO(&zooWorld, swampZone[cycleIter]);
+            else
+                temp.push_back(swampZone[i]);
+        }
+
+        swampZone.clear();
+
+        if (temp.size())
+        {
+            swampZone = temp;
+            cycleIter = 0;
+            targetedMonster = swampZone[cycleIter];
+        }
+        else
+        {
+            cycleIter = 0;
+            zooCamera.position = swampAreaPosition + Vector3(0, 75, -50);
+            zooCamera.target = swampAreaPosition;
+            currentArea = AREA_SWAMP;
+            targetedMonster = NULL;
+
+            isFollowingMonster = false;
+            currentState = STATE_ENCLOSURE;
+        }
+
+        break;
+    }
+
+    SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].Add(1);
+
+}
+
+void SceneZoo::RenderHuntingScenesInterface()
+{
+    SetHUD(true);
+
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_BACKGROUND), 55.f, 40.f, 30.f, false);
+
+    //Grass scene
+    if (Application::cursorXPos / Application::m_width >= 0.189602 &&
+        Application::cursorXPos / Application::m_width <= 0.46875 &&
+        Application::cursorYPos / Application::m_height >= 0.212037 &&
+        Application::cursorYPos / Application::m_height <= 0.496296)
+    {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 22.5f, 17.5f, 1.f, 26.5f, 38.f, 0, 0, 0, false);
+
+        if (Application::IsMousePressed(0))
+            changeSceneTo = AREA_GRASS;
+    }
+    else
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 22.5f, 17.5f, 1.f, 26.5f, 38.f, 0, 0, 0, false);
+
+    //Fire Scene
+    if (Application::cursorXPos / Application::m_width >= 0.525 &&
+        Application::cursorXPos / Application::m_width <= 0.803646 &&
+        Application::cursorYPos / Application::m_height >= 0.212037 &&
+        Application::cursorYPos / Application::m_height <= 0.496296)
+    {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 22.5f, 17.5f, 1.f, 53.5f, 38.f, 0, 0, 0, false);
+
+        if (Application::IsMousePressed(0))
+            changeSceneTo = AREA_FIRE;
+    }
+    else
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 22.5f, 17.5f, 1.f, 53.5f, 38.f, 0, 0, 0, false);
+
+    //Rock scene
+    if (Application::cursorXPos / Application::m_width >= 0.189602 &&
+        Application::cursorXPos / Application::m_width <= 0.46875 &&
+        Application::cursorYPos / Application::m_height >= 0.536111 &&
+        Application::cursorYPos / Application::m_height <= 0.818519)
+    {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 22.5f, 17.5f, 1.f, 26.5f, 18.f, 0, 0, 0, false);
+
+        if (Application::IsMousePressed(0))
+            changeSceneTo = AREA_ROCK;
+
+    }
+    else
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 22.5f, 17.5f, 1.f, 26.5f, 18.f, 0, 0, 0, false);
+
+    //Swamp Scene
+    if (Application::cursorXPos / Application::m_width >= 0.525 &&
+        Application::cursorXPos / Application::m_width <= 0.803646 &&
+        Application::cursorYPos / Application::m_height >= 0.536111 &&
+        Application::cursorYPos / Application::m_height <= 0.818519)
+    {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 22.5f, 17.5f, 1.f, 53.5f, 18.f, 0, 0, 0, false);
+        
+        if (Application::IsMousePressed(0))
+            changeSceneTo = AREA_SWAMP;
+    }
+    else 
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 22.5f, 17.5f, 1.f, 53.5f, 18.f, 0, 0, 0, false);
+
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Go Hunting!", Color(1, 1, 0), 4.f, 30.f, 48.5f);
+
+    SetHUD(false);
 }
 
 //Mouse picking stuff//
