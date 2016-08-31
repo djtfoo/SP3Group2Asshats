@@ -67,14 +67,15 @@ void SceneRock::Init()
                 rockWorld.hitbox[go].m_origin = rockWorld.position[go];
                 rockWorld.hitbox[go].m_scale.Set(3.f, 7.f, 3.f);
                 rockWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
-                if (tile == 'E') {  // swamp plant
-                    rockWorld.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(0.5f, 1.f), Math::RandFloatMinMax(0.8f, 1.f));
-                }
-                else {
-                    rockWorld.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(1.2f, 2.f), Math::RandFloatMinMax(0.8f, 1.f));
-                }
+                rockWorld.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(1.2f, 2.f), Math::RandFloatMinMax(0.8f, 1.f));
                 rockWorld.appearance[go].angle = Math::RandFloatMinMax(0.f, 360.f);
                 rockWorld.appearance[go].billboard = false;
+				
+				if (tile == 'M')
+				{
+					rockWorld.hitbox[go].m_origin = rockWorld.position[go];
+					rockWorld.hitbox[go].m_scale.Set(5.f, 15.f, 5.f);
+				}
                 //grass.appearance[go].scale.Set(1, 1, 1);
             }
             else if (tile >= '1' && tile <= '9')
@@ -90,21 +91,21 @@ void SceneRock::Init()
                 case '1':
                     rockWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_GOLEM);
                     rockWorld.monster[go] = MonsterFactory::CreateMonster("Golem");
-                    rockWorld.hitbox[go].m_scale.Set(3.f, 4.f, 3.5f);
+                    rockWorld.hitbox[go].m_scale.Set(3.f, 5.f, 3.5f);
                     rockWorld.appearance[go].scale.Set(1.25f, 1.25f, 1.25f);
                     break;
 
                 case '2':
                     rockWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_FOSSIL);
                     rockWorld.monster[go] = MonsterFactory::CreateMonster("Fossil");
-                    rockWorld.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
+                    rockWorld.hitbox[go].m_scale.Set(4.f, 4.5f, 4.f);
                     rockWorld.appearance[go].scale.Set(1.25f, 1.25f, 1.25f);
                     break;
 
                 case '3':
                     rockWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_ROCKSNAKE);
                     rockWorld.monster[go] = MonsterFactory::CreateMonster("RockSnake");
-                    rockWorld.hitbox[go].m_scale.Set(5.f, 5.f, 5.f);
+                    rockWorld.hitbox[go].m_scale.Set(11.f, 15.f, 11.f);
                     rockWorld.appearance[go].scale.Set(4, 4, 4);
                     break;
                 }
@@ -388,19 +389,19 @@ void SceneRock::Render()
     }
     glDepthMask(GL_TRUE);
 
-    for (GameObject tallGrass = 0; tallGrass < rockWorld.GAMEOBJECT_COUNT; ++tallGrass)
-    {
-        if ((rockWorld.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
-        {
-            modelStack.PushMatrix();
-            modelStack.Translate(rockWorld.hitbox[tallGrass].m_origin.x, rockWorld.hitbox[tallGrass].m_origin.y, rockWorld.hitbox[tallGrass].m_origin.z);
-            modelStack.Scale(rockWorld.hitbox[tallGrass].m_scale.x, rockWorld.hitbox[tallGrass].m_scale.y, rockWorld.hitbox[tallGrass].m_scale.z);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            modelStack.PopMatrix();
-        }
-    }
+    //for (GameObject tallGrass = 0; tallGrass < rockWorld.GAMEOBJECT_COUNT; ++tallGrass)
+    //{
+    //    if ((rockWorld.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
+    //    {
+    //        modelStack.PushMatrix();
+    //        modelStack.Translate(rockWorld.hitbox[tallGrass].m_origin.x, rockWorld.hitbox[tallGrass].m_origin.y, rockWorld.hitbox[tallGrass].m_origin.z);
+    //        modelStack.Scale(rockWorld.hitbox[tallGrass].m_scale.x, rockWorld.hitbox[tallGrass].m_scale.y, rockWorld.hitbox[tallGrass].m_scale.z);
+    //        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    //        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //        modelStack.PopMatrix();
+    //    }
+    //}
     
     // HUD THINGS
     if (SharedData::GetInstance()->sceneManager->GetGameState() == SceneManager::GAMESTATE_GAMEPLAY)
@@ -484,7 +485,7 @@ bool SceneRock::CheckInteractMoneyTree(World *world, GameObject GO)
                       rockWorld.velocity[GO] = rockWorld.monster[GO]->m_velocity;
                       break;
             }
-            default:
+            case 3:
                 // Nothing
                 destroyGO(&rockWorld, GO);
                 break;
@@ -495,4 +496,16 @@ bool SceneRock::CheckInteractMoneyTree(World *world, GameObject GO)
     }
 
     return false;
+}
+
+void SceneRock::SpawnSceneParticles()
+{
+	for (GameObject GO = 0; GO < rockWorld.GAMEOBJECT_COUNT; ++GO)
+	{
+		if ((rockWorld.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+		{
+			//SharedData::GetInstance()->particleManager->SpawnParticle(rockWorld.position[GO], ParticleObject::P_VOLCANOSPARK);
+		}
+	}
+
 }

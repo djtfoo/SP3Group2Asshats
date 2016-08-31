@@ -67,11 +67,20 @@ void SceneLava::Init()
                 {
                     lava.position[go].Set(cols * Scene::tileSize, 0.f, rows * Scene::tileSize);
                     lava.hitbox[go].m_origin = lava.position[go] + Vector3(0, 2, 0);
-                    lava.hitbox[go].m_scale.Set(8.f, 12.f, 8.f);
+                    lava.hitbox[go].m_scale.Set(8.f, 17.f, 8.f);
                     lava.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_VOLCANO);
                     lava.appearance[go].scale.Set(Math::RandFloatMinMax(1.5f, 1.7f), Math::RandFloatMinMax(3.5f, 4.f), Math::RandFloatMinMax(1.5f, 1.7f));
                     lava.appearance[go].billboard = false;
                 }
+				else if (tile == 'H')
+				{
+					lava.position[go].Set(cols * Scene::tileSize, 0.f, rows * Scene::tileSize);
+					lava.hitbox[go].m_origin = lava.position[go] + Vector3(0, 2, 0);
+					lava.hitbox[go].m_scale.Set(5.f, 15.f, 5.f);
+					lava.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_RED_CRYSTAL);
+					lava.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(0.5f, 1.f), Math::RandFloatMinMax(0.8f, 1.f));
+					lava.appearance[go].billboard = false;
+				}
                 else
                 {
                     lava.position[go].Set(cols * Scene::tileSize, 0.f, rows * Scene::tileSize);
@@ -80,7 +89,6 @@ void SceneLava::Init()
                     lava.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
                     lava.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(0.5f, 1.f), Math::RandFloatMinMax(0.8f, 1.f));
                     lava.appearance[go].billboard = false;
-
                 }
 				
 				//grass.appearance[go].scale.Set(1, 1, 1);
@@ -234,7 +242,7 @@ void SceneLava::Update(double dt)
 	//////////////////////////////////////////////
 	////////PARTICLES ////////////////////////////
 	//////////////////////////////////////////////
-
+	SpawnSceneParticles();
     UpdateParticles(&lava, dt);
 
     //===============================================================================================================================//
@@ -457,19 +465,19 @@ void SceneLava::Render()
     }
     glDepthMask(GL_TRUE);
 
-    //for (GameObject tallGrass = 0; tallGrass < lava.GAMEOBJECT_COUNT; ++tallGrass)
-    //{
-    //    if ((grass.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
-    //    {
-    //        modelStack.PushMatrix();
-    //        modelStack.Translate(grass.hitbox[tallGrass].m_origin.x, grass.hitbox[tallGrass].m_origin.y, grass.hitbox[tallGrass].m_origin.z);
-    //        modelStack.Scale(grass.hitbox[tallGrass].m_scale.x, grass.hitbox[tallGrass].m_scale.y, grass.hitbox[tallGrass].m_scale.z);
-    //        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    //        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
-    //        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //        modelStack.PopMatrix();
-    //    }
-    //}
+	//for (GameObject tallGrass = 0; tallGrass < lava.GAMEOBJECT_COUNT; ++tallGrass)
+	//{
+	//    if ((lava.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
+	//    {
+	//        modelStack.PushMatrix();
+	//        modelStack.Translate(lava.hitbox[tallGrass].m_origin.x, lava.hitbox[tallGrass].m_origin.y, lava.hitbox[tallGrass].m_origin.z);
+	//        modelStack.Scale(lava.hitbox[tallGrass].m_scale.x, lava.hitbox[tallGrass].m_scale.y, lava.hitbox[tallGrass].m_scale.z);
+	//        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+	//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//        modelStack.PopMatrix();
+	//    }
+	//}
 
     // HUD THINGS
     if (SharedData::GetInstance()->sceneManager->GetGameState() == SceneManager::GAMESTATE_GAMEPLAY)
@@ -559,4 +567,15 @@ bool SceneLava::CheckInteractMoneyTree(World *world, GameObject GO)
     }
 
     return false;
+}
+
+void SceneLava::SpawnSceneParticles()
+{
+		for (GameObject GO = 0; GO < lava.GAMEOBJECT_COUNT; ++GO)
+		{
+			if ((lava.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+			{
+				SharedData::GetInstance()->particleManager->SpawnParticle(lava.position[GO], ParticleObject::P_VOLCANOSPARK);
+			}
+		}
 }

@@ -81,6 +81,7 @@ public:
     void UpdateInventory();
 
     void UpdateParticles(World *world, double dt);
+	virtual void SpawnSceneParticles() = 0;
 
     bool CheckPickUpCaughtMonster(World *world, GameObject GO);
     virtual bool CheckInteractMoneyTree(World *world, GameObject GO);

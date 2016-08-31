@@ -71,6 +71,15 @@ void SceneGrass::Init()
                 grass.appearance[go].angle = Math::RandFloatMinMax(0.f, 360.f);
                 grass.appearance[go].billboard = false;
                 //grass.appearance[go].scale.Set(1, 1, 1);
+
+				if (tile == 'D')
+				{
+					grass.hitbox[go].m_scale.Set(5.f, 8.f, 5.f);
+				}
+				if (tile == 'C')
+				{
+					grass.hitbox[go].m_scale.Set(5.f, 8.f, 5.f);
+				}
             }
             else if (tile >= '1' && tile <= '9')
             {
@@ -99,7 +108,7 @@ void SceneGrass::Init()
                 case '3':
                     grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_FAIRY);
                     grass.monster[go] = MonsterFactory::CreateMonster("Fairy");
-                    grass.hitbox[go].m_scale.Set(5.f, 5.f, 5.f);
+                    grass.hitbox[go].m_scale.Set(5.5f, 17.5f, 5.5f);
                     grass.appearance[go].scale.Set(4, 4, 4);
                     break;
                 }
@@ -444,4 +453,17 @@ void SceneGrass::Exit()
 	}
 
     SharedData::GetInstance()->particleManager->ClearParticles();
+}
+
+void SceneGrass::SpawnSceneParticles()
+{
+	for (GameObject GO = 0; GO < grass.GAMEOBJECT_COUNT; ++GO)
+	{
+		if ((grass.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+		{
+			//SharedData::GetInstance()->particleManager->SpawnParticle(world->position[GO], ParticleObject::P_HIDDENBONUS);
+			//SharedData::GetInstance()->particleManager->SpawnParticle(grass.position[GO], ParticleObject::P_VOLCANOSPARK);
+		}
+	}
+
 }

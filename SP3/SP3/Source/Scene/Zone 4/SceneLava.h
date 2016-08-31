@@ -24,6 +24,7 @@ public:
 	void RenderLavaScene();
 	virtual void Exit();
     virtual bool CheckInteractMoneyTree(World *world, GameObject GO);
+	virtual void SpawnSceneParticles();
 
 	//Test stuff
 	ItemProjectile* itemProjectile;

@@ -68,6 +68,17 @@ void SceneSwamp::Init()
                 swamp.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(0.5f, 1.f), Math::RandFloatMinMax(0.8f, 1.f));
                 swamp.appearance[go].angle = Math::RandFloatMinMax(0.f, 360.f);
                 swamp.appearance[go].billboard = false;
+
+				if (tile == 'F')
+				{
+					swamp.hitbox[go].m_origin = swamp.position[go] + Vector3(0, 2, 0);
+					swamp.hitbox[go].m_scale.Set(5.f, 17.5f, 5.f);
+				}
+				if (tile == 'I')
+				{
+					swamp.hitbox[go].m_origin = swamp.position[go] + Vector3(0, 2, 0);
+					swamp.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
+				}
                 //swamp.appearance[go].scale.Set(1, 1, 1);
             }
             else if (tile >= '1' && tile <= '9')
@@ -83,21 +94,21 @@ void SceneSwamp::Init()
                 case '1':
                     swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_SEAMONSTER);
                     swamp.monster[go] = MonsterFactory::CreateMonster("SeaMonster");
-                    swamp.hitbox[go].m_scale.Set(1.5f, 2.f, 1.75f);
+					swamp.hitbox[go].m_scale.Set(5.f, 2.5f, 3.f);
                     swamp.appearance[go].scale.Set(1.5f, 1.5f, 1.5f);
                     break;
 
                 case '2':
                     swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_GRIMEJAM);
                     swamp.monster[go] = MonsterFactory::CreateMonster("Grimejam");
-                    swamp.hitbox[go].m_scale.Set(2.f, 2.f, 2.f);
+					swamp.hitbox[go].m_scale.Set(3.f, 7.f, 3.f);
                     swamp.appearance[go].scale.Set(2.f, 2.f, 2.f);
                     break;
 
                 case '3':
                     swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_MUKBOSS);
                     swamp.monster[go] = MonsterFactory::CreateMonster("MukBoss");
-                    swamp.hitbox[go].m_scale.Set(3.f, 3.f, 3.f);
+                    swamp.hitbox[go].m_scale.Set(20.f, 20.f, 20.f);
                     swamp.appearance[go].scale.Set(6, 6, 6);
                     break;
                 }
@@ -452,3 +463,16 @@ void SceneSwamp::Exit()
 //========================
 // == OBJECTS TO RENDER
 //========================
+
+void SceneSwamp::SpawnSceneParticles()
+{
+	for (GameObject GO = 0; GO < swamp.GAMEOBJECT_COUNT; ++GO)
+	{
+		if ((swamp.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+		{
+			//SharedData::GetInstance()->particleManager->SpawnParticle(world->position[GO], ParticleObject::P_HIDDENBONUS);
+			//SharedData::GetInstance()->particleManager->SpawnParticle(swamp.position[GO], ParticleObject::P_VOLCANOSPARK);
+		}
+	}
+
+}

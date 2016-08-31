@@ -27,6 +27,7 @@ public:
     virtual void Render();
     virtual void RenderSwampScene();
     virtual void Exit();
+	virtual void SpawnSceneParticles();
     //Test stuff
     ItemProjectile* itemProjectile;
     ItemProjectile* rockProjectile;

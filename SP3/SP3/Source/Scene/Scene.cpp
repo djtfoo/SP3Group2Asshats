@@ -1360,6 +1360,8 @@ void Scene::RenderPressEText(World *world)
 
 void Scene::RenderHUD(World *world)
 {
+    glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), false);
+
     SetHUD(true);
 
     std::stringstream ss;
@@ -1443,7 +1445,14 @@ void Scene::RenderParticle(ParticleObject* particle)
         RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HIDDENBONUS_PARTICLE), false);
         modelStack.PopMatrix();
         break;
-
+	case ParticleObject::P_VOLCANOSPARK:
+		modelStack.PushMatrix();
+		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
+		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
+		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
+		RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_VOLCANOSPARK_PARTICLE), false);
+		modelStack.PopMatrix();
+		break;
     default:
         break;
     }
