@@ -10,18 +10,18 @@
 
 #include "../Graphics/GraphicsLoader/GraphicsLoader.h"
 #include "../GameObject/GameObject.h"
+#include "../Graphics/Particle/Particle.h"
 
 #include <vector>
 #include <map>
 
-//#include "mainMenu.h"
+typedef std::map<char, std::pair<GraphicsLoader::GEOMETRY_TYPE, std::vector<COMPONENTS>> > LevelGenerationMap;
 
 class Scene
 {
     friend class MainMenu;
 
 public:
-    typedef std::map<char, std::pair<GraphicsLoader::GEOMETRY_TYPE, std::vector<COMPONENTS>> > LevelGenerationMap;
     static LevelGenerationMap m_levelGenerationData;
     static void AddToMap(char tileCount, GraphicsLoader::GEOMETRY_TYPE meshType, const std::vector<COMPONENTS>& componentsList);
     static void LoadLevelGenerationData(const char* file_path);
@@ -77,6 +77,8 @@ public:
     void ShootBait();
     void PlaceTrap(World *world);
 
+    void UpdateParticles(World *world, double dt);
+
     bool CheckPickUpCaughtMonster(World *world, GameObject GO);
     virtual bool CheckInteractMoneyTree(World *world, GameObject GO);
     bool CheckPickUpCoin(World *world, GameObject GO);
@@ -85,8 +87,10 @@ public:
 
     bool ViewCheckPosition(Vector3 pos, float degree);
     
+    void RenderProjectiles();
     void RenderPressEText(World *world);
     void RenderHUD(World *world);
+    void RenderParticle(ParticleObject *particle);
 
 	// To render
 	// ideal case is put objects in a vector; then use for loop to go through the list to render them

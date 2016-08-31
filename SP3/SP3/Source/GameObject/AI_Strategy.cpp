@@ -13,6 +13,8 @@ Class that Updates the strategy of monster
 #include "../Scene/Scene.h"
 #include "../General/SharedData.h"
 
+#include "../Scene/Scene.h"
+
 AI_Strategy::AI_Strategy() : currentState(STATE_IDLE)
 {
 }
@@ -58,7 +60,9 @@ void AI_Strategy::SetState(AI_Strategy::STRATEGY_MODE currentState)
 		break;
     }
 
-	monster->PlaySoundEffect();
+    if (currentState != STATE_IDLE) {
+        monster->PlaySoundEffect();
+    }
 }
 
 bool AI_Strategy::CheckDestinationReached()
@@ -115,8 +119,9 @@ void AI_Strategy::Update()
 
     else if (aggressionLevel > 50 || fearLevel > 50)
     {
-        if (currentState != STATE_ALERT)
+        if (currentState != STATE_ALERT && currentState != STATE_BAITED)
         {
+            std::cout << "LMAO";
             SetState(STATE_ALERT);
         }
     }
@@ -140,30 +145,60 @@ void AI_Strategy::Update()
     }
 }
 
+bool CheckHitbox(int row, int col)
+{
+    GameObject componentCheck;
+    LevelGenerationMap::iterator itTemp = Scene::m_levelGenerationData.find(Scene::m_levelMap[row][col]);
+    for (unsigned i = 0; i < (itTemp->second).second.size(); ++i)
+    {
+        componentCheck = componentCheck | (itTemp->second).second[i];
+    }
+    if ((componentCheck & COMPONENT_HITBOX) == COMPONENT_HITBOX)
+        return true;
+    else
+        return false;
+}
+
 void AI_Strategy::SetIdleStateDestination()
 {
     int cols = (int)(monster->m_position.x / Scene::tileSize);
     int rows = (int)(monster->m_position.z / Scene::tileSize);
 
-    int randCol = cols + Math::RandIntMinMax(1, 5) * Math::RandIntMinMax(-1, 1);
-    int randRow = rows + Math::RandIntMinMax(1, 5) * Math::RandIntMinMax(-1, 1);
-    while ((randCol < 0 || randCol >= 40) || (randRow < 0 || randRow >= 40) || Scene::m_levelMap[randRow][randCol] != '0')
-    {
-        randCol = cols + Math::RandIntMinMax(1, 5) * Math::RandIntMinMax(-1, 1);
-        randRow = rows + Math::RandIntMinMax(1, 5) * Math::RandIntMinMax(-1, 1);
-    }
-
-    //Vector3 RNGdestination;
-    //int col = 40;
-    //int row = 40;
-    //while ((col < 0 || col >= 40) || (row < 0 || row >= 40) || Scene::m_levelMap[row][col] != '0')
+    //int randCol = cols + Math::RandIntMinMax(1, 5) * Math::RandIntMinMax(-1, 1);
+    //int randRow = rows + Math::RandIntMinMax(1, 5) * Math::RandIntMinMax(-1, 1);
+    //while ((randCol < 0 || randCol >= 40) || (randRow < 0 || randRow >= 40) || Scene::m_levelMap[randRow][randCol] != '0')
     //{
-    //    RNGdestination.Set(monster->m_position.x + Math::RandFloatMinMax(-20.f, 20.f), 0, monster->m_position.z + Math::RandFloatMinMax(-20.f, 20.f));
-    //    col = (int)(RNGdestination.x / Scene::tileSize);
-    //    row = (int)(RNGdestination.z / Scene::tileSize);
+    //    randCol = cols + Math::RandIntMinMax(1, 5) * Math::RandIntMinMax(-1, 1);
+    //    randRow = rows + Math::RandIntMinMax(1, 5) * Math::RandIntMinMax(-1, 1);
     //}
 
-    Vector3 RNGdestination(randCol * Scene::tileSize + Scene::tileSize * 0.5f, 0, randRow * Scene::tileSize + Scene::tileSize * 0.5f);
+
+    //int randCol = cols + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+    //int randRow = rows + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+    //while (randCol < 0 || randCol >= 40 || randRow < 0 || randRow >= 40 || CheckHitbox(randRow, randCol) /*|| Scene::m_levelMap[randRow][randCol] != '0'*/)
+    //{ 
+    //    randCol = cols + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+    //    randRow = rows + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
+    //}
+
+    int randCol, randRow;
+    bool run = true;
+    while (run)
+    { 
+        randCol = cols + /*Math::RandIntMinMax(3, 5) **/ Math::RandIntMinMax(-1, 1);
+        randRow = rows + /*Math::RandIntMinMax(3, 5) **/ Math::RandIntMinMax(-1, 1);
+
+        if ((randCol > 0 && randCol < 40) && (randRow > 0 && randRow < 40)) {
+            if (Scene::m_levelMap[randRow][randCol] >= '0' && Scene::m_levelMap[randRow][randCol] <= '9') {
+                run = false;
+            }
+            else if (!CheckHitbox(randRow, randCol)) {
+                run = false;
+            }
+        }
+    }
+
+    Vector3 RNGdestination(randCol * Scene::tileSize + Scene::tileSize * Math::RandFloatMinMax(0.3f, 0.7f), 0, randRow * Scene::tileSize + Scene::tileSize * Math::RandFloatMinMax(0.3f, 0.7f));
 
     setDestination(RNGdestination);
 }

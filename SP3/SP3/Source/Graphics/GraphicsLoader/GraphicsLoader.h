@@ -15,7 +15,6 @@ Load Graphics for every instance
 #include "../Lighting/Light.h"
 #include "../Lighting/DepthFBO.h"
 #include "../Mesh/LoadHmap.h"
-#include "../ParticleManager/Particle.h"
 #include <math.h>
 
 #include <vector>
@@ -132,6 +131,12 @@ public:
 		//SceneRock
 		GEO_ROCK_TERRAIN,
 		GEO_ROCK_SKYPLANE,
+        GEO_ROCK_BUSH,
+        GEO_ROCK_ROCK,
+        GEO_ROCK_PILLAR,
+        GEO_MONSTER_FOSSIL,
+        GEO_MONSTER_GOLEM,
+        GEO_BOSS_ROCKSNAKE,
 
 		//SceneLava
 		GEO_LAVA_TERRAIN,

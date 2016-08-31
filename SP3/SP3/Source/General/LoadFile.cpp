@@ -137,15 +137,19 @@ void LoadLevelGenerationData(std::ifstream& fileStream)
 GraphicsLoader::GEOMETRY_TYPE AssignMeshType(int num)
 {
     GraphicsLoader::GEOMETRY_TYPE list[GraphicsLoader::NUM_GEOMETRY] = {    // legend size
-        GraphicsLoader::GEO_GRASS1,     //SceneGrass
-        GraphicsLoader::GEO_GRASS2,     //SceneGrass
-        GraphicsLoader::GEO_TREE1,      //SceneGrass
-        GraphicsLoader::GEO_TREE2,      //SceneGrass
-        GraphicsLoader::GEO_SWAMP_PLANT,    //SceneSwamp
-        GraphicsLoader::GEO_SWAMP_DEADTREE, //SceneSwamp
-		GraphicsLoader::GEO_MONEY_TREE,     //SceneGrass
-		GraphicsLoader::GEO_RED_CRYSTAL,    //SceneLava
-        GraphicsLoader::GEO_SWAMP_ROOT,     //SceneSwamp
+        GraphicsLoader::GEO_GRASS1,     //Grass
+        GraphicsLoader::GEO_GRASS2,     //Grass
+        GraphicsLoader::GEO_TREE1,      //Grass
+        GraphicsLoader::GEO_TREE2,      //Grass
+        GraphicsLoader::GEO_SWAMP_PLANT,    //Swamp
+        GraphicsLoader::GEO_SWAMP_DEADTREE, //Swamp
+		GraphicsLoader::GEO_MONEY_TREE,     //Grass
+		GraphicsLoader::GEO_RED_CRYSTAL,    //Lava
+        GraphicsLoader::GEO_SWAMP_ROOT,     //Swamp
+        GraphicsLoader::GEO_VOLCANO,    //Lava
+        GraphicsLoader::GEO_ROCK_BUSH,  //Rock
+        GraphicsLoader::GEO_ROCK_ROCK,  //Rock
+        GraphicsLoader::GEO_ROCK_PILLAR,  //Rock
     };
 
     return list[num];

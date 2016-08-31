@@ -159,7 +159,7 @@ void Application::Init()
 
 void Application::Run()
 {
-	SharedData::GetInstance()->sceneManager->ChangeScene(4);
+	SharedData::GetInstance()->sceneManager->ChangeScene(2);
     SharedData::GetInstance()->sceneManager->SetMainMenuState();
 
     //Main Loop
@@ -168,7 +168,7 @@ void Application::Run()
 	{
 		if (Application::IsKeyPressed('V'))
 		{
-            SharedData::GetInstance()->sceneManager->ChangeScene(1);
+            SharedData::GetInstance()->sceneManager->ChangeScene(3);
 		}
         SharedData::GetInstance()->sceneManager->Update(m_timer.getElapsedTime());
 		GetCursorPos(&cursorXPos, &cursorYPos);

@@ -23,8 +23,6 @@ public:
 	virtual void Render();
 	void RenderLavaScene();
 	virtual void Exit();
-	bool ViewCheckPosition(Vector3 pos, float degree);
-	void RenderParticle(ParticleObject* particle);
     virtual bool CheckInteractMoneyTree(World *world, GameObject GO);
 
 	//Test stuff

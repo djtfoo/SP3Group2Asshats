@@ -6,6 +6,9 @@
 //#include "../../Graphics/LoadOBJ/LoadTGA.h"
 //#include "../../Graphics/Mesh/MeshBuilder.h"
 #include "../../General/SharedData.h"
+#include "../../GameObject/MonsterFactory.h"
+#include "../../GameObject/AI_Strategy.h"
+#include "../../General/WorldValues.h"
 
 #include <sstream>
 
@@ -35,314 +38,180 @@ void SceneRock::Init()
     memset(&rockWorld, 0, sizeof(rockWorld));
 
     // Load map
-    Scene::LoadLevelMap("GameData/GrassScene.csv");
+    Scene::LoadLevelMap("GameData/RockScene.csv");
     for (int rows = 0; rows < Scene::m_rows; ++rows)
     {
         for (int cols = 0; cols < Scene::m_cols; ++cols)
         {
-            if (m_levelMap[rows][cols] == '0')
+            char tile = m_levelMap[rows][cols];
+
+            if (tile == '0')
                 continue;
 
-            LevelGenerationMap::iterator it = Scene::m_levelGenerationData.find(m_levelMap[rows][cols]);
+            LevelGenerationMap::iterator it = Scene::m_levelGenerationData.find(tile);
 
             // it->first is tileCount
             // first in it->second is mesh
             // second in it->second is vector of components
-            //std::cout << m_levelMap[rows][cols] << " ";
-            if (m_levelMap[rows][cols] >= '1' && m_levelMap[rows][cols] <= '9')
-                continue;
 
-            GameObject go = createGO(&rockWorld);
-            rockWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
-            rockWorld.position[go].Set(-100.f + cols * Scene::tileSize, 0.f, -100.f + rows * Scene::tileSize);
-            rockWorld.hitbox[go].m_origin = rockWorld.position[go] + Vector3(0, 2.5, 0);
-            rockWorld.hitbox[go].m_scale.Set(5.f, 5.f, 5.f);
-            rockWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
-            rockWorld.appearance[go].scale.Set(1, Math::RandFloatMinMax(0.75f, 1.25f), 1);
+            if (tile >= 'A' && tile <= 'Z')
+            {
+                GameObject go = createGO(&rockWorld);
+
+                for (unsigned i = 0; i < (it->second).second.size(); ++i)
+                {
+                    rockWorld.mask[go] = rockWorld.mask[go] | (it->second).second[i];
+                }
+
+                rockWorld.position[go].Set(cols * Scene::tileSize, 0.f, rows * Scene::tileSize);
+                rockWorld.hitbox[go].m_origin = rockWorld.position[go];
+                rockWorld.hitbox[go].m_scale.Set(3.f, 7.f, 3.f);
+                rockWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
+                rockWorld.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(1.2f, 2.f), Math::RandFloatMinMax(0.8f, 1.f));
+                rockWorld.appearance[go].angle = Math::RandFloatMinMax(0.f, 360.f);
+                rockWorld.appearance[go].billboard = false;
+                //grass.appearance[go].scale.Set(1, 1, 1);
+            }
+            else if (tile >= '1' && tile <= '9')
+            {
+                GameObject go = createGO(&rockWorld);
+                rockWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI | COMPONENT_OBSTACLE;
+                //rockWorld.velocity[go].Set(Math::RandFloatMinMax(0.f, 1.f), 0, Math::RandFloatMinMax(0.f, 1.f));
+                //rockWorld.velocity[go].SetZero();
+                rockWorld.position[go].Set(cols * tileSize + Math::RandFloatMinMax(0.f, 1.f), 0.f, rows * tileSize + Math::RandFloatMinMax(0.f, 1.f));
+                rockWorld.hitbox[go].m_origin = rockWorld.position[go] + Vector3(0, 0.75f, -0.3f);
+                switch (tile)
+                {
+                case '1':
+                    rockWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_GOLEM);
+                    rockWorld.monster[go] = MonsterFactory::CreateMonster("Golem");
+                    rockWorld.hitbox[go].m_scale.Set(3.f, 4.f, 3.5f);
+                    rockWorld.appearance[go].scale.Set(1.25f, 1.25f, 1.25f);
+                    break;
+
+                case '2':
+                    rockWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_FOSSIL);
+                    rockWorld.monster[go] = MonsterFactory::CreateMonster("Fossil");
+                    rockWorld.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
+                    rockWorld.appearance[go].scale.Set(1.25f, 1.25f, 1.25f);
+                    break;
+
+                case '3':
+                    rockWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_ROCKSNAKE);
+                    rockWorld.monster[go] = MonsterFactory::CreateMonster("RockSnake");
+                    rockWorld.hitbox[go].m_scale.Set(5.f, 5.f, 5.f);
+                    rockWorld.appearance[go].scale.Set(4, 4, 4);
+                    break;
+                }
+                rockWorld.monster[go]->m_position = rockWorld.position[go];
+                rockWorld.appearance[go].angle = 0.f;
+                rockWorld.appearance[go].billboard = false;
+
+                rockWorld.monster[go]->SetIdleState();
+                rockWorld.velocity[go] = rockWorld.monster[go]->m_velocity;
+
+            }
         }
     }
 
-    //Test monster
-    monster = createGO(&rockWorld);
-    rockWorld.mask[monster] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
-    rockWorld.position[monster].Set(0, 0, 25);//Zero();
-    rockWorld.velocity[monster].SetZero();//(0, 0, 1);
-    rockWorld.hitbox[monster].m_origin = rockWorld.position[monster] + Vector3(0, 0.75f, -0.3f);
-    rockWorld.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
-    rockWorld.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
-    rockWorld.appearance[monster].scale.Set(1, 1, 1);
-
-    rock = createGO(&rockWorld);
-    rockWorld.mask[rock] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
-    rockWorld.position[rock].Set(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z);
-    rockWorld.appearance[rock].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
-    rockWorld.appearance[rock].scale.Set(1, 1, 1);
-
-    net = createGO(&rockWorld);
-    rockWorld.mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE;
-    rockWorld.position[net].SetZero();
-    rockWorld.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
-    rockWorld.appearance[net].scale.Set(2, 2, 2);
+    ////Test monster
+    //monster = createGO(&rockWorld);
+    //rockWorld.mask[monster] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
+    //rockWorld.position[monster].Set(0, 0, 25);//Zero();
+    //rockWorld.velocity[monster].SetZero();//(0, 0, 1);
+    //rockWorld.hitbox[monster].m_origin = rockWorld.position[monster] + Vector3(0, 0.75f, -0.3f);
+    //rockWorld.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
+    //rockWorld.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
+    //rockWorld.appearance[monster].scale.Set(1, 1, 1);
+    //
+    //rock = createGO(&rockWorld);
+    //rockWorld.mask[rock] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
+    //rockWorld.position[rock].Set(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z);
+    //rockWorld.appearance[rock].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
+    //rockWorld.appearance[rock].scale.Set(1, 1, 1);
+    //
+    //net = createGO(&rockWorld);
+    //rockWorld.mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE;
+    //rockWorld.position[net].SetZero();
+    //rockWorld.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
+    //rockWorld.appearance[net].scale.Set(2, 2, 2);
     //HITBOX.m_origin = Vector3(0, 5, 0);
     //HITBOX.m_scale = Vector3(10, 10, 10);
 
-    b_capturing = false;
-    b_captured = false;
-    captureCounter = 0;
+    //b_capturing = false;
+    //b_captured = false;
+    //captureCounter = 0;
+
+    b_Rocks = true;
+    b_Nets = false;
+    b_Baits = false;
+
+    f_RotateRock = 0.f;
+    f_RotateNet = 0.f;
+    f_RotateBait = 0.f;
+
+    f_HighlightPos = -34.7f;
 
     camera.Update();
 }
-static double counter = 0;
 
 void SceneRock::Update(double dt)
 {
+
     fps = (float)(1.f / dt);
-    //glEnable(GL_CULL_FACE);
 
     //===============================================================================================================================//
     //                                                            Updates                                                            //
     //===============================================================================================================================//
 
-    //Update Projectiles
-    itemProjectile->UpdateProjectile(dt);
+    //Monster Update
+    UpdateMonsters(dt, &rockWorld);
 
     //Movement update for Gameobjects
     UpdateGameObjects(&rockWorld, dt);
 
+    //Player Update
+    UpdatePlayer(dt, &rockWorld);
+
     //Camera Update
     camera.Update();
 
-    //Player Update
-    SharedData::GetInstance()->player->Update(dt);
-
-    //Inputmanager Update
-    SharedData::GetInstance()->inputManager->Update();
+    // Check to see if text_C and text_M should be destroyed
+    DestroyText(&rockWorld);
 
     //===============================================================================================================================//
     //                                                            Checks                                                             //
     //===============================================================================================================================//
+    ////////////////////////////////////////////////
+    ////Projectile checks//////////////ROCKS////////
+    ////////////////////////////////////////////////
 
-    //Projectile checks
-    if (ItemProjectile::ItemProjectileList.size())
-    {
-        for (unsigned i = 0; i < ItemProjectile::ItemProjectileList.size(); ++i)
-        {
-            if (rockWorld.hitbox[monster].CheckCollision(ItemProjectile::ItemProjectileList[i]->position))
-            {
-                b_capturing = true;
-                ItemProjectile::ItemProjectileList[i]->deleteBullet;
-                rockWorld.position[net] = rockWorld.position[monster];
-            }
-            if (b_capturing == true)
-            {
-                int v1 = rand() % 100;
-                std::cout << v1 << std::endl;
-                if (v1 < 20)
-                {
-                    b_captured = true;
-                }
-                b_capturing = false;//fail capture
-                rockWorld.position[net] = 0;//set net to false
-            }
-            if (b_captured == true)
-            {
-                rockWorld.velocity[monster] = 0;
-                rockWorld.position[net] = rockWorld.position[monster];
-                break;
-            }
-        }
-    }
+    UpdateRockProjectiles(&rockWorld);
 
-    if (Application::IsKeyPressed('C') && SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].Use() && counter > 0.5)
-    {
-        ItemProjectile::ItemProjectileList.push_back(new ItemProjectile(
-            Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
-            Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-            500,
-            50,
-            10
-            ));
-        counter = 0;
-    }
+
     //////////////////////////////////////////////
     ////Projectile checks//////////////NET////////
     //////////////////////////////////////////////
-    if (ItemProjectile::ItemProjectileList.size())
-    {
-        for (unsigned i = 0; i < ItemProjectile::ItemProjectileList.size(); ++i)
-        {
-            for (GameObject ai = 0; ai < rockWorld.GAMEOBJECT_COUNT; ++ai)
-            {
-                if ((rockWorld.mask[ai] & COMPONENT_AI) == COMPONENT_AI)
-                {
-                    if (rockWorld.hitbox[ai].CheckCollision(ItemProjectile::ItemProjectileList[i]->position))
-                    {
-                        ItemProjectile::ItemProjectileList[i]->deleteBullet;
-                        net = createGO(&rockWorld);
-                        rockWorld.mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE;
-                        rockWorld.capture[net].capturingMonster = true;
-                        rockWorld.capture[net].capturedMonster = false;
-                        rockWorld.capture[net].timeBeforeCapture = 3;
-                        rockWorld.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
-                        rockWorld.appearance[net].scale.Set(2, 2, 2);
-                        if (rockWorld.capture[net].capturingMonster == true)
-                        {
-                            rockWorld.position[net] = rockWorld.position[ai];
-                            int v1 = rand() % 100;
-                            std::cout << v1 << std::endl;
-                            if (v1 < 20)
-                            {
-                                rockWorld.capture[net].capturedMonster = true;//Captured!
-                            }
-                            rockWorld.capture[net].capturingMonster = false;//fail capture
-                        }
-                        if (rockWorld.capture[net].capturedMonster == true)
-                        {
-                            rockWorld.velocity[ai] = 0;
-                            rockWorld.position[net] = rockWorld.position[ai];
-                        }
-                    }
-                }
-            }
-        }
-    }
+
+    UpdateNetProjectiles(&rockWorld);
+
     //////////////////////////////////////////////
     ////////BAIT /////////////////////////////////
     //////////////////////////////////////////////
-    //if (ItemProjectile::ItemProjectileList.size())
-    //{
-    //	for (unsigned i = 0; i < ItemProjectile::ItemProjectileList.size(); ++i)
-    //	{
-    //		if (ItemProjectile::ItemProjectileList[i]->position.y <= 1)
-    //		{
-    //			Vector3 tempo = ItemProjectile::ItemProjectileList[i]->position;
-    //			ItemProjectile::ItemProjectileList[i]->deleteBullet;
-
-    //			bait = createGO(&grass);
-    //			grass.mask[bait] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_BAIT;
-    //			grass.position[bait] = tempo;
-    //			grass.appearance[bait].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE);
-    //			grass.appearance[bait].scale.Set(1, 1, 1);
-    //			grass.bait[bait].scentRadius = 200;
-    //			grass.bait[bait].foundRadius = 5;
-    //			grass.bait[bait].eattingBait = false;
-    //			grass.bait[bait].foundBait = false;
-    //			grass.bait[bait].timeEatting = 3.0f;
-    //		}
-    //	} 
-    //}
-
-    //for (GameObject ai = 0; ai < grass.GAMEOBJECT_COUNT; ++ai)
-    //{
-    //	if ((grass.mask[ai] & COMPONENT_AI) == COMPONENT_AI)
-    //	{
-    //		for (GameObject bait = 0; bait < grass.GAMEOBJECT_COUNT; ++bait)
-    //		{
-    //			if ((grass.mask[bait] & COMPONENT_BAIT) == COMPONENT_BAIT)
-    //			{
-    //				if ((grass.position[ai] - grass.position[bait]).LengthSquared() < grass.bait[bait].scentRadius && grass.bait[bait].eattingBait == false)
-    //				{
-    //					grass.bait[bait].foundBait = true;
-    //					std::cout << " FOUND BAIT " + grass.bait[bait].foundBait << std::endl;
-    //					if (grass.bait[bait].foundBait == true)
-    //					{
-    //						grass.velocity[ai] = (grass.position[ai] - grass.position[bait]).Normalized();
-    //						grass.velocity[ai].y = 0;
-    //						grass.velocity[ai] *= -1;
-    //					}
-    //				}
-    //				if ((grass.position[ai] - grass.position[bait]).LengthSquared() < grass.bait[bait].foundRadius)
-    //				{
-    //					std::cout << "EATTING BAIT " + grass.bait[bait].foundBait << std::endl;
-    //					grass.bait[bait].foundBait = false;
-    //					grass.bait[bait].eattingBait = true;
-    //					grass.velocity[ai] = 0;
-    //					grass.velocity[ai].y = 0;
-    //				}
-    //				if (grass.bait[bait].eattingBait == true)
-    //				{
-    //					grass.bait[bait].timeEatting -= dt;
-    //					std::cout << grass.bait[bait].timeEatting << std::endl;
-    //					if (grass.bait[bait].timeEatting <= 0)
-    //					{
-    //						grass.bait[bait].eattingBait == false;
-    //						destroyGO(&grass, bait);
-    //						std::cout << "Done Eatting" << std::endl;
-    //						//PUT WHATEVER THE RABBIT DO NORMALLY HERE :D (DONE EATTING BAIT)
-    //						grass.velocity[ai] = 2;
-    //						grass.velocity[ai].y = 0;
-    //					}
-    //				}
-    //			}
-    //		}
-    //	}
-    //}
-
+    UpdateBaitProjectiles(&rockWorld);
+    UpdateBait(&rockWorld, dt);
 
     //Trap check (radius)
-    for (GameObject trap = 0; trap < rockWorld.GAMEOBJECT_COUNT; ++trap)
-    {
-        if ((rockWorld.mask[trap] & COMPONENT_TRAP) == COMPONENT_TRAP)
-        {
-            if (!rockWorld.trap[trap].activated)
-            {
-                for (GameObject ai = 0; ai < rockWorld.GAMEOBJECT_COUNT; ++ai)
-                {
-                    if ((rockWorld.mask[ai] & COMPONENT_AI) == COMPONENT_AI)
-                    {
-                        if ((rockWorld.position[trap] - rockWorld.position[ai]).LengthSquared() < rockWorld.trap[trap].radius)
-                        {
-                            rockWorld.trap[trap].caughtMonsterVel = rockWorld.velocity[ai];
-                            rockWorld.trap[trap].caughtMonster = ai;
-                            rockWorld.trap[trap].activated = true;
-                            rockWorld.velocity[ai].SetZero();
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (rockWorld.trap[trap].triggerTimer < rockWorld.trap[trap].triggerDuration)
-                {
-                    rockWorld.trap[trap].triggerTimer += dt;
-                }
-                else
-                {
-                    rockWorld.velocity[rockWorld.trap[trap].caughtMonster] = rockWorld.trap[trap].caughtMonsterVel;
-                    destroyGO(&rockWorld, trap);
-                }
-            }
-        }
-    }
+    UpdateTrap(&rockWorld, dt);
 
-    //
-    for (GameObject ai = 0; ai < rockWorld.GAMEOBJECT_COUNT; ++ai)
-    {
-        if ((rockWorld.mask[ai] & COMPONENT_AI) == COMPONENT_AI)
-        {
-            if ((SharedData::GetInstance()->player->GetPositionVector() - rockWorld.position[ai]).LengthSquared() < 750.0f * SharedData::GetInstance()->player->m_noiseFactor)
-            {
-                rockWorld.velocity[ai] = (rockWorld.position[ai] - SharedData::GetInstance()->player->GetPositionVector()).Normalized() * 5;
-                rockWorld.velocity[ai].y = 0;
-            }
-        }
+    // Monster damage to player
+    CheckMonsterAttack(&rockWorld);
 
-    }
+    //////////////////////////////////////////////
+    ////////PARTICLES ////////////////////////////
+    //////////////////////////////////////////////
 
-    //If player is hidden
-    for (GameObject tallGrass = 0; tallGrass < rockWorld.GAMEOBJECT_COUNT; ++tallGrass)
-    {
-        if ((rockWorld.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
-        {
-            if (rockWorld.hitbox[tallGrass].CheckCollision(SharedData::GetInstance()->player->GetPositionVector()))
-            {
-                SharedData::GetInstance()->player->m_bHiding = true;
-                break;
-            }
-            else
-                SharedData::GetInstance()->player->m_bHiding = false;
-        }
-    }
+    UpdateParticles(&rockWorld, dt);
 
     //===============================================================================================================================//
     //                                                            Key Inputs                                                         //
@@ -351,69 +220,119 @@ void SceneRock::Update(double dt)
     //Place trap
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].Use())
     {
-        GameObject trap = createGO(&rockWorld);
-
-        rockWorld.mask[trap] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_TRAP;
-
-        rockWorld.position[trap].Set(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
-        rockWorld.appearance[trap].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP);
-        rockWorld.appearance[trap].scale.Set(3, 3, 3);
-        
-        rockWorld.trap[trap].triggerDuration = 3.0f;
-        rockWorld.trap[trap].triggerTimer = 0.f;
-        rockWorld.trap[trap].radius = 2.5f;
-        rockWorld.trap[trap].activated = false;
-        rockWorld.trap[trap].caughtMonster = 0;
-        rockWorld.trap[trap].caughtMonsterVel.SetZero();
-
-        counter = 0;
+        PlaceTrap(&rockWorld);
     }
 
-    //Shoot projectile
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_X].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_NET].Use())
+    //Rocks
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].isPressed)
     {
-        ItemProjectile::ItemProjectileList.push_back(new ItemProjectile(
-            Vector3(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
-            Vector3(SharedData::GetInstance()->player->GetViewVector().x, 0.5, SharedData::GetInstance()->player->GetViewVector().z),
-            500,
-            15,
-            10
-            ));
+        b_Rocks = true;
+        b_Baits = false;
+        b_Nets = false;
+        f_HighlightPos = -34.7f;
+    }
+    //Nets
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_2].isPressed)
+    {
+        b_Nets = true;
+        b_Rocks = false;
+        b_Baits = false;
+        f_HighlightPos = -24.8f;
+    }
+    //Baits
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_3].isPressed)
+    {
+        b_Baits = true;
+        b_Rocks = false;
+        b_Nets = false;
 
-        counter = 0;
+        f_HighlightPos = -14.9f;
     }
 
-    //Spawn monster at origin
+    if (b_Rocks)
+    {
+        //Rock projectile
+        f_RotateRock += dt * 50;
+        ShootRock();
+    }
+    if (b_Nets)
+    {
+        //Net projectile
+        f_RotateNet += dt * 50;
+        ShootNet();
+    }
+    if (b_Baits)
+    {
+        //Bait Projectile
+        f_RotateBait += dt * 50;
+        ShootBait();
+    }
+
+    // Check pick up monster
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_E].isPressed)
     {
-        monster = createGO(&rockWorld);
-        rockWorld.mask[monster] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
-        rockWorld.position[monster].SetZero();
-        rockWorld.velocity[monster].Set(0, 0, 1);
-        rockWorld.hitbox[monster].m_origin = rockWorld.position[monster] + Vector3(0, 0.75f, -0.3f);
-        rockWorld.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
-        rockWorld.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
-        rockWorld.appearance[monster].scale.Set(1, 1, 1);
+        for (GameObject GO = 0; GO < rockWorld.GAMEOBJECT_COUNT; ++GO)
+        {
+            // check for picking up net
+            if ((rockWorld.mask[GO] & COMPONENT_CAPTURE) == COMPONENT_CAPTURE)
+            {
+                if (CheckPickUpCaughtMonster(&rockWorld, GO))
+                    break;
+            }
 
-        counter = 0;
+            // check for interacting with money tree
+            else if ((rockWorld.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+            {
+                if (CheckInteractMoneyTree(&rockWorld, GO))
+                    break;
+            }
+
+            // check for interacting with coin
+            if ((rockWorld.mask[GO] & COMPONENT_COIN) == COMPONENT_COIN)
+            {
+                if (CheckPickUpCoin(&rockWorld, GO))
+                    break;
+            }
+
+            // check for interacting with coin
+            else if ((rockWorld.mask[GO] & COMPONENT_ROCKS) == COMPONENT_ROCKS)
+            {
+                if (CheckPickUpRock(&rockWorld, GO))
+                    break;
+            }
+
+            // check for interacting with meat
+            else if ((rockWorld.mask[GO] & COMPONENT_MEAT) == COMPONENT_MEAT)
+            {
+                if (CheckPickUpMeat(&rockWorld, GO))
+                    break;
+            }
+
+        }
+
     }
 
-    //Shoot projectile
-    /*if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].IsPressed() && counter > 0.2)
+    // TEMPORARY DEBUG: check of inventory
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_C].isPressed)
     {
-    ItemProjectile::ItemProjectileList.push_back(new ItemProjectile(
-    Vector3(camera.position.x, camera.position.y, camera.position.z),
-    Vector3(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-    500,
-    25,
-    400
-    ));
-
-    counter = 0;
-    }*/
+        std::cout << "MONSTER INVENTORY: ";
+        for (unsigned i = 0; i < SharedData::GetInstance()->player->monsterList.size(); ++i)
+        {
+            std::cout << SharedData::GetInstance()->player->monsterList[i] << " ";
+        }
+        std::cout << std::endl;
+    }
 
     // for buffer time between projectile launches
-    counter += dt;
+    ItemProjectile::d_rockCounter += dt;
+    ItemProjectile::d_netCounter += dt;
+    ItemProjectile::d_baitCounter += dt;
+
+    //Update Projectiles vector - delete them from vector
+    itemProjectile->UpdateProjectile(dt);
+    rockProjectile->UpdateRockProjectile(dt);
+    netProjectile->UpdateNetProjectile(dt);
+    baitProjectile->UpdateBaitProjectile(dt);
 }
 
 void SceneRock::Render()
@@ -445,21 +364,9 @@ void SceneRock::Render()
     }
 
     //Axes
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_AXES), false);
+    //RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_AXES), false);
 
-    //Render pojectiles
-    for (vector<ItemProjectile*>::iterator it = ItemProjectile::ItemProjectileList.begin(); it != ItemProjectile::ItemProjectileList.end(); ++it)
-    {
-        modelStack.PushMatrix();
-        modelStack.Translate(
-            (*it)->position.x,
-            (*it)->position.y,
-            (*it)->position.z
-            );
-        modelStack.Scale(0.5, 0.5, 0.5);
-        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), false);
-        modelStack.PopMatrix();
-    }
+    RenderProjectiles();
 
     RenderRockScene();
 
@@ -472,87 +379,120 @@ void SceneRock::Render()
     RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
     modelStack.PopMatrix();
 
-    std::stringstream ss;
-    ss << "FPS: " << fps;
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 3);
+    // Render particles
+    for (std::vector<ParticleObject* >::iterator it = SharedData::GetInstance()->particleManager->m_particleList.begin(); it != SharedData::GetInstance()->particleManager->m_particleList.end(); ++it)
+    {
+        ParticleObject* particle = (ParticleObject*)(*it);
+        if (particle->active)
+        {
+            RenderParticle(particle);
+        }
+    }
 
-    std::stringstream ss1;
-    ss1 << "Noise: " << SharedData::GetInstance()->player->GetNoiseFactor();
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss1.str(), Color(1, 1, 0), 3, 0, 6);
-    
-    std::stringstream ss2;
-    ss2 << "Distance Squared: " << (SharedData::GetInstance()->player->GetPositionVector() - rockWorld.position[monster]).LengthSquared();
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(1, 1, 0), 3, 0, 9);
-
-    std::stringstream ss3;
-    ss3 << "Distance Treshold: " << 750.0f * SharedData::GetInstance()->player->m_noiseFactor;
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 3, 0, 12);
-}
-
-void SceneRock::RenderRockScene()
-{
-    //Ground mesh
-    modelStack.PushMatrix();
-    modelStack.Translate(0, 0, 0);
-    modelStack.Rotate(-90, 1, 0, 0);
-    modelStack.Scale(200, 200, 100);
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCK_TERRAIN), true);
-    modelStack.PopMatrix();
-
-    //Gameobjects
-    //if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isHeldDown)
-        RenderGameObjects(&rockWorld);
-
-    //Skyplane
-    modelStack.PushMatrix();
-    modelStack.Translate(500, 2800, -500);
-    //modelStack.Rotate(0, 0,0,0);
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_SKYPLANE), false);
-    modelStack.PopMatrix();
-
-    //Render hitboxes
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isHeldDown)
     for (GameObject tallGrass = 0; tallGrass < rockWorld.GAMEOBJECT_COUNT; ++tallGrass)
     {
         if ((rockWorld.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
         {
-
             modelStack.PushMatrix();
             modelStack.Translate(rockWorld.hitbox[tallGrass].m_origin.x, rockWorld.hitbox[tallGrass].m_origin.y, rockWorld.hitbox[tallGrass].m_origin.z);
             modelStack.Scale(rockWorld.hitbox[tallGrass].m_scale.x, rockWorld.hitbox[tallGrass].m_scale.y, rockWorld.hitbox[tallGrass].m_scale.z);
-            //modelStack.Rotate(0, 0, 0, 0);
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             modelStack.PopMatrix();
         }
     }
+    
+    // HUD THINGS
+    if (SharedData::GetInstance()->sceneManager->GetGameState() == SceneManager::GAMESTATE_GAMEPLAY)
+    {
+        RenderHUD(&rockWorld);
+    }
 }
 
-bool SceneRock::ViewCheckPosition(Vector3 pos, float degree)
+void SceneRock::RenderRockScene()
 {
-    if (pos != camera.position)
-    {
-        Vector3 view = (pos - camera.position).Normalized();
+    //Ground mesh
+    modelStack.PushMatrix();
+    modelStack.Translate(100, -7, 100);
+    modelStack.Scale(300.0f, 30.0f, 300.0f);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCK_TERRAIN), true);
+    modelStack.PopMatrix();
 
-        float angleX = Math::RadianToDegree(acos(view.Dot(SharedData::GetInstance()->player->GetViewVector())));
+    //Skyplane
+    modelStack.PushMatrix();
+    modelStack.Translate(500, 2800, -500);
+    //modelStack.Rotate(0, 0,0,0);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCK_SKYPLANE), false);
+    modelStack.PopMatrix();
 
-        if (angleX <= degree)
-        {
-            return true;
-        }
-        if (angleX > degree)
-        {
-            return false;
-        }
-    }
+    RenderGameObjects(&rockWorld);
 }
 
 void SceneRock::Exit()
 {
+    for (unsigned GO = 0; GO < rockWorld.GAMEOBJECT_COUNT; ++GO)
+    {
+        //if (grass.monster[GO])
+        //{
+        //    delete grass.monster[GO];
+        //}
 
+        // call destroyGO instead
+        destroyGO(&rockWorld, GO);
+    }
+
+    SharedData::GetInstance()->particleManager->ClearParticles();
 }
 
-//========================
-// == OBJECTS TO RENDER
-//========================
+bool SceneRock::CheckInteractMoneyTree(World *world, GameObject GO)
+{
+    if ((camera.position - rockWorld.position[GO]).LengthSquared() < 250)
+    {
+        if (ViewCheckPosition(rockWorld.position[GO], 45.f) == true)
+        {
+            int loot = Math::RandIntMinMax(0, 3);
+            switch (loot)
+            {
+            case 0:
+            {
+                      rockWorld.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_OBSTACLE | COMPONENT_COIN;
+                      rockWorld.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN);
+                      rockWorld.appearance[GO].scale.Set(5, 5, 5);
+                      break;
+            }
+            case 1:
+            {
+                      rockWorld.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_OBSTACLE | COMPONENT_ROCKS;
+                      rockWorld.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1);
+                      rockWorld.appearance[GO].scale.Set(2, 2, 2);
+                      break;
+            }
+            case 2:
+            {
+                      rockWorld.mask[GO] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI | COMPONENT_OBSTACLE;
+                      rockWorld.appearance[GO].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_GOLEM);
+                      rockWorld.appearance[GO].scale.Set(1.25f, 1.25f, 1.25f);
+                      rockWorld.monster[GO] = MonsterFactory::CreateMonster("Golem");
+                      rockWorld.hitbox[GO].m_origin = rockWorld.position[GO] + Vector3(0, 0.75f, -0.3f);
+                      rockWorld.hitbox[GO].m_scale.Set(3.f, 4.f, 3.5f);
+
+                      rockWorld.monster[GO]->m_position = rockWorld.position[GO];
+                      rockWorld.appearance[GO].angle = 0.f;
+                      rockWorld.appearance[GO].billboard = false;
+
+                      rockWorld.monster[GO]->SetIdleState();
+                      rockWorld.velocity[GO] = rockWorld.monster[GO]->m_velocity;
+                      break;
+            }
+            case 3:
+                // Nothing
+                break;
+            }
+
+            return true;
+        }
+    }
+
+    return false;
+}

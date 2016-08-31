@@ -19,17 +19,21 @@ public:
     virtual void Init();
     virtual void Update(double dt);
     virtual void Render();
-    virtual void RenderRockScene();
     virtual void Exit();
-    bool ViewCheckPosition(Vector3 pos, float degree);
+    void RenderRockScene();
+    virtual bool CheckInteractMoneyTree(World *world, GameObject GO);
+
     //Test stuff
     ItemProjectile* itemProjectile;
+    ItemProjectile* rockProjectile;
+    ItemProjectile* netProjectile;
+    ItemProjectile* baitProjectile;
 
     //For placing traps
-    //bool b_placing = false;
-    bool b_capturing = false;
-    bool b_captured = false;
-    int captureCounter = 0;
+    bool b_placing = false;
+    //bool b_capturing = false;
+    //bool b_captured = false;
+    //int captureCounter = 0;
 
     std::vector<Vector3> placedTraps;
 

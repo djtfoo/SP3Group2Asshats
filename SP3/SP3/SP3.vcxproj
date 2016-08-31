@@ -74,7 +74,8 @@
     <ClCompile Include="Source\Graphics\Mesh\Mesh.cpp" />
     <ClCompile Include="Source\Graphics\Mesh\MeshBuilder.cpp" />
     <ClCompile Include="Source\Graphics\Mesh\SpriteAnimation.cpp" />
-    <ClCompile Include="Source\Graphics\ParticleManager\Particle.cpp" />
+    <ClCompile Include="Source\Graphics\Particle\Particle.cpp" />
+    <ClCompile Include="Source\Graphics\Particle\ParticleManager.cpp" />
     <ClCompile Include="Source\Graphics\Vertex\Utility.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Scene\mainMenu.cpp" />
@@ -130,7 +131,8 @@
     <ClInclude Include="Source\Graphics\Mesh\Mesh.h" />
     <ClInclude Include="Source\Graphics\Mesh\MeshBuilder.h" />
     <ClInclude Include="Source\Graphics\Mesh\SpriteAnimation.h" />
-    <ClInclude Include="Source\Graphics\ParticleManager\Particle.h" />
+    <ClInclude Include="Source\Graphics\Particle\Particle.h" />
+    <ClInclude Include="Source\Graphics\Particle\ParticleManager.h" />
     <ClInclude Include="Source\Graphics\Vertex\Utility.h" />
     <ClInclude Include="Source\Graphics\Vertex\Vertex.h" />
     <ClInclude Include="Source\Scene\mainMenu.h" />

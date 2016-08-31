@@ -30,6 +30,7 @@ void destroyGO(World *world, GameObject GO)
 		world->appearance[GO].scale.SetZero();
 		world->appearance[GO].mesh = nullptr;
         world->appearance[GO].angle = 0.f;
+        world->appearance[GO].billboard = false;
 	}
 
 	if ((world->mask[GO] & COMPONENT_HITBOX) == COMPONENT_HITBOX)

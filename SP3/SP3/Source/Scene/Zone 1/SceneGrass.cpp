@@ -69,6 +69,7 @@ void SceneGrass::Init()
                 grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
                 grass.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(0.5f, 1.f), Math::RandFloatMinMax(0.8f, 1.f));
                 grass.appearance[go].angle = Math::RandFloatMinMax(0.f, 360.f);
+                grass.appearance[go].billboard = false;
                 //grass.appearance[go].scale.Set(1, 1, 1);
             }
             else if (tile >= '1' && tile <= '9')
@@ -104,20 +105,10 @@ void SceneGrass::Init()
                 }
                 grass.monster[go]->m_position = grass.position[go];
                 grass.appearance[go].angle = 0.f;
+                grass.appearance[go].billboard = false;
 
-                int randCol = cols + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
-                int randRow = rows + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
-                while (randCol < 0 || randCol >= 40 || randRow < 0 || randRow >= 40 || Scene::m_levelMap[randRow][randCol] != '0')
-                {
-                    randCol = cols + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
-                    randRow = rows + Math::RandIntMinMax(3, 5) * Math::RandIntMinMax(-1, 1);
-                }
-
-                Vector3 RNGdestination(randCol * Scene::tileSize + Scene::tileSize * 0.5f, 0, randRow * Scene::tileSize + Scene::tileSize * 0.5f);
-
-                grass.monster[go]->m_destination = RNGdestination;
-                grass.velocity[go] = (RNGdestination - grass.position[go]).Normalized() * grass.monster[go]->GetSpeedStat();
-                grass.monster[go]->m_velocity = grass.velocity[go];
+                grass.monster[go]->SetIdleState();
+                grass.velocity[go] = grass.monster[go]->m_velocity;
 
             }
         }
@@ -189,7 +180,6 @@ void SceneGrass::Update(double dt)
 
     //Camera Update
     camera.Update();
-	UpdateParticle(dt);
 
 	// Check to see if text_C and text_M should be destroyed
     DestroyText(&grass);
@@ -221,6 +211,12 @@ void SceneGrass::Update(double dt)
 
 	// Monster damage to player
     CheckMonsterAttack(&grass);
+
+    //////////////////////////////////////////////
+    ////////PARTICLES ////////////////////////////
+    //////////////////////////////////////////////
+
+    UpdateParticles(&grass, dt);
 
 	//===============================================================================================================================//
 	//                                                            Key Inputs                                                         //
@@ -365,53 +361,7 @@ void SceneGrass::Render()
 
 	//RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_AXES), false);
 
-	//for (vector<ItemProjectile*>::iterator it = ItemProjectile::ItemProjectileList.begin(); it != ItemProjectile::ItemProjectileList.end(); ++it){
-	//	modelStack.PushMatrix();
-	//	modelStack.Translate(
-	//		(*it)->position.x,
-	//		(*it)->position.y,
-	//		(*it)->position.z
-	//		);
-	//	modelStack.Scale(0.5, 0.5, 0.5);
-	//	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), false);
-	//	modelStack.PopMatrix();
-	//}
-
-	for (vector<ItemProjectile*>::iterator it = ItemProjectile::RockProjectileList.begin(); it != ItemProjectile::RockProjectileList.end(); ++it){
-		modelStack.PushMatrix();
-		modelStack.Translate(
-			(*it)->position.x,
-			(*it)->position.y,
-			(*it)->position.z
-			);
-		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), true);
-		modelStack.PopMatrix();
-	}
-
-	for (vector<ItemProjectile*>::iterator it = ItemProjectile::NetProjectileList.begin(); it != ItemProjectile::NetProjectileList.end(); ++it){
-		modelStack.PushMatrix();
-		modelStack.Translate(
-			(*it)->position.x,
-			(*it)->position.y,
-			(*it)->position.z
-			);
-		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), true);
-		modelStack.PopMatrix();
-	}
-
-	for (vector<ItemProjectile*>::iterator it = ItemProjectile::BaitProjectileList.begin(); it != ItemProjectile::BaitProjectileList.end(); ++it){
-		modelStack.PushMatrix();
-		modelStack.Translate(
-			(*it)->position.x,
-			(*it)->position.y,
-			(*it)->position.z
-			);
-		modelStack.Scale(0.5, 0.5, 0.5);
-		RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), true);
-		modelStack.PopMatrix();
-	}
+    RenderProjectiles();
 
 	RenderGrassScene();
 
@@ -436,6 +386,16 @@ void SceneGrass::Render()
     modelStack.Scale(1,1,1);
     RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
     modelStack.PopMatrix();
+
+    // Render particles
+    for (std::vector<ParticleObject* >::iterator it = SharedData::GetInstance()->particleManager->m_particleList.begin(); it != SharedData::GetInstance()->particleManager->m_particleList.end(); ++it)
+    {
+        ParticleObject* particle = (ParticleObject*)(*it);
+        if (particle->active)
+        {
+            RenderParticle(particle);
+        }
+    }
 
     //for (GameObject tallGrass = 0; tallGrass < grass.GAMEOBJECT_COUNT; ++tallGrass)
     //{
@@ -475,28 +435,10 @@ void SceneGrass::RenderGrassScene()
 	modelStack.PopMatrix();
 
     RenderGameObjects(&grass);
-
-	for (std::vector<ParticleObject*>::iterator it = particleList.begin(); it != particleList.end(); ++it)
-	{
-		ParticleObject* particle = (ParticleObject*)*it;
-		if ((particle)->active)
-		{
-			RenderParticle(particle);
-		}
-	}
 }
-
-
 
 void SceneGrass::Exit()
 {
-	while (particleList.size() > 0)
-	{
-		ParticleObject * particle = particleList.back();
-		delete particle;
-		particleList.pop_back();
-	}
-
 	for (unsigned GO = 0; GO < grass.GAMEOBJECT_COUNT; ++GO)
 	{
 		//if (grass.monster[GO])
@@ -508,80 +450,5 @@ void SceneGrass::Exit()
 		destroyGO(&grass, GO);
 	}
 
-}
-
-ParticleObject* SceneGrass::GetParticle()
-{
-	for (std::vector<ParticleObject*>::iterator it = particleList.begin(); it != particleList.end(); ++it)
-	{
-		ParticleObject* particle = (ParticleObject*)*it;
-		if (!particle->active)
-		{
-			particle->active = true;
-			m_particleCount++;
-			return particle;
-		}
-	}
-
-	for (unsigned i = 0; i < 10; ++i)
-	{
-		ParticleObject* particle = new ParticleObject();
-		particleList.push_back(particle);
-	}
-
-	ParticleObject* particle = particleList.back();
-	particle->active = true;
-	m_particleCount++;
-	return particle;
-}
-
-void SceneGrass::UpdateParticle(double dt)
-{
-	if (m_particleCount < MAX_PARTICLE)
-	{
-		for (int i = 0; i < 100; i++)
-		{
-			ParticleObject* particle1 = GetParticle();
-			particle1->type = ParticleObject_TYPE::P_HIDDENBONUS;
-			particle1->scale.Set(1, 1, 1);
-			particle1->vel.Set(Math::RandFloatMinMax(-30, 30), Math::RandFloatMinMax(-30, 30), Math::RandFloatMinMax(-30, 30));
-			particle1->rotationSpeed = Math::RandFloatMinMax(20.0f, 40.0f);
-			particle1->pos.Set(0, 1200.0f, 0);
-		}
-	}
-
-	for (std::vector<ParticleObject*>::iterator it = particleList.begin(); it != particleList.end(); ++it)
-	{
-		ParticleObject* particle1 = (ParticleObject*)*it;
-		if (particle1->active)
-		{
-			if (particle1->type == ParticleObject_TYPE::P_HIDDENBONUS)
-			{
-				particle1->vel += WV_GRAVITY *(float)dt * 5;
-				particle1->pos += particle1->vel * (float)dt * 20.0f;
-
-				particle1->rotation += particle1->rotationSpeed * (float)dt;
-
-			}
-		}
-	}
-}
-
-void SceneGrass::RenderParticle(ParticleObject* particle)
-{
-	switch (particle->type)
-	{
-
-	case ParticleObject_TYPE::P_HIDDENBONUS:
-		modelStack.PushMatrix();
-		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
-		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
-		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
-		RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), false);
-		modelStack.PopMatrix();
-		break;
-
-	default:
-		break;
-	}
+    SharedData::GetInstance()->particleManager->ClearParticles();
 }

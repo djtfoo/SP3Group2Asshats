@@ -138,6 +138,7 @@ int Monster::GetStrategyState()
 void Monster::AttackPlayer()
 {
     SharedData::GetInstance()->player->TakeDamage(m_originalAggression * 0.5f);
+    PlaySoundEffect();
 }
 
 void Monster::updateStats(double dt)

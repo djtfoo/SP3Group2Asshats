@@ -19,7 +19,7 @@ Abstract class for scenes in gameplay
 
 #include <sstream>
 
-Scene::LevelGenerationMap Scene::m_levelGenerationData = {};
+LevelGenerationMap Scene::m_levelGenerationData = {};
 char** Scene::m_levelMap = 0;
 
 void Scene::LoadLevelGenerationData(const char* file_path)
@@ -683,6 +683,7 @@ void Scene::UpdateRockProjectiles(World *world)
                                 world->appearance[meat].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT);
                                 world->appearance[meat].scale.Set(1, 1, 1);
                                 world->appearance[meat].angle = 0.f;
+                                world->appearance[meat].billboard = false;
 
                                 destroyGO(world, ai);
                             }
@@ -716,6 +717,7 @@ void Scene::UpdateNetProjectiles(World *world)
                     //world->appearance[net].scale.Set(2, 2, 2);
                     world->appearance[net].scale = world->appearance[ai].scale;
                     world->appearance[net].angle = 0.f;
+                    world->appearance[net].billboard = false;
 
                     if (world->capture[net].capturingMonster == true)
                     {
@@ -794,6 +796,7 @@ void Scene::UpdateBaitProjectiles(World *world)
                 world->position[bait] = tempo;
                 world->appearance[bait].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT);
                 world->appearance[bait].scale.Set(1, 1, 1);
+                world->appearance[bait].billboard = false;
                 world->bait[bait].scentRadius = 200;
                 world->bait[bait].foundRadius = 5;
                 world->bait[bait].eattingBait = false;
@@ -816,7 +819,7 @@ void Scene::UpdateBait(World *world, double dt)
             {
                 if ((world->mask[ai] & COMPONENT_AI) == COMPONENT_AI && world->monster[ai])
                 {
-                    if (world->monster[ai]->GetStrategyState() == AI_Strategy::STATE_IDLE && (world->position[ai] - world->position[bait]).LengthSquared() < world->bait[bait].scentRadius && world->bait[bait].eattingBait == false)
+                    if ((world->monster[ai]->GetStrategyState() == AI_Strategy::STATE_IDLE || world->monster[ai]->GetStrategyState() == AI_Strategy::STATE_ALERT) && (world->position[ai] - world->position[bait]).LengthSquared() < world->bait[bait].scentRadius && world->bait[bait].eattingBait == false)
                     {
                         world->bait[bait].foundBait = true;
                         //std::cout << " FOUND BAIT " + grass.bait[bait].foundBait << std::endl;
@@ -832,15 +835,15 @@ void Scene::UpdateBait(World *world, double dt)
                             }
                         }
                     }
-                    if ((world->position[ai] - world->position[bait]).LengthSquared() < world->bait[bait].foundRadius)
+                    if ((world->monster[ai]->GetStrategyState() == AI_Strategy::STATE_BAITED) && (world->position[ai] - world->position[bait]).LengthSquared() < world->bait[bait].foundRadius)
                     {
-                        std::cout << "EATING BAIT " + world->bait[bait].foundBait << std::endl;
                         world->bait[bait].foundBait = false;
                         world->bait[bait].eattingBait = true;
                         world->velocity[ai].SetZero();
                         world->monster[ai]->m_velocity.SetZero();
                     }
-                    if (world->bait[bait].eattingBait == true && (world->position[ai] - world->position[bait]).LengthSquared() < world->bait[bait].foundRadius)
+                    if (world->monster[ai]->GetStrategyState() == AI_Strategy::STATE_BAITED && world->bait[bait].eattingBait == true
+                        && (world->position[ai] - world->position[bait]).LengthSquared() < world->bait[bait].foundRadius)
                     {
                         world->bait[bait].timeEatting -= (float)(dt);
                         if (world->bait[bait].timeEatting > 0.1f) {
@@ -869,12 +872,26 @@ void Scene::UpdateBait(World *world, double dt)
                 }
             }
 
+            //for (std::vector<GameObject>::iterator it = world->bait[bait].baitedMonsters.begin(); it != world->bait[bait].baitedMonsters.end(); )
+            //{
+            //    if (world->monster[*it]->GetStrategyState() != AI_Strategy::STATE_BAITED)
+            //    {
+            //        it = world->bait[bait].baitedMonsters.erase(it);
+            //    }
+            //    else
+            //    {
+            //        ++it;
+            //    }
+            //}
+
             if (world->bait[bait].finishedBait == true) {
                 //PUT WHATEVER THE RABBIT DO NORMALLY HERE :D (DONE EATTING BAIT)
                 for (unsigned i = 0; i < world->bait[bait].baitedMonsters.size(); ++i) {
                     GameObject ai = world->bait[bait].baitedMonsters[i];
-                    world->monster[ai]->SetIdleState();
-                    world->velocity[ai] = world->monster[ai]->m_velocity;
+                    if (world->monster[ai] && world->monster[ai]->GetStrategyState() == AI_Strategy::STATE_BAITED) {
+                        world->monster[ai]->SetIdleState();
+                        world->velocity[ai] = world->monster[ai]->m_velocity;
+                    }
                 }
                 destroyGO(world, bait);
             }
@@ -1052,6 +1069,25 @@ void Scene::PlaceTrap(World *world)
         //counter = 0;
 }
 
+void Scene::UpdateParticles(World *world, double dt)
+{
+    SharedData::GetInstance()->particleManager->d_timeCounter += dt;
+
+    if (SharedData::GetInstance()->particleManager->d_timeCounter > 0.5)
+    {
+        for (GameObject GO = 0; GO < world->GAMEOBJECT_COUNT; ++GO)
+        {
+            if ((world->mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+            {
+                SharedData::GetInstance()->particleManager->SpawnParticle(world->position[GO], ParticleObject::P_HIDDENBONUS);
+            }
+        }
+
+        SharedData::GetInstance()->particleManager->d_timeCounter = 0.0;
+    }
+    SharedData::GetInstance()->particleManager->Update(dt);
+}
+
 bool Scene::CheckPickUpCaughtMonster(World *world, GameObject GO)
 {
     GameObject ai = world->capture[GO].caughtMonster;
@@ -1174,6 +1210,45 @@ bool Scene::ViewCheckPosition(Vector3 pos, float degree)
     return true;
 }
 
+void Scene::RenderProjectiles()
+{
+    for (vector<ItemProjectile*>::iterator it = ItemProjectile::RockProjectileList.begin(); it != ItemProjectile::RockProjectileList.end(); ++it){
+        modelStack.PushMatrix();
+        modelStack.Translate(
+            (*it)->position.x,
+            (*it)->position.y,
+            (*it)->position.z
+            );
+        modelStack.Scale(0.5, 0.5, 0.5);
+        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), true);
+        modelStack.PopMatrix();
+    }
+
+    for (vector<ItemProjectile*>::iterator it = ItemProjectile::NetProjectileList.begin(); it != ItemProjectile::NetProjectileList.end(); ++it){
+        modelStack.PushMatrix();
+        modelStack.Translate(
+            (*it)->position.x,
+            (*it)->position.y,
+            (*it)->position.z
+            );
+        modelStack.Scale(0.5, 0.5, 0.5);
+        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), true);
+        modelStack.PopMatrix();
+    }
+
+    for (vector<ItemProjectile*>::iterator it = ItemProjectile::BaitProjectileList.begin(); it != ItemProjectile::BaitProjectileList.end(); ++it){
+        modelStack.PushMatrix();
+        modelStack.Translate(
+            (*it)->position.x,
+            (*it)->position.y,
+            (*it)->position.z
+            );
+        modelStack.Scale(0.5, 0.5, 0.5);
+        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), true);
+        modelStack.PopMatrix();
+    }
+}
+
 void Scene::RenderPressEText(World *world)
 {
     for (GameObject GO = 0; GO < world->GAMEOBJECT_COUNT; ++GO)
@@ -1287,4 +1362,24 @@ void Scene::RenderHUD(World *world)
     //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), true, 10.0f, 40, -48);
 
     SetHUD(false);
+}
+
+void Scene::RenderParticle(ParticleObject* particle)
+{
+    glBlendFunc(GL_ONE, GL_ONE);
+    switch (particle->type)
+    {
+    case ParticleObject::P_HIDDENBONUS:
+        modelStack.PushMatrix();
+        modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
+        modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
+        modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
+        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HIDDENBONUS_PARTICLE), false);
+        modelStack.PopMatrix();
+        break;
+
+    default:
+        break;
+    }
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

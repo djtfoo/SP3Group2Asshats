@@ -40,9 +40,6 @@
     <Filter Include="Header Files\Graphics\Mesh">
       <UniqueIdentifier>{bee4c529-490c-4dd2-89e0-360a21711f43}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Graphics\ParticleManager">
-      <UniqueIdentifier>{81ae9f73-1860-49b8-89b3-d0136c260a39}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Graphics\Vertex">
       <UniqueIdentifier>{f57836fe-f19f-4820-bf00-f222bf3b9bca}</UniqueIdentifier>
     </Filter>
@@ -79,9 +76,6 @@
     <Filter Include="Source Files\Graphics\Mesh">
       <UniqueIdentifier>{eca53e7b-9fef-4938-8e9e-df4b1b94f6ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Graphics\ParticleManager">
-      <UniqueIdentifier>{5bc8313f-adcd-4f48-b15d-f9500c1cec46}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Graphics\Vertex">
       <UniqueIdentifier>{de4f3cbb-f161-41e7-b2c5-5256cec8119b}</UniqueIdentifier>
     </Filter>
@@ -108,6 +102,12 @@
     </Filter>
     <Filter Include="Header Files\Scene\Zone 4">
       <UniqueIdentifier>{1addd879-c9a8-4282-a925-755696221ca8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Particle">
+      <UniqueIdentifier>{5bc8313f-adcd-4f48-b15d-f9500c1cec46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Graphics\Particle">
+      <UniqueIdentifier>{81ae9f73-1860-49b8-89b3-d0136c260a39}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -227,9 +227,6 @@
     <ClCompile Include="Source\Scene\Scene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\ParticleManager\Particle.cpp">
-      <Filter>Source Files\Graphics\ParticleManager</Filter>
-    </ClCompile>
     <ClCompile Include="Source\General\SharedData.cpp">
       <Filter>Source Files\General</Filter>
     </ClCompile>
@@ -332,6 +329,12 @@
     <ClCompile Include="Source\Scene\Pause.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\Particle\Particle.cpp">
+      <Filter>Source Files\Graphics\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\Particle\ParticleManager.cpp">
+      <Filter>Source Files\Graphics\Particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\shader.hpp">
@@ -369,9 +372,6 @@
     </ClInclude>
     <ClInclude Include="Source\Graphics\Mesh\MeshBuilder.h">
       <Filter>Header Files\Graphics\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Graphics\ParticleManager\Particle.h">
-      <Filter>Header Files\Graphics\ParticleManager</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameObject\Player.h">
       <Filter>Header Files\GameObject</Filter>
@@ -495,6 +495,12 @@
     </ClInclude>
     <ClInclude Include="Source\Scene\Pause.h">
       <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\Particle\ParticleManager.h">
+      <Filter>Header Files\Graphics\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\Particle\Particle.h">
+      <Filter>Header Files\Graphics\Particle</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
