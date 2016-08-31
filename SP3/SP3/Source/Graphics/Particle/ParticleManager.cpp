@@ -38,6 +38,8 @@ void ParticleManager::Exit()
 
 void ParticleManager::ClearParticles()
 {
+    m_particleCount = 0;
+
     while (m_particleList.size() > 0)
     {
         ParticleObject *particle = m_particleList.back();

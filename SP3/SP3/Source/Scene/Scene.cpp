@@ -434,7 +434,7 @@ void Scene::RenderGameObjects(World* world)
 			modelStack.PopMatrix();
         }
 
-        if (m_sceneName != "Zoo" && world->monster[GO])
+        if (m_sceneName != "Zoo" && SharedData::GetInstance()->sceneManager->GetGameState() == SceneManager::GAMESTATE_GAMEPLAY && world->monster[GO])
         {
             Vector3 pos;
 

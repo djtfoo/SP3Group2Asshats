@@ -30,10 +30,13 @@ public:
 	Vector3 defaultTarget;
 	Vector3 defaultUp;
 
+    float rotateAngle;  // for scene spinning in main menu
+
 	Camera();
 	~Camera();
 	void Init(const Vector3& pos, const Vector3& target, const Vector3& up);
-	void Update();
+    void UpdateForMenu(double dt);
+    void Update();
 	void Reset();
 
     void MoveForward(const double dt);

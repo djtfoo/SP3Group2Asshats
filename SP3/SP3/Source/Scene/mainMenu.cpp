@@ -292,6 +292,7 @@ void MainMenu::MainMenuButton()
 			//SharedData::GetInstance()->sound->playSoundEffect("Sound//Click.mp3");
 			std::cout << "STARTGAME" << std::endl;
 			SharedData::GetInstance()->sceneManager->SetGameState();
+            SharedData::GetInstance()->sceneManager->ChangeScene(5);
 		}
 	}
 

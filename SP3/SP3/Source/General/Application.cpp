@@ -149,6 +149,8 @@ void Application::Init()
 		//return -1;
 	}
 
+    Math::InitRNG();
+
 	// Initialise Shared Data
 	SharedData::GetInstance()->Init();
 
@@ -159,7 +161,7 @@ void Application::Init()
 
 void Application::Run()
 {
-	SharedData::GetInstance()->sceneManager->ChangeScene(5);
+	SharedData::GetInstance()->sceneManager->ChangeScene(Math::RandIntMinMax(1, 4));
     SharedData::GetInstance()->sceneManager->SetMainMenuState();
 
     //Main Loop

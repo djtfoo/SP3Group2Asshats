@@ -501,7 +501,7 @@ void SceneLava::RenderLavaScene()
 
 	//Skyplane
 	modelStack.PushMatrix();
-	modelStack.Translate(500, 2800, -500);
+	modelStack.Translate(500, 2500, -500);
 	//modelStack.Rotate(0, 0,0,0);
 	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_LAVA_SKYPLANE), false);
 	modelStack.PopMatrix();

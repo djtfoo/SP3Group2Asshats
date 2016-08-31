@@ -185,8 +185,8 @@ void AI_Strategy::SetIdleStateDestination()
     bool run = true;
     while (run)
     { 
-        randCol = cols + /*Math::RandIntMinMax(3, 5) **/ Math::RandIntMinMax(-1, 1);
-        randRow = rows + /*Math::RandIntMinMax(3, 5) **/ Math::RandIntMinMax(-1, 1);
+        randCol = cols + /*Math::RandIntMinMax(3, 5) **/ Math::RandIntMinMax(-2, 2);
+        randRow = rows + /*Math::RandIntMinMax(3, 5) **/ Math::RandIntMinMax(-2, 2);
 
         if ((randCol > 0 && randCol < 40) && (randRow > 0 && randRow < 40)) {
             if (Scene::m_levelMap[randRow][randCol] >= '0' && Scene::m_levelMap[randRow][randCol] <= '9') {

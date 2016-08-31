@@ -121,6 +121,7 @@ void SceneManager::Update(double dt)
     switch (m_gamestate)
     {
     case GAMESTATE_MAINMENU:
+        m_mainMenu->scene->camera.UpdateForMenu(dt);
         m_mainMenu->Update(dt);
         break;
 
