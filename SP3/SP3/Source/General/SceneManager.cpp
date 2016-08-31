@@ -56,27 +56,27 @@ void SceneManager::ChangeScene(short id)
 
 	if (id == 1)
 	{
-        m_scene = new SceneGrass();
+        m_scene = new SceneGrass("Grass");
 		Application::SetDisabledCursor();
 	}
 	else if (id == 2)
 	{
-		m_scene = new SceneSwamp();
+		m_scene = new SceneSwamp("Swamp");
 		Application::SetDisabledCursor();
 	}
     else if (id == 3)
     {
-        m_scene = new SceneRock();
+        m_scene = new SceneRock("Rock");
 		Application::SetDisabledCursor();
     }
     else if (id == 4)
     {
-        m_scene = new SceneLava();
+        m_scene = new SceneLava("Lava");
 		Application::SetDisabledCursor();
     }
     else if (id == 5)
     {
-        m_scene = new SceneZoo();
+        m_scene = new SceneZoo("Zoo");
         Application::SetNormalCursor();
     }
 
@@ -102,7 +102,7 @@ void SceneManager::SetMainMenuState()
 void SceneManager::SetGameState()
 {
     m_gamestate = GAMESTATE_GAMEPLAY;
-    Application::SetDisabledCursor();
+    //Application::SetDisabledCursor();
 }
 
 void SceneManager::SetPauseState()

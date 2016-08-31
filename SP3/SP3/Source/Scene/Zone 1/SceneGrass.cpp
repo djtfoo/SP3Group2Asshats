@@ -10,7 +10,7 @@
 #include "../../GameObject/AI_Strategy.h"
 #include "../../General/WorldValues.h"
 
-SceneGrass::SceneGrass()
+SceneGrass::SceneGrass(std::string name) : Scene(name)
 {
 
 }

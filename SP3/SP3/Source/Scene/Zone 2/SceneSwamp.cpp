@@ -10,7 +10,7 @@
 
 #include <sstream>
 
-SceneSwamp::SceneSwamp()
+SceneSwamp::SceneSwamp(std::string name) : Scene(name)
 {
 }
 
@@ -457,7 +457,13 @@ void SceneSwamp::RenderSwampScene()
 
 void SceneSwamp::Exit()
 {
+    for (unsigned GO = 0; GO < swamp.GAMEOBJECT_COUNT; ++GO)
+    {
+        // call destroyGO instead
+        destroyGO(&swamp, GO);
+    }
 
+    SharedData::GetInstance()->particleManager->ClearParticles();
 }
 
 //========================

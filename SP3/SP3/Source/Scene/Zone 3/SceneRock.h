@@ -13,7 +13,7 @@ class SceneRock : public Scene
     bool bLButtonState;
 
 public:
-    SceneRock();
+    SceneRock(std::string name);
     ~SceneRock();
 
     virtual void Init();

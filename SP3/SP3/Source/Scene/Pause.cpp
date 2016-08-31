@@ -36,7 +36,7 @@ void Pause::Update(double dt)
 	{
 	case P_MAIN:
 	{
-		PasueMenuButton();
+		PauseMenuButton();
 	}
 	case P_QUEST:
 	{
@@ -205,7 +205,7 @@ void Pause::RenderOptionState()
 /////BUTTON STUFFS///////
 /////////////////////////
 
-void Pause::PasueMenuButton()
+void Pause::PauseMenuButton()
 {
 	double x, y;
 	Application::GetCursorPos(&x, &y);
@@ -231,6 +231,7 @@ void Pause::PasueMenuButton()
 			//SharedData::GetInstance()->sound->playSoundEffect("Sound//Click.mp3");
 			std::cout << "RESUME GAME" << std::endl;
 			SharedData::GetInstance()->sceneManager->SetGameState();
+            Application::SetDisabledCursor();
 		}
 	}
 
@@ -254,7 +255,8 @@ void Pause::PasueMenuButton()
 			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
 			b_mouseClick = false;
 			std::cout << "BACK TO TOWN" << std::endl;
-			//SharedData::GetInstance()->sceneManager->SetGameState(); GO TO TOWN!
+            SharedData::GetInstance()->sceneManager->SetGameState();
+            SharedData::GetInstance()->sceneManager->ChangeScene(5);
 		}
 	}
 

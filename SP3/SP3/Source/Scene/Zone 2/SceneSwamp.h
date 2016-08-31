@@ -17,7 +17,7 @@ class SceneSwamp : public Scene
     bool bLButtonState;
 
 public:
-    SceneSwamp();
+    SceneSwamp(std::string name);
     ~SceneSwamp();
 
 	void UpdateFog(double dt);

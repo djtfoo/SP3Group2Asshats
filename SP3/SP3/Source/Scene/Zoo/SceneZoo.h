@@ -10,7 +10,7 @@
 class SceneZoo : public Scene
 {
 public:
-    SceneZoo();
+    SceneZoo(std::string name);
     ~SceneZoo();
 
     virtual void Init();
@@ -18,6 +18,8 @@ public:
     virtual void Render();
     virtual void RenderZooScene();
     virtual void Exit();
+
+    virtual void SpawnSceneParticles();
 
     void populateMonsterList();
 

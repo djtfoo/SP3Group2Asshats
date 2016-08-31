@@ -13,7 +13,7 @@ class SceneGrass : public Scene
 	bool bLButtonState;
 
 public:
-	SceneGrass();
+    SceneGrass(std::string name);
 	~SceneGrass();
 
 	virtual void Init();

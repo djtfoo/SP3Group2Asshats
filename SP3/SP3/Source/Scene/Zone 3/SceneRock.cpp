@@ -12,7 +12,7 @@
 
 #include <sstream>
 
-SceneRock::SceneRock()
+SceneRock::SceneRock(std::string name) : Scene(name)
 {
 }
 
@@ -433,11 +433,6 @@ void SceneRock::Exit()
 {
     for (unsigned GO = 0; GO < rockWorld.GAMEOBJECT_COUNT; ++GO)
     {
-        //if (grass.monster[GO])
-        //{
-        //    delete grass.monster[GO];
-        //}
-
         // call destroyGO instead
         destroyGO(&rockWorld, GO);
     }

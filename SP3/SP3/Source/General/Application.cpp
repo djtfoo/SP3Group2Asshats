@@ -153,23 +153,23 @@ void Application::Init()
 	SharedData::GetInstance()->Init();
 
     GetCursorPos(&cursorXPos, &cursorYPos);
-	//glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    //glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Application::Run()
 {
-	SharedData::GetInstance()->sceneManager->ChangeScene(2);
+	SharedData::GetInstance()->sceneManager->ChangeScene(5);
     SharedData::GetInstance()->sceneManager->SetMainMenuState();
 
     //Main Loop
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
     while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE) && SharedData::GetInstance()->sceneManager->GetGameState() != SceneManager::GAMESTATE_EXIT)
 	{
-		if (Application::IsKeyPressed('V'))
-		{
-            SharedData::GetInstance()->sceneManager->ChangeScene(3);
-		}
+		//if (Application::IsKeyPressed('V'))
+		//{
+        //    SharedData::GetInstance()->sceneManager->ChangeScene(3);
+		//}
         SharedData::GetInstance()->sceneManager->Update(m_timer.getElapsedTime());
 		GetCursorPos(&cursorXPos, &cursorYPos);
         SharedData::GetInstance()->sceneManager->Render();

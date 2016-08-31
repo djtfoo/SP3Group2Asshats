@@ -368,6 +368,19 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_MONSTERSTATE_RAMPAGE] = MeshBuilder::GenerateQuad("Rampage State", Color(0, 1, 0), 1.f);
 	m_meshList[GEO_MONSTERSTATE_RAMPAGE]->textureArray[0] = LoadTGA("Image//monster_rampage.tga");
 
+    // Zoo
+    m_meshList[GEO_ZOO_GRASS_GROUND] = MeshBuilder::GenerateQuad("Grass Ground", Color(0, 1, 0), 1.f, 10);
+    m_meshList[GEO_ZOO_GRASS_GROUND]->textureArray[0] = LoadTGA("Image//GrassZone/Grass.tga");
+
+    m_meshList[GEO_ZOO_SWAMP_GROUND] = MeshBuilder::GenerateQuad("Grass Ground", Color(0, 1, 0), 1.f, 10);
+    m_meshList[GEO_ZOO_SWAMP_GROUND]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_terrain.tga");
+
+    m_meshList[GEO_ZOO_ROCK_GROUND] = MeshBuilder::GenerateQuad("Grass Ground", Color(0, 1, 0), 1.f, 10);
+    m_meshList[GEO_ZOO_ROCK_GROUND]->textureArray[0] = LoadTGA("Image//RockZone/RockZone_Terrain.tga");
+
+    m_meshList[GEO_ZOO_LAVA_GROUND] = MeshBuilder::GenerateQuad("Grass Ground", Color(0, 1, 0), 1.f, 10);
+    m_meshList[GEO_ZOO_LAVA_GROUND]->textureArray[0] = LoadTGA("Image//FireZone/lava_terrain.tga");
+
     // Shop stuff
     m_meshList[GEO_SHOP_BACKGROUND] = MeshBuilder::GenerateQuad("Rock Terrain", Color(0.5f, 0.5f, 0.5f), 1.f, 100);
     m_meshList[GEO_SHOP_SELECTION] = MeshBuilder::GenerateQuad("Rock Terrain", Color(0, 0, 0), 1.f, 100);

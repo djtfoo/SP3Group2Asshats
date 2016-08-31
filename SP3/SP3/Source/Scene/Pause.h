@@ -43,7 +43,7 @@ public:
 	void RenderQuestState();
 	void RenderOptionState();
 
-	void PasueMenuButton();
+	void PauseMenuButton();
 	void BackButton();
 
 	void RenderBackButton();

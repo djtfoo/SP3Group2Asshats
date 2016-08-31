@@ -434,7 +434,7 @@ void Scene::RenderGameObjects(World* world)
 			modelStack.PopMatrix();
         }
 
-        if (world->monster[GO])
+        if (m_sceneName != "Zoo" && world->monster[GO])
         {
             Vector3 pos;
 
@@ -1450,7 +1450,7 @@ void Scene::RenderParticle(ParticleObject* particle)
 		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
 		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
 		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
-		RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_VOLCANOSPARK_PARTICLE), false);
+		//RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_VOLCANOSPARK_PARTICLE), false);
 		modelStack.PopMatrix();
 		break;
     default:

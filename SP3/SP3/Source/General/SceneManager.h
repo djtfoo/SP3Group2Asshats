@@ -7,6 +7,9 @@
 A Class that handles the different scenes
 */
 /****************************************************************************/
+#ifndef SCENEMANAGER_H
+#define SCENEMANAGER_H
+
 //#include "../Scene/Scene.h"
 #include "../Scene/mainMenu.h"
 #include "../Scene/Pause.h"
@@ -54,3 +57,5 @@ public:
 	void Render();
 	void Exit();
 };
+
+#endif

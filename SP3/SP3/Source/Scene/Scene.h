@@ -19,8 +19,6 @@ typedef std::map<char, std::pair<GraphicsLoader::GEOMETRY_TYPE, std::vector<COMP
 
 class Scene
 {
-    friend class MainMenu;
-
 public:
     static LevelGenerationMap m_levelGenerationData;
     static void AddToMap(char tileCount, GraphicsLoader::GEOMETRY_TYPE meshType, const std::vector<COMPONENTS>& componentsList);
@@ -33,7 +31,10 @@ public:
     static const int m_cols = 40;
     static const int tileSize = 5;
 
+    const std::string m_sceneName;
+
 	Scene() {}
+    Scene(std::string name) : m_sceneName(name) {}
 	~Scene() {}
 
 	virtual void Init() = 0;

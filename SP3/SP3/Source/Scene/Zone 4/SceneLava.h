@@ -15,7 +15,7 @@ class SceneLava : public Scene
 	bool bLButtonState;
 
 public:
-	SceneLava();
+    SceneLava(std::string name);
 	~SceneLava();
 
 	virtual void Init();

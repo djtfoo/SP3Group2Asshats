@@ -109,6 +109,12 @@
     <Filter Include="Header Files\Graphics\Particle">
       <UniqueIdentifier>{81ae9f73-1860-49b8-89b3-d0136c260a39}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\General\Quest">
+      <UniqueIdentifier>{dd58afa3-7cf8-4344-8168-3bdc2943c19c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\General\Quest">
+      <UniqueIdentifier>{136ad7cb-c7eb-44ac-8f67-01e80ecdcee3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\comg.fragmentshader">
@@ -335,6 +341,12 @@
     <ClCompile Include="Source\Graphics\Particle\ParticleManager.cpp">
       <Filter>Source Files\Graphics\Particle</Filter>
     </ClCompile>
+    <ClCompile Include="Source\General\Quest\Quest.cpp">
+      <Filter>Source Files\General\Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\General\Quest\QuestManager.cpp">
+      <Filter>Source Files\General\Quest</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\shader.hpp">
@@ -501,6 +513,12 @@
     </ClInclude>
     <ClInclude Include="Source\Graphics\Particle\Particle.h">
       <Filter>Header Files\Graphics\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\General\Quest\Quest.h">
+      <Filter>Header Files\General\Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\General\Quest\QuestManager.h">
+      <Filter>Header Files\General\Quest</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

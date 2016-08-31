@@ -12,7 +12,7 @@
 
 #include <sstream>
 
-SceneLava::SceneLava()
+SceneLava::SceneLava(std::string name) : Scene(name)
 {
 }
 
