@@ -293,7 +293,7 @@ void Scene::RenderMeshIn2D(Mesh *mesh, bool enableLight, float sizeX, float size
 
 void Scene::RenderUI(Mesh* mesh, float size, float x, float y, float rotatex, float rotatey, float rotatez, bool enableLight)
 {
-	//glDisable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 	Mtx44 ortho;
 	ortho.SetToOrtho(0, 80, 0, 60, -100, 100); //size of screen UI
 	projectionStack.PushMatrix();
@@ -336,7 +336,7 @@ void Scene::RenderUI(Mesh* mesh, float size, float x, float y, float rotatex, fl
 	modelStack.PopMatrix();
 	viewStack.PopMatrix();
 	projectionStack.PopMatrix();
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 }
 //
 //void Scene::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size, float x, float y, bool rotate, float angle)
@@ -669,6 +669,7 @@ void Scene::UpdateRockProjectiles(World *world)
                         if (world->monster[ai]->GetStrategyState() != AI_Strategy::STATE_CAPTURED) {
                             world->monster[ai]->TakeDamage(SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetEffectiveness());
                             std::cout << "HEALTH: " << world->monster[ai]->GetHealthStat() << std::endl;
+                            //SharedData::GetInstance()->sound->SoundEffect3D->setSoundVolume(1.0f);
                             SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//Hit.mp3",
                                 irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
                                 irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
@@ -767,7 +768,7 @@ void Scene::UpdateNetProjectiles(World *world)
                         world->monster[ai]->GetCaptured();
                         world->position[net] = world->position[ai];
                         world->capture[net].caughtMonster = ai;
-                        SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//Netted.wav",
+                        SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//NPC.wav",
                             irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
                             irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
                             irrklang::vec3df(world->position[ai].x, world->position[ai].y, world->position[ai].z));
@@ -1083,7 +1084,7 @@ void Scene::UpdateInventory()
         b_Baits = false;
         b_Nets = false;
         b_Traps = false;
-        f_HighlightPos = -20.f;
+        f_HighlightPos = -34.7f;
     }
     //Nets
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_2].isPressed)
@@ -1092,7 +1093,7 @@ void Scene::UpdateInventory()
         b_Rocks = false;
         b_Baits = false;
         b_Traps = false;
-        f_HighlightPos = -10.f;
+        f_HighlightPos = -24.8f;
     }
     //Baits
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_3].isPressed)
@@ -1102,7 +1103,7 @@ void Scene::UpdateInventory()
         b_Nets = false;
         b_Traps = false;
 
-        f_HighlightPos = 0.f;
+        f_HighlightPos = -14.9f;
     }
     //Traps
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_4].isPressed)
@@ -1112,7 +1113,7 @@ void Scene::UpdateInventory()
         b_Nets = false;
         b_Traps = true;
 
-        f_HighlightPos = 10.f;
+        f_HighlightPos = -5.f;
     }
 }
 
@@ -1184,7 +1185,7 @@ bool Scene::CheckPickUpCoin(World *world, GameObject GO)
         if (ViewCheckPosition(world->position[GO], 45.f) == true)
         {
             std::cout << "coin picked up" << std::endl;
-            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//PickUp.wav",
+            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//ItemFound.mp3",
                 irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
                 irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
                 irrklang::vec3df(world->position[GO].x, world->position[GO].y, world->position[GO].z));
@@ -1205,7 +1206,7 @@ bool Scene::CheckPickUpMeat(World *world, GameObject GO)
         {
             SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].Add(1);
             std::cout << "meat picked up" << std::endl;
-            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//PickUp.wav",
+            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//ItemFound.mp3",
                 irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
                 irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
                 irrklang::vec3df(world->position[GO].x, world->position[GO].y, world->position[GO].z));
@@ -1225,10 +1226,6 @@ bool Scene::CheckPickUpRock(World *world, GameObject GO)
         if (ViewCheckPosition(world->position[GO], 45.f) == true)
         {
             std::cout << "rocks picked up" << std::endl;
-			SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//PickUp.wav",
-				irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
-				irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-				irrklang::vec3df(world->position[GO].x, world->position[GO].y, world->position[GO].z));
             destroyGO(world, GO);
             SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Add(1);
             // insert pick up rock sound
@@ -1389,62 +1386,48 @@ void Scene::RenderHUD(World *world)
     ss5 << "Meat: " << SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].GetCount();
 
     RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), false, 11.f, 12.f, f_HighlightPos, -48);
-    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 50.f, 12.f, 0, -48);
+    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 80.f, 12.f, 0, -48);
 
     // background
-    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 50.f, 12.f, 0, -48);
+    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 80.f, 12.f, 0, -48);
 
     // 1: Rock
     if (b_Rocks) {
-        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2.5f, 30.f, 6.5f, f_RotateRock, f_RotateRock, 0, false);
-		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss1.str(), Color(1, 1, 0), 1, 28.f, 3.5f);
-    }
-    else 
-	{
-        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2, 30.f, 6.5f, f_RotateRock, f_RotateRock, 0, false);
-		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss1.str(), Color(1, 1, 0), 1, 28.f, 3.5f);
-    }
-	
-    // 2: Net
-    if (b_Nets) {
-        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 1.25f, 35.f, 5.5f, 0, f_RotateNet, 0, false);
-		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(1, 1, 0), 1, 33.f, 3.5f);
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2.5f, 22.5f, 6.5f, f_RotateRock, f_RotateRock, 0, false);
     }
     else {
-        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 1, 35.f, 5.5f, 0, f_RotateNet, 0, false);
-		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(1, 1, 0), 1, 33.f, 3.5f);
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2, 22.5f, 6.5f, f_RotateRock, f_RotateRock, 0, false);
     }
-    
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss1.str(), Color(1, 1, 0), 1, 20.5f, 3.5f);
+    // 2: Net
+    if (b_Nets) {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 1.25f, 27.5f, 5.5f, 0, f_RotateNet, 0, false);
+    }
+    else {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 1, 27.5f, 5.5f, 0, f_RotateNet, 0, false);
+    }
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(1, 1, 0), 1, 25.5f, 3.5f);
     // 3: Bait
     if (b_Baits) {
-        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2.5f, 40.f, 6.5f, f_RotateBait, f_RotateBait, 0, false);
-		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 1, 38.f, 3.5f);
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2.5f, 32.5f, 6.5f, f_RotateBait, f_RotateBait, 0, false);
     }
-    else 
-	{
-        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2, 40.f, 6.5f, f_RotateBait, f_RotateBait, 0, false);
-		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 1, 38.f, 3.5f);
+    else {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2, 32.5f, 6.5f, f_RotateBait, f_RotateBait, 0, false);
     }
- 
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 1, 30.5f, 3.5f);
     // 4: Trap
-    if (b_Traps) 
-	{
-        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2.5f, 45.f, 6.5f, 0, f_RotateTrap, 0, false);
-		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss4.str(), Color(1, 1, 0), 1, 43.f, 3.5f);
+    if (b_Traps) {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2.5f, 37.5f, 6.5f, 0, f_RotateTrap, 0, false);
     }
-    else
-	{
-        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2, 45.f, 6.5f, 0, f_RotateTrap, 0, false);
-		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss4.str(), Color(1, 1, 0), 1, 43.f, 3.5f);
+    else {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2, 37.5f, 6.5f, 0, f_RotateTrap, 0, false);
     }
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss4.str(), Color(1, 1, 0), 1, 43.f, 3.5f);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss4.str(), Color(1, 1, 0), 1, 35.5f, 3.5f);
     // 5: Meat
-    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT), 2, 50.f, 6.2f, 45.f, 45.f, 0, false);
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss5.str(), Color(1, 1, 0), 1, 48.f, 3.5f);
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT), 2, 42.5f, 6.2f, 45.f, 45.f, 0, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss5.str(), Color(1, 1, 0), 1, 40.5f, 3.5f);
     //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), false, 30.f, 10, -30, false);
     //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), true, 10.0f, 40, -48);
-
-	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT), 2, 75.f, 20.5f, 0, f_RotateTrap, 0, false);
 
     SetHUD(false);
 }

@@ -36,7 +36,6 @@ void SceneSwamp::Init()
     memset(&swamp, 0, sizeof(swamp));
 
     // Load map
-	SharedData::GetInstance()->sound->PlayMusic("Sound//SwampZone//SwampScene1.wav");
     Scene::LoadLevelMap("GameData/SwampScene.csv");
     for (int rows = 0; rows < Scene::m_rows; ++rows)
     {
@@ -172,7 +171,7 @@ void SceneSwamp::Init()
     f_RotateBait = 0.f;
     f_RotateTrap = 0.f;
 
-    f_HighlightPos = -20.f;
+    f_HighlightPos = -34.7f;
 
     camera.Update();
 }

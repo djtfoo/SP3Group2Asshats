@@ -37,7 +37,6 @@ public:
 	//void playSoundEffect3D(string Music, irrklang::vec3df pos, irrklang::vec3df TargetPos);
 	void PlaySoundEffect3D(string Music, irrklang::vec3df pos, irrklang::vec3df view, irrklang::vec3df TargetPos,bool repeat = 0);
 	void StopSoundEffect3D();
-	void StopAllSounds();
 private: 
 	irrklang::ISoundEngine* musicEngine;
 	irrklang::ISoundEngine* SoundEffect3D;

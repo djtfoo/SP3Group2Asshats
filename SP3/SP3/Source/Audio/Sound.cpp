@@ -40,7 +40,7 @@ void Sound::Init()
 {
 		SoundEffect3D->setDefault3DSoundMinDistance(10.0f);
 		SoundEffect3D->setDefault3DSoundMaxDistance(100.0);
-		SoundEffect3D->setSoundVolume(1.0f);
+		SoundEffect3D->setSoundVolume(20.0f);
 }
 
 /****************************************************************************/
@@ -53,7 +53,6 @@ a string to take in music file to play.
 /****************************************************************************/
 void Sound::PlayMusic(string Music)
 {
-	musicEngine->setSoundVolume(0.1);
 	Song = musicEngine->play2D(Music.c_str(), true, false, true);
 }
 /****************************************************************************/
@@ -92,12 +91,6 @@ void Sound::PlaySoundEffect3D(string Music, irrklang::vec3df pos, irrklang::vec3
 void Sound::StopSoundEffect3D()
 {
 	SoundEffect3D->stopAllSounds();
-}
-
-void Sound::StopAllSounds()
-{
-	SoundEffect3D->stopAllSounds();
-	musicEngine->stopAllSounds();
 }
 
 /****************************************************************************/

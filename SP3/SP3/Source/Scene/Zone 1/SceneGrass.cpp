@@ -38,7 +38,6 @@ void SceneGrass::Init()
     memset(&grass, 0, sizeof(grass));
 
     // Load map
-	SharedData::GetInstance()->sound->PlayMusic("Sound//GrassZone//GrassScene.wav");
     Scene::LoadLevelMap("GameData/GrassScene.csv");
     for (int rows = 0; rows < Scene::m_rows; ++rows)
     {
@@ -161,7 +160,7 @@ void SceneGrass::Init()
 	f_RotateBait = 0.f;
     f_RotateTrap = 0.f;
 
-    f_HighlightPos = -20.f;
+    f_HighlightPos = -34.7f;
 
     // disable fog
     glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), false);
