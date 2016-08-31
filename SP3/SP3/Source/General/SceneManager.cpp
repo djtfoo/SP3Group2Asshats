@@ -17,6 +17,7 @@ A Class that handles the different scenes
 #include "../Scene/Zone 4/SceneLava.h"
 #include "../Scene/Zoo/SceneZoo.h"
 #include "../Scene//mainMenu.h"
+#include "../General/SharedData.h"
 
 SceneManager::SceneManager() : m_gamestate(GAMESTATE_MAINMENU), m_scene(0)
 {
@@ -53,6 +54,8 @@ void SceneManager::ChangeScene(short id)
 		m_scene->Exit();
 		delete m_scene;
 	}
+
+	SharedData::GetInstance()->sound->StopAllSounds();
 
 	if (id == 1)
 	{

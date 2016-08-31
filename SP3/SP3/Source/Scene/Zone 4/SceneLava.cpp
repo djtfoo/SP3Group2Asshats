@@ -38,6 +38,7 @@ void SceneLava::Init()
 	memset(&lava, 0, sizeof(lava));
 
 	// Load map
+	SharedData::GetInstance()->sound->PlayMusic("Sound//LavaZone//LavaScene.mp3");
 	Scene::LoadLevelMap("GameData/LavaScene.csv");
 	for (int rows = 0; rows < Scene::m_rows; ++rows)
 	{
@@ -169,7 +170,7 @@ void SceneLava::Init()
 	f_RotateBait = 0.f;
     f_RotateTrap = 0.f;
 
-    f_HighlightPos = -34.7f;
+    f_HighlightPos = -20.f;
     
     camera.Update();
 }

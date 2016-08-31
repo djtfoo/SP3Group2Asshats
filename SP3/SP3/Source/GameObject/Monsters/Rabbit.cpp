@@ -58,7 +58,7 @@ void Monster_Rabbit::TakeDamage(const int damage)
 
 void Monster_Rabbit::PlaySoundEffect()
 {
-	SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//Rabbit.wav",
+	SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//GrassZone//Rabbit.mp3",
 		irrklang::vec3df(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
 		irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
 		irrklang::vec3df(m_position.x, m_position.y, m_position.z));
