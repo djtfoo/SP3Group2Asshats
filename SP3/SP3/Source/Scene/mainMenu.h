@@ -34,6 +34,8 @@ public:
 	float m_worldHeight;
 	float m_worldWidth;
 
+	bool b_playOnes[M_TOTAL];
+
 	MAINMENU_STATE MM_STATE;
 	bool button_highlighted[M_TOTAL];
 
