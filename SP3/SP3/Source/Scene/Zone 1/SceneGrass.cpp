@@ -235,7 +235,7 @@ void SceneGrass::Update(double dt)
     //////////////////////////////////////////////
     ////////PARTICLES ////////////////////////////
     //////////////////////////////////////////////
-
+	SpawnSceneParticles();
     UpdateParticles(&grass, dt);
 
 	//===============================================================================================================================//
@@ -459,11 +459,9 @@ void SceneGrass::SpawnSceneParticles()
 {
 	for (GameObject GO = 0; GO < grass.GAMEOBJECT_COUNT; ++GO)
 	{
-		if ((grass.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+		if ((grass.mask[GO] & COMPONENT_OBSTACLE) == COMPONENT_OBSTACLE)
 		{
-			//SharedData::GetInstance()->particleManager->SpawnParticle(world->position[GO], ParticleObject::P_HIDDENBONUS);
-			//SharedData::GetInstance()->particleManager->SpawnParticle(grass.position[GO], ParticleObject::P_VOLCANOSPARK);
+			SharedData::GetInstance()->particleManager->SpawnParticle(grass.position[GO], ParticleObject::P_FALLINGLEAF);
 		}
 	}
-
 }

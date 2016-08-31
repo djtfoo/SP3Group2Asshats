@@ -45,6 +45,46 @@ void ParticleObject::UpdateParticle(double dt)
             this->b_toDelete = true;
         }
         break;
+	case P_FALLINGLEAF:
+		this->vel.y -= 0.5f * (float)dt;
+		this->pos.y += this->vel.y * float(dt);
+		this->pos.x += Math::RandIntMinMax(-2, 2) * (float)dt;
+		this->rotation += Math::RandIntMinMax(-this->rotationSpeed, this->rotationSpeed) * (float)dt * 10.0f;
+		if (this->pos.y < 0.f)
+		{
+			this->b_toDelete = true;
+		}
+		break;
+	case P_ROCK:
+		this->vel.y -= 0.5f * (float)dt;
+		this->pos.y += this->vel.y * float(dt);
+		this->rotation += Math::RandIntMinMax(-this->rotationSpeed, this->rotationSpeed) * (float)dt * 10.0f;
+		if (this->pos.y < 0.f)
+		{
+			this->b_toDelete = true;
+		}
+		break;
+	case P_DUST:
+		this->vel.y += 0.001f * (float)dt;
+		this->pos.y += this->vel.y * float(dt);
+		this->rotation += Math::RandIntMinMax(-this->rotationSpeed, this->rotationSpeed) * (float)dt * 10.0f;
+		if (this->pos.y > 2.f)
+		{
+			this->b_toDelete = true;
+		}
+		break;
+	case P_MUDBUBBLE:
+		this->vel.y += 0.001f * (float)dt;
+		this->pos.y += this->vel.y * float(dt);
+		this->scale += 0.001f * (float)dt;
+		this->rotation += Math::RandIntMinMax(-this->rotationSpeed, this->rotationSpeed) * (float)dt * 10.0f;
+		if (this->scale.x >= 5 ||
+			this->scale.y >= 5 ||
+			this->scale.z >= 5)
+		{
+			this->b_toDelete = true;
+		}
+		break;
     }
     
 }

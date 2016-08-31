@@ -69,6 +69,30 @@ void ParticleManager::SpawnParticle(const Vector3& position, ParticleObject::PAR
             particle->rotationSpeed = Math::RandFloatMinMax(20.0f, 40.0f);
             particle->pos.Set(position.x + Math::RandFloatMinMax(-0.1f, 0.1f), 5, position.z + Math::RandFloatMinMax(-0.1f, 0.1f));
             break;
+		case ParticleObject::P_FALLINGLEAF:
+			particle->scale.Set(2.f, 2.f, 2.f);
+			particle->vel.Set(0.f, 0.5f, 0.f);
+			particle->rotationSpeed = Math::RandFloatMinMax(20.0f, 40.0f);
+			particle->pos.Set(position.x + Math::RandFloatMinMax(-0.1f, 0.1f), 5, position.z + Math::RandFloatMinMax(-0.1f, 0.1f));
+			break;
+		case ParticleObject::P_ROCK:
+			particle->scale.Set(2.f, 2.f, 2.f);
+			particle->vel.Set(0.f, -5.f, 0.f);
+			particle->rotationSpeed = Math::RandFloatMinMax(20.0f, 40.0f);
+			particle->pos.Set(position.x + Math::RandFloatMinMax(-0.1f, 0.1f), 50, position.z + Math::RandFloatMinMax(-0.1f, 0.1f));
+			break;
+		case ParticleObject::P_DUST:
+			particle->scale.Set(2.f, 2.f, 2.f);
+			particle->vel.Set(0.f, 0.5f, 0.f);
+			particle->rotationSpeed = Math::RandFloatMinMax(20.0f, 40.0f);
+			particle->pos.Set(position.x + Math::RandFloatMinMax(-0.1f, 0.1f), 5, position.z + Math::RandFloatMinMax(-0.1f, 0.1f));
+			break;
+		case ParticleObject::P_MUDBUBBLE:
+			particle->scale.Set(2.f, 2.f, 2.f);
+			particle->vel.Set(0.f, 0.001f, 0.f);
+			particle->rotationSpeed = Math::RandFloatMinMax(20.0f, 40.0f);
+			particle->pos.Set(position.x + Math::RandFloatMinMax(-0.1f, 0.1f), 5, position.z + Math::RandFloatMinMax(-0.1f, 0.1f));
+			break;
         }
     }
 }

@@ -11,6 +11,10 @@ public:
         //P_WATER = 0,
         P_HIDDENBONUS = 0,
         P_VOLCANOSPARK,
+		P_FALLINGLEAF,
+		P_ROCK,
+		P_DUST,
+		P_MUDBUBBLE,
         P_TOTAL
     };
 

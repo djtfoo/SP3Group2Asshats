@@ -436,6 +436,18 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_VOLCANOSPARK_PARTICLE] = MeshBuilder::GenerateQuad("Volcano Spark", Color(0, 1, 0), 1.f);
 	m_meshList[GEO_VOLCANOSPARK_PARTICLE]->textureArray[0] = LoadTGA("Image//Particles/VolcanoSpark.tga");
 
+	m_meshList[GEO_FALLINGLEAF_PARTICLE] = MeshBuilder::GenerateQuad("Falling Leaf", Color(0, 1, 0), 1.f);
+	m_meshList[GEO_FALLINGLEAF_PARTICLE]->textureArray[0] = LoadTGA("Image//Particles/LeafParticle.tga");
+
+	m_meshList[GEO_DUST_PARTICLE] = MeshBuilder::GenerateQuad("Dust", Color(0, 1, 0), 1.f);
+	m_meshList[GEO_DUST_PARTICLE]->textureArray[0] = LoadTGA("Image//Particles/DustParticle.tga");
+
+	m_meshList[GEO_FALLINGROCK_PARTICLE] = MeshBuilder::GenerateQuad("Falling Rocks", Color(0, 1, 0), 1.f);
+	m_meshList[GEO_FALLINGROCK_PARTICLE]->textureArray[0] = LoadTGA("Image//Particles/RockParticle.tga");
+
+	m_meshList[GEO_MUDBUBBLE_PARTICLE] = MeshBuilder::GenerateQuad("Mud Bubble", Color(0, 1, 0), 1.f);
+	m_meshList[GEO_MUDBUBBLE_PARTICLE]->textureArray[0] = LoadTGA("Image//Particles/MudBubbleParticle.tga");
+
     // Fonts
     m_meshList[GEO_TEXT_IMPACT] = MeshBuilder::GenerateText("Font - Impact", 16, 16);
     m_meshList[GEO_TEXT_IMPACT]->textureID = LoadTGA("Image//Fonts/Font_Impact.tga");
