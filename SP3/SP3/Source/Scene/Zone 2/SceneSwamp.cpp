@@ -68,6 +68,17 @@ void SceneSwamp::Init()
                 swamp.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(0.5f, 1.f), Math::RandFloatMinMax(0.8f, 1.f));
                 swamp.appearance[go].angle = Math::RandFloatMinMax(0.f, 360.f);
                 swamp.appearance[go].billboard = false;
+
+				if (tile == 'F')
+				{
+					swamp.hitbox[go].m_origin = swamp.position[go] + Vector3(0, 2, 0);
+					swamp.hitbox[go].m_scale.Set(5.f, 17.5f, 5.f);
+				}
+				if (tile == 'I')
+				{
+					swamp.hitbox[go].m_origin = swamp.position[go] + Vector3(0, 2, 0);
+					swamp.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
+				}
                 //swamp.appearance[go].scale.Set(1, 1, 1);
             }
             else if (tile >= '1' && tile <= '9')
@@ -83,21 +94,21 @@ void SceneSwamp::Init()
                 case '1':
                     swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_SEAMONSTER);
                     swamp.monster[go] = MonsterFactory::CreateMonster("SeaMonster");
-                    swamp.hitbox[go].m_scale.Set(1.5f, 2.f, 1.75f);
+					swamp.hitbox[go].m_scale.Set(5.f, 2.5f, 3.f);
                     swamp.appearance[go].scale.Set(1.5f, 1.5f, 1.5f);
                     break;
 
                 case '2':
                     swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_GRIMEJAM);
                     swamp.monster[go] = MonsterFactory::CreateMonster("Grimejam");
-                    swamp.hitbox[go].m_scale.Set(2.f, 2.f, 2.f);
+					swamp.hitbox[go].m_scale.Set(3.f, 7.f, 3.f);
                     swamp.appearance[go].scale.Set(2.f, 2.f, 2.f);
                     break;
 
                 case '3':
                     swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_MUKBOSS);
                     swamp.monster[go] = MonsterFactory::CreateMonster("MukBoss");
-                    swamp.hitbox[go].m_scale.Set(3.f, 3.f, 3.f);
+                    swamp.hitbox[go].m_scale.Set(20.f, 20.f, 20.f);
                     swamp.appearance[go].scale.Set(6, 6, 6);
                     break;
                 }
@@ -153,10 +164,12 @@ void SceneSwamp::Init()
     b_Rocks = true;
     b_Nets = false;
     b_Baits = false;
+    b_Traps = false;
 
     f_RotateRock = 0.f;
     f_RotateNet = 0.f;
     f_RotateBait = 0.f;
+    f_RotateTrap = 0.f;
 
     f_HighlightPos = -34.7f;
 
@@ -177,6 +190,15 @@ void SceneSwamp::UpdateFog(double dt)
 void SceneSwamp::Update(double dt)
 {
     fps = (float)(1.f / dt);
+
+    //===============================================================================================================================//
+    //                                                             Pause                                                             //
+    //===============================================================================================================================//
+
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_P].isPressed)
+    {
+        SharedData::GetInstance()->sceneManager->SetPauseState();
+    }
 
     //===============================================================================================================================//
     //                                                            Updates                                                            //
@@ -235,37 +257,8 @@ void SceneSwamp::Update(double dt)
     //                                                            Key Inputs                                                         //
     //===============================================================================================================================//
 
-    //Place trap
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].Use())
-    {
-        PlaceTrap(&swamp);
-    }
-
-    //Rocks
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].isPressed)
-    {
-        b_Rocks = true;
-        b_Baits = false;
-        b_Nets = false;
-        f_HighlightPos = -34.7f;
-    }
-    //Nets
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_2].isPressed)
-    {
-        b_Nets = true;
-        b_Rocks = false;
-        b_Baits = false;
-        f_HighlightPos = -24.8f;
-    }
-    //Baits
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_3].isPressed)
-    {
-        b_Baits = true;
-        b_Rocks = false;
-        b_Nets = false;
-
-        f_HighlightPos = -14.9f;
-    }
+    // Update Player Inventory
+    UpdateInventory();
 
     if (b_Rocks)
     {
@@ -284,6 +277,11 @@ void SceneSwamp::Update(double dt)
         //Bait Projectile
         f_RotateBait += dt * 50;
         ShootBait();
+    }
+    if (b_Traps)
+    {
+        f_RotateTrap += dt * 50;
+        PlaceTrap(&swamp);
     }
 
     // Check pick up monster
@@ -337,6 +335,7 @@ void SceneSwamp::Update(double dt)
     ItemProjectile::d_rockCounter += dt;
     ItemProjectile::d_netCounter += dt;
     ItemProjectile::d_baitCounter += dt;
+    ItemProjectile::d_trapCounter += dt;
 
     //Update Projectiles vector - delete them from vector
     itemProjectile->UpdateProjectile(dt);
@@ -382,15 +381,21 @@ void SceneSwamp::Render()
     RenderSwampScene();
 
     //Trap placing
-    double x, y;
-    Application::GetCursorPos(&x, &y);
-    modelStack.PushMatrix();
-    modelStack.Translate(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0.5, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
-    modelStack.Scale(1, 1, 1);
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
-    modelStack.PopMatrix();
+    if (b_Traps)
+    {
+        double x, y;
+        Application::GetCursorPos(&x, &y);
+        modelStack.PushMatrix();
+        modelStack.Translate(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0.5, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
+        modelStack.Scale(1, 1, 1);
+        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
+        modelStack.PopMatrix();
+    }
+
+    glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), false);
 
     // Render particles
+    glDepthMask(GL_FALSE);
     for (std::vector<ParticleObject* >::iterator it = SharedData::GetInstance()->particleManager->m_particleList.begin(); it != SharedData::GetInstance()->particleManager->m_particleList.end(); ++it)
     {
         ParticleObject* particle = (ParticleObject*)(*it);
@@ -399,6 +404,7 @@ void SceneSwamp::Render()
             RenderParticle(particle);
         }
     }
+    glDepthMask(GL_TRUE);
 
     //for (GameObject tallGrass = 0; tallGrass < swamp.GAMEOBJECT_COUNT; ++tallGrass)
     //{
@@ -423,11 +429,21 @@ void SceneSwamp::Render()
 
 void SceneSwamp::RenderSwampScene()
 {
+    //Ground
 	modelStack.PushMatrix();
 	modelStack.Translate(100, -7, 100);
 	modelStack.Scale(300.0f, 30.0f, 300.0f);
 	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SWAMP_TERRAIN), true);
 	modelStack.PopMatrix();
+
+    //Mud
+    modelStack.PushMatrix();
+    modelStack.Translate(100, -1, 100);
+    modelStack.Rotate(90, 1, 0, 0);
+    modelStack.Scale(300.0f, 300.f, 1.f);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SWAMP_MUD), false);
+    modelStack.PopMatrix();
+
 
     //Skyplane
     modelStack.PushMatrix();
@@ -447,3 +463,16 @@ void SceneSwamp::Exit()
 //========================
 // == OBJECTS TO RENDER
 //========================
+
+void SceneSwamp::SpawnSceneParticles()
+{
+	for (GameObject GO = 0; GO < swamp.GAMEOBJECT_COUNT; ++GO)
+	{
+		if ((swamp.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
+		{
+			//SharedData::GetInstance()->particleManager->SpawnParticle(world->position[GO], ParticleObject::P_HIDDENBONUS);
+			//SharedData::GetInstance()->particleManager->SpawnParticle(swamp.position[GO], ParticleObject::P_VOLCANOSPARK);
+		}
+	}
+
+}

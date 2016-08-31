@@ -196,11 +196,14 @@ void GraphicsLoader::Init()
 	//m_meshList[GEO_ROCKS5]->textureArray[0] = LoadTGA("Image//Rock5.tga");
 
     // Swamp Scene
-	m_meshList[GEO_SWAMP_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw", m_heightMap);
+	m_meshList[GEO_SWAMP_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//SwampZone/Swamp_HeightMap.raw", m_heightMap);
 	m_meshList[GEO_SWAMP_TERRAIN]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_terrain.tga");
 	
 	m_meshList[GEO_SWAMP_SKYPLANE] = MeshBuilder::GenerateSkyPlane("skyplane", Color(1, 1, 1), 128, 400.0f, 3000.0f, 1.0f, 1.0f);
 	m_meshList[GEO_SWAMP_SKYPLANE]->textureArray[0] = LoadTGA("Image//SwampZone//swamp_skyplane.tga");
+
+    m_meshList[GEO_SWAMP_MUD] = MeshBuilder::GenerateQuad("Swamp Mud", Color(1, 1, 1), 1.f, 10);
+    m_meshList[GEO_SWAMP_MUD]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_mud.tga");
 
     m_meshList[GEO_SWAMP_PLANT] = MeshBuilder::GenerateOBJ("swamp plant", "OBJ//SwampZone/swamp_plant.obj");
     m_meshList[GEO_SWAMP_PLANT]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_plant.tga");
@@ -283,47 +286,77 @@ void GraphicsLoader::Init()
     m_meshList[GEO_CAPTUREBAR] = MeshBuilder::GenerateRing("CAPTURE BAR", Color(0.5f, 0, 1.f), 36);
 
 	// Menu stuffs
-	m_meshList[GEO_START] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_START]->textureID = LoadTGA("Image//MenuText/Start.tga");
+	m_meshList[GEO_STARTGAME] = MeshBuilder::GenerateQuad("NewGame", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_STARTGAME]->textureID = LoadTGA("Image//MenuText//NewGame.tga");
 
-	m_meshList[GEO_START_HL] = MeshBuilder::GenerateQuad("StartHL", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_START_HL]->textureID = LoadTGA("Image//MenuText/StartHL.tga");
+	m_meshList[GEO_STARTGAME_HL] = MeshBuilder::GenerateQuad("NewGameHL", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_STARTGAME_HL]->textureID = LoadTGA("Image//MenuText//NewGameHL.tga");
 
-	m_meshList[GEO_INSTRUCTIONS] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_INSTRUCTIONS]->textureID = LoadTGA("Image//MenuText/Instructions.tga");
+	m_meshList[GEO_LOADGAME] = MeshBuilder::GenerateQuad("LoadGame", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_LOADGAME]->textureID = LoadTGA("Image//MenuText//LoadGame.tga");
 
-	m_meshList[GEO_INSTRUCTIONS_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_INSTRUCTIONS_HL]->textureID = LoadTGA("Image//MenuText/InstructionsHL.tga");
+	m_meshList[GEO_LOADGAME_HL] = MeshBuilder::GenerateQuad("LoadGameHL", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_LOADGAME_HL]->textureID = LoadTGA("Image//MenuText//LoadGameHL.tga");
 
-	m_meshList[GEO_OPTIONS] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_OPTIONS]->textureID = LoadTGA("Image//MenuText/Options.tga");
+	m_meshList[GEO_INSTRUCTIONS] = MeshBuilder::GenerateQuad("Intructions", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_INSTRUCTIONS]->textureID = LoadTGA("Image//MenuText//Intructions.tga");
 
-	m_meshList[GEO_OPTIONS_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_OPTIONS_HL]->textureID = LoadTGA("Image//MenuText/OptionsHL.tga");
+	m_meshList[GEO_INSTRUCTIONS_HL] = MeshBuilder::GenerateQuad("IntructionsH/l", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_INSTRUCTIONS_HL]->textureID = LoadTGA("Image//MenuText//IntructionsHL.tga");
 
-	m_meshList[GEO_STORY] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_STORY]->textureID = LoadTGA("Image//MenuText/Story.tga");
+	m_meshList[GEO_RESUMEGAME] = MeshBuilder::GenerateQuad("ResumeGame", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_RESUMEGAME]->textureID = LoadTGA("Image//MenuText//ResumeGame.tga");
 
-	m_meshList[GEO_STORY_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_STORY_HL]->textureID = LoadTGA("Image//MenuText/StoryHL.tga");
+	m_meshList[GEO_RESUMEGAME_HL] = MeshBuilder::GenerateQuad("ResumeGameHL", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_RESUMEGAME_HL]->textureID = LoadTGA("Image//MenuText//ResumeGameHL.tga");
 
-	m_meshList[GEO_CREDITS] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_CREDITS]->textureID = LoadTGA("Image//MenuText/Credits.tga");
+	m_meshList[GEO_QUEST] = MeshBuilder::GenerateQuad("Quest", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_QUEST]->textureID = LoadTGA("Image//MenuText//Quest.tga");
 
-	m_meshList[GEO_CREDITS_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_CREDITS_HL]->textureID = LoadTGA("Image//MenuText/CreditsHL.tga");
+	m_meshList[GEO_QUEST_HL] = MeshBuilder::GenerateQuad("QuestHL", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_QUEST_HL]->textureID = LoadTGA("Image//MenuText//QuestHL.tga");
 
-	m_meshList[GEO_EXIT] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_EXIT]->textureID = LoadTGA("Image//MenuText/Exit.tga");
+	m_meshList[GEO_BACKTOTOWN] = MeshBuilder::GenerateQuad("Backtotown", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_BACKTOTOWN]->textureID = LoadTGA("Image//MenuText//Backtotown.tga");
 
-	m_meshList[GEO_EXIT_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_EXIT_HL]->textureID = LoadTGA("Image//MenuText/ExitHL.tga");
+	m_meshList[GEO_BACKTOTOWN_HL] = MeshBuilder::GenerateQuad("BacktotownHL", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_BACKTOTOWN_HL]->textureID = LoadTGA("Image//MenuText//BacktotownHL.tga");
 
-	m_meshList[GEO_BACK] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_BACK]->textureID = LoadTGA("Image//MenuText/Back.tga");
+	m_meshList[GEO_OPTIONS] = MeshBuilder::GenerateQuad("Options", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_OPTIONS]->textureID = LoadTGA("Image//MenuText//Options.tga");
 
-	m_meshList[GEO_BACK_HL] = MeshBuilder::GenerateQuad("Start", Color(1, 0, 0), 1.f);
-	m_meshList[GEO_BACK_HL]->textureID = LoadTGA("Image//MenuText/BackHL.tga");
+	m_meshList[GEO_OPTIONS_HL] = MeshBuilder::GenerateQuad("OptionsHL", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_OPTIONS_HL]->textureID = LoadTGA("Image//MenuText//OptionsHL.tga");
+
+	m_meshList[GEO_STORY] = MeshBuilder::GenerateQuad("Story", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_STORY]->textureID = LoadTGA("Image//MenuText//Story.tga");
+
+	m_meshList[GEO_STORY_HL] = MeshBuilder::GenerateQuad("StoryHL", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_STORY_HL]->textureID = LoadTGA("Image//MenuText//StoryHL.tga");
+
+	m_meshList[GEO_CREDITS] = MeshBuilder::GenerateQuad("Credits", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_CREDITS]->textureID = LoadTGA("Image//MenuText//Credits.tga");
+
+	m_meshList[GEO_CREDITS_HL] = MeshBuilder::GenerateQuad("CreditsHL", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_CREDITS_HL]->textureID = LoadTGA("Image//MenuText//CreditsHL.tga");
+
+	m_meshList[GEO_EXIT] = MeshBuilder::GenerateQuad("Exit", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_EXIT]->textureID = LoadTGA("Image//MenuText//Exit.tga");
+
+	m_meshList[GEO_EXIT_HL] = MeshBuilder::GenerateQuad("ExitHL", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_EXIT_HL]->textureID = LoadTGA("Image//MenuText//ExitHL.tga");
+
+	m_meshList[GEO_BACK] = MeshBuilder::GenerateQuad("Back", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_BACK]->textureID = LoadTGA("Image//MenuText//Back.tga");
+
+	m_meshList[GEO_BACK_HL] = MeshBuilder::GenerateQuad("BackHL", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_BACK_HL]->textureID = LoadTGA("Image//MenuText//BackHL.tga");
+
+	m_meshList[GEO_MENUBOARD] = MeshBuilder::GenerateQuad("MenuBoard", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_MENUBOARD]->textureID = LoadTGA("Image//MenuText//MenuBoard.tga");
+
+	m_meshList[GEO_GREENBUTTON] = MeshBuilder::GenerateQuad("GreenBoard", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_GREENBUTTON]->textureID = LoadTGA("Image//MenuText//GreenButton.tga");
 
 	// Monster State
     m_meshList[GEO_MONSTERSTATE_EXCLAMATION_MARK] = MeshBuilder::GenerateQuad("Exclamation mark", Color(1, 0, 0), 1.f);

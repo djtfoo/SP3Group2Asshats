@@ -77,6 +77,7 @@ void SceneManager::ChangeScene(short id)
     else if (id == 5)
     {
         m_scene = new SceneZoo();
+        Application::SetNormalCursor();
     }
 
 	if (m_scene)

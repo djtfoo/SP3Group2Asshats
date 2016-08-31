@@ -12,7 +12,7 @@ Class that defines a monster's variables and statistics
 #include "AI_Strategy.h"
 #include "../General/SharedData.h"
 
-Monster::Monster(std::string name, const std::vector<int>& stats) : m_name(name), m_originalAggression(stats[2]), m_originalFear(stats[3])
+Monster::Monster(std::string name, const std::vector<int>& stats) : m_name(name), m_originalAggression(stats[2]), m_originalFear(stats[3]), m_sellingPrice(stats[5])
 {
     AggressionLevel = 0.f;
     FearLevel = 0.f;

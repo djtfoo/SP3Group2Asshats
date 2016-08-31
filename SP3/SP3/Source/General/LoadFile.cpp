@@ -58,6 +58,8 @@ bool LoadFile(const char* file_path, FILE_TYPE file_type)
     }
 
     fileStream.close();
+
+    return true;
 }
 
 void LoadMonsterData(std::ifstream& fileStream)
@@ -77,9 +79,9 @@ void LoadMonsterData(std::ifstream& fileStream)
         // first content is name of monster
         std::string tempName = data;
 
-        // remaining content are monster stats: health, capture rate, aggression, fear, speed
+        // remaining content are monster stats: health, capture rate, aggression, fear, speed, selling price
         std::vector<int> stats;
-        for (int i = 0; i < 5; ++i)
+        for (int i = 0; i < 6; ++i)
         {
             std::getline(dataStream, data, ',');
             stats.push_back(std::stoi(data));

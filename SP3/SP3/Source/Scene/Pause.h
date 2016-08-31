@@ -5,48 +5,48 @@
 
 class Pause
 {
-    //enum PAUSE_STATE?
+	enum PAUSE_STATE
+	{
+		P_MAIN = 0,
+		P_RESUMEGAME,
+		P_BACKTOTOWN,
+		P_QUEST,
+		P_OPTION,
+		P_EXITGAME,
+
+		P_TOTAL
+	};
 
 public:
-    Scene* scene; // to render on top
+	Scene* scene; // to render on top
 
-    Pause();
-    ~Pause();
+	Pause();
+	~Pause();
 
-    virtual void Init();
-    virtual void Update(double dt);
-    virtual void Render();
-    virtual void Exit();
+	virtual void Init();
+	virtual void Update(double dt);
+	virtual void Render();
+	virtual void Exit();
 
-    bool b_mouseClick;
+	bool b_mouseClick;
 
-    float m_worldHeight;
-    float m_worldWidth;
+	float m_worldHeight;
+	float m_worldWidth;
 
-    bool button_highlighted[7];
+	PAUSE_STATE P_STATE;
+	bool button_highlighted[P_TOTAL];
 
-    bool b_StartBtnHL;
-    bool b_BackBtnHL;
+	bool b_StartBtnHL;
+	bool b_BackBtnHL;
 
-    void RenderMainMenuState();
-    void RenderInstructionState();
-    void RenderStoryState();
-    void RenderOptionState();
-    void RenderCreditState();
+	void RenderPauseMenuState();
+	void RenderQuestState();
+	void RenderOptionState();
 
-    void MainMenuButton();
-    void InstructionButton();
-    void OptionButton();
-    void BackButton();
-    void CreditsButton();
-    void ExitButton();
+	void PasueMenuButton();
+	void BackButton();
 
-    void RenderStartButton();
-    void RenderInstructionButton();
-    void RenderOptionButton();
-    void RenderBackButton();
-    void RenderCreditsButton();
-    void RenderExitButton();
+	void RenderBackButton();
 };
 
 #endif

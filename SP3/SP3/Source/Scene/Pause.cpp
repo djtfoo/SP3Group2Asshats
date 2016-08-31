@@ -17,307 +17,316 @@ Pause::~Pause()
 
 void Pause::Init()
 {
-    Application::GetCursorPos(&Application::cursorXPos, &Application::cursorYPos);
-    Application::SetCursorPos(Application::GetWindowWidth() / 2.f, Application::GetWindowHeight() / 2.f);
+	P_STATE = P_MAIN;
 
-    for (int i = 0; i < 7; i++)
-    {
-        button_highlighted[i] = false;
-    }
+	Application::GetCursorPos(&Application::cursorXPos, &Application::cursorYPos);
+	Application::SetCursorPos(Application::GetWindowWidth() / 2.f, Application::GetWindowHeight() / 2.f);
 
-    b_mouseClick = false;
+	for (int i = 0; i < 7; i++)
+	{
+		button_highlighted[i] = false;
+	}
+
+	b_mouseClick = false;
 }
 
 void Pause::Update(double dt)
 {
-    double x, y;
-    Application::GetCursorPos(&x, &y);
+	switch (P_STATE)
+	{
+	case P_MAIN:
+	{
+		PasueMenuButton();
+	}
+	case P_QUEST:
+	{
+		BackButton();
+	}
+	case P_OPTION:
+	{
+		BackButton();
+	}
+	}
 }
 
 void Pause::Render()
 {
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //Mtx44 perspective;
-    //perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
-    ////perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
-    //scene->projectionStack.LoadMatrix(perspective);
-    //
-    //m_worldHeight = 100.f;
-    //m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
-    //
-    //// Camera matrix
-    //scene->viewStack.LoadIdentity();
-    //scene->viewStack.LookAt(
-    //    scene->camera.position.x, scene->camera.position.y, scene->camera.position.z,
-    //    scene->camera.target.x, scene->camera.target.y, scene->camera.target.z,
-    //    scene->camera.up.x, scene->camera.up.y, scene->camera.up.z
-    //	);
-    //scene->modelStack.LoadIdentity();
+	double x, y;
+	Application::GetCursorPos(&x, &y);
+	//std::stringstream ss;
 
-    //double x, y;
-    //Application::GetCursorPos(&x, &y);
-    //std::stringstream ss;
+	//ss.str("");
+	//ss << "X: " << x;
+	//scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 30, 6);
 
-    //ss.str("");
-    //ss << "X: " << x << "   m_worldWidth " << m_worldWidth << "button_highlighted[5] " << button_highlighted[5];
-    //RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 6);
+	//ss.str("");
+	//ss << "Y: " << y;
+	//scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 30, 9);
 
-    //ss.str("");
-    //ss << "Y: " << y << "   m_worldHeight " << m_worldHeight << "b_mouseClick " << b_mouseClick;
-    //RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 9);
-
-    scene->SetHUD(true);
-    //switch (MM_STATE)
-    //{
-    //case M_MAIN:
-    //    RenderMainMenuState();
-    //    break;
-    //case M_INSTRUCTION:
-    //    RenderInstructionState();
-    //    break;
-    //case M_STORY:
-    //    RenderStoryState();
-    //    break;
-    //case M_OPTION:
-    //    RenderOptionState();
-    //    break;
-    //case M_CREDITS:
-    //    RenderCreditState();
-    //    break;
-    //}
-    scene->SetHUD(false);
+	scene->SetHUD(true);
+	switch (P_STATE)
+	{
+	case P_MAIN:
+		RenderPauseMenuState();
+		break;
+	case P_QUEST:
+		RenderQuestState();
+		break;
+	case P_OPTION:
+		RenderOptionState();
+		break;
+	}
+	scene->SetHUD(false);
 }
 
-void Pause::RenderMainMenuState()
+void Pause::RenderPauseMenuState()
 {
-    // Buttons
-    if (button_highlighted[0])
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_START_HL), false, 30.f, 10.f, -60, 35);
-    }
-    else
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_START), false, 24.f, 6.f, -60, 35);
-    }
+	std::stringstream ss;
 
-    if (button_highlighted[1])
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS_HL), false, 30.f, 10.f, -60, 25);
-    }
-    else
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS), false, 24.f, 6.f, -60, 25);
-    }
+	if (button_highlighted[0])
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_RESUMEGAME_HL), false, 26.f, 6.5f, -50, 50);
+	}
+	else
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_RESUMEGAME), false, 24.f, 6.f, -50, 50);
+	}
 
-    if (button_highlighted[2])
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_STORY_HL), false, 30.f, 10.f, -60, 15);
-    }
-    else
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_STORY), false, 24.f, 6.f, -60, 15);
-    }
+	if (button_highlighted[1])
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACKTOTOWN_HL), false, 26.f, 6.5f, -50, 35);
+	}
+	else
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACKTOTOWN), false, 24.f, 6.f, -50, 35);
+	}
 
-    if (button_highlighted[3])
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS_HL), false, 30.f, 10.f, -60, 5);
-    }
-    else
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS), false, 24.f, 6.f, -60, 5);
-    }
+	if (button_highlighted[2])
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_QUEST_HL), false, 26.f, 6.5f, -50, 20);
+	}
+	else
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_QUEST), false, 24.f, 6.f, -50, 20);
+	}
 
-    if (button_highlighted[4])
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CREDITS_HL), false, 30.f, 10.f, -60, -5);
-    }
-    else
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CREDITS), false, 24.f, 6.f, -60, -5);
-    }
+	if (button_highlighted[3])
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS_HL), false, 26.f, 6.5f, -50, 5);
+	}
+	else
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS), false, 24.f, 6.f, -50, 5);
+	}
 
-    if (button_highlighted[5])
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_EXIT_HL), false, 30.f, 10.f, -60, -15);
-    }
-    else
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_EXIT), false, 24.f, 6.f, -60, -15);
-    }
+	if (button_highlighted[4])
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_EXIT_HL), false, 26.f, 6.5f, -50, -10);
+	}
+	else
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_EXIT), false, 24.f, 6.f, -50, -10);
+	}
+
+
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -50, 50);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, 50);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -50, 35);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, 35);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -50, 20);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, 20);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -50, 5);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, 5);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -50, -10);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, -10);
+
+	//if (button_highlighted[0])
+	//{
+	//	//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_START_HL), false, 26.f, 6.5f, -50, 50);
+	//	ss.str("");
+	//	ss << "RESUME GAME ";
+	//	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 2, 10, 54.5f);
+	//}
+	//else
+	//{
+	//	//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_START), false, 24.f, 6.f, -50, 50);
+	//	ss.str("");
+	//	ss << "RESUME GAME ";
+	//	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 2, 10, 54.5f);
+	//}
+
+	//if (button_highlighted[1])
+	//{
+	//	ss.str("");
+	//	ss << "BACK TO TOWN ";
+	//	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 2, 10, 46.5);
+	//}
+	//else
+	//{
+	//	ss.str("");
+	//	ss << "BACK TO TOWN ";
+	//	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 2, 10, 46.5);
+	//}
+	//if (button_highlighted[2])
+	//{
+	//	//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS_HL), false, 26.f, 6.5f, -50, 20);
+	//	ss.str("");
+	//	ss << "QUEST: ";
+	//	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 10, 38.5);
+	//}
+	//else
+	//{
+	//	//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS), false, 24.f, 6.f, -50, 20);
+	//	ss.str("");
+	//	ss << "QUEST: ";
+	//	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 3,10, 38.5);
+	//}
 }
 
-void Pause::RenderInstructionState()
+void Pause::RenderQuestState()
 {
-    scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS), false, 48.f, 12.f, 0, 45);
-    RenderBackButton();
-}
+	//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS), false, 48.f, 12.f, 0, 45);
+	std::stringstream ss;
 
-void Pause::RenderStoryState()
-{
-    scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_STORY), false, 48.f, 12.f, 0, 45);
-    RenderBackButton();
-}
+	ss.str("");
+	ss << "QUEST PAGE :P ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 30, 55);
 
-void Pause::RenderCreditState()
-{
-    scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CREDITS), false, 48.f, 12.f, 0, 45);
-    RenderBackButton();
+	RenderBackButton();
 }
 
 void Pause::RenderOptionState()
 {
-    scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS), false, 48.f, 12.f, 0, 45);
-    RenderBackButton();
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS), false, 48.f, 12.f, 0, 45);
+	RenderBackButton();
 }
 
 /////////////////////////
 /////BUTTON STUFFS///////
 /////////////////////////
 
-void Pause::MainMenuButton()
+void Pause::PasueMenuButton()
 {
-    double x, y;
-    Application::GetCursorPos(&x, &y);
+	double x, y;
+	Application::GetCursorPos(&x, &y);
 
-    if (x > 105 && x < 370 && y > 200 && y < 240)
-    {
-        button_highlighted[0] = true;
-    }
-    else
-    {
-        button_highlighted[0] = false;
-    }
+	if (x > 192 && x < 525 && y > 53 && y < 123)
+	{
+		button_highlighted[0] = true;
+	}
+	else
+	{
+		button_highlighted[0] = false;
+	}
 
-    if (button_highlighted[0])
-    {
-        if (!b_mouseClick && Application::IsMousePressed(0))
-        {
-            b_mouseClick = true;
-        }
-        else if (b_mouseClick && !Application::IsMousePressed(0))
-        {
-            b_mouseClick = false;
-            //SharedData::GetInstance()->sound->playSoundEffect("Sound//Click.mp3");
-            std::cout << "STARTGAME" << std::endl;
-            SharedData::GetInstance()->sceneManager->SetGameState();
-        }
-    }
+	if (button_highlighted[0])
+	{
+		if (!b_mouseClick && Application::IsMousePressed(0))
+		{
+			b_mouseClick = true;
+		}
+		else if (b_mouseClick && !Application::IsMousePressed(0))
+		{
+			b_mouseClick = false;
+			//SharedData::GetInstance()->sound->playSoundEffect("Sound//Click.mp3");
+			std::cout << "RESUME GAME" << std::endl;
+			SharedData::GetInstance()->sceneManager->SetGameState();
+		}
+	}
 
-    if (x > 105 && x < 370 && y > 290 && y < 330)
-    {
-        button_highlighted[1] = true;
-    }
-    else
-    {
-        button_highlighted[1] = false;
-    }
+	if (x > 192 && x < 525 && y > 183 && y < 253)
+	{
+		button_highlighted[1] = true;
+	}
+	else
+	{
+		button_highlighted[1] = false;
+	}
 
-    if (button_highlighted[1])
-    {
-        if (!b_mouseClick && Application::IsMousePressed(0))
-        {
-            b_mouseClick = true;
-        }
-        else if (b_mouseClick && !Application::IsMousePressed(0))
-        {
-            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
-            b_mouseClick = false;
-            //MM_STATE = M_INSTRUCTION;
-        }
-    }
+	if (button_highlighted[1])
+	{
+		if (!b_mouseClick && Application::IsMousePressed(0))
+		{
+			b_mouseClick = true;
+		}
+		else if (b_mouseClick && !Application::IsMousePressed(0))
+		{
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
+			b_mouseClick = false;
+			std::cout << "BACK TO TOWN" << std::endl;
+			//SharedData::GetInstance()->sceneManager->SetGameState(); GO TO TOWN!
+		}
+	}
 
-    if (x > 105 && x < 370 && y > 370 && y < 420)
-    {
-        button_highlighted[2] = true;
-    }
-    else
-    {
-        button_highlighted[2] = false;
-    }
+	if (x > 192 && x < 525 && y > 316 && y < 386)
+	{
+		button_highlighted[2] = true;
+	}
+	else
+	{
+		button_highlighted[2] = false;
+	}
 
-    if (button_highlighted[2])
-    {
-        if (!b_mouseClick && Application::IsMousePressed(0))
-        {
-            b_mouseClick = true;
-        }
-        else if (b_mouseClick && !Application::IsMousePressed(0))
-        {
-            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
-            b_mouseClick = false;
-            //MM_STATE = M_STORY;
-        }
-    }
+	if (button_highlighted[2])
+	{
+		if (!b_mouseClick && Application::IsMousePressed(0))
+		{
+			b_mouseClick = true;
+		}
+		else if (b_mouseClick && !Application::IsMousePressed(0))
+		{
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
+			b_mouseClick = false;
+			P_STATE = P_QUEST;
+			//SHOW QUEST;
+		}
+	}
 
-    if (x > 105 && x < 370 && y > 460 && y < 500)
-    {
-        button_highlighted[3] = true;
-    }
-    else
-    {
-        button_highlighted[3] = false;
-    }
+	if (x > 192 && x < 525 && y > 450 && y < 520)
+	{
+		button_highlighted[3] = true;
+	}
+	else
+	{
+		button_highlighted[3] = false;
+	}
 
-    if (button_highlighted[3])
-    {
-        if (!b_mouseClick && Application::IsMousePressed(0))
-        {
-            b_mouseClick = true;
-        }
-        else if (b_mouseClick && !Application::IsMousePressed(0))
-        {
-            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
-            b_mouseClick = false;
-            //MM_STATE = M_OPTION;
-        }
-    }
+	if (button_highlighted[3])
+	{
+		if (!b_mouseClick && Application::IsMousePressed(0))
+		{
+			b_mouseClick = true;
+		}
+		else if (b_mouseClick && !Application::IsMousePressed(0))
+		{
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
+			b_mouseClick = false;
+			P_STATE = P_OPTION;
+		}
+	}
 
-    if (x > 105 && x < 370 && y > 550 && y < 590)
-    {
-        button_highlighted[4] = true;
-    }
-    else
-    {
-        button_highlighted[4] = false;
-    }
+	if (x > 192 && x < 525 && y > 580 && y < 650)
+	{
+		button_highlighted[4] = true;
+	}
+	else
+	{
+		button_highlighted[4] = false;
+	}
 
-    if (button_highlighted[4])
-    {
-        if (!b_mouseClick && Application::IsMousePressed(0))
-        {
-            b_mouseClick = true;
-        }
-        else if (b_mouseClick && !Application::IsMousePressed(0))
-        {
-            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
-            b_mouseClick = false;
-            //MM_STATE = M_CREDITS;
-        }
-    }
-
-    if (x > 105 && x < 370 && y > 640 && y < 680)
-    {
-        button_highlighted[5] = true;
-    }
-    else
-    {
-        button_highlighted[5] = false;
-    }
-
-    if (button_highlighted[5])
-    {
-        if (!b_mouseClick && Application::IsMousePressed(0))
-        {
-            b_mouseClick = true;
-        }
-        else if (b_mouseClick && !Application::IsMousePressed(0))
-        {
-            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
-            b_mouseClick = false;
-            std::cout << "EXIT" << std::endl;
-            SharedData::GetInstance()->sceneManager->SetToExit();
-        }
-    }
+	if (button_highlighted[4])
+	{
+		if (!b_mouseClick && Application::IsMousePressed(0))
+		{
+			b_mouseClick = true;
+		}
+		else if (b_mouseClick && !Application::IsMousePressed(0))
+		{
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
+			b_mouseClick = false;
+			SharedData::GetInstance()->sceneManager->SetToExit();
+		}
+	}
 }
 
 /////////////////////////
@@ -326,44 +335,46 @@ void Pause::MainMenuButton()
 
 void Pause::RenderBackButton()
 {
-    if (button_highlighted[6])
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACK_HL), false, 30.f, 10.f, 60, -45);
-    }
-    else
-    {
-        scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACK), false, 24.f, 6.f, 60, -45);
-    }
+	if (button_highlighted[5])
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACK_HL), false, 26.f, 6.5f, 50, -45);
+	}
+	else
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACK), false, 24.f, 6.f, 50, -45);
+	}
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, 50, -45);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, 50, -45);
 }
 
 void Pause::BackButton()
 {
-    bool b_StartBtnHL;
-    bool b_BackBtnHL;
-    double x, y;
-    Application::GetCursorPos(&x, &y);
-    if (x > 1600 && x < 1870 && y > 900 && y < 940)
-    {
-        button_highlighted[6] = true;
-    }
-    else
-    {
-        button_highlighted[6] = false;
-    }
+	bool b_StartBtnHL;
+	bool b_BackBtnHL;
+	double x, y;
+	Application::GetCursorPos(&x, &y);
+	if (x > 1390 && x < 1725 && y > 888 && y < 960)
+	{
+		button_highlighted[5] = true;
+	}
+	else
+	{
+		button_highlighted[5] = false;
+	}
 
-    if (button_highlighted[6])
-    {
-        if (!b_mouseClick && Application::IsMousePressed(0))
-        {
-            b_mouseClick = true;
-        }
-        else if (b_mouseClick && !Application::IsMousePressed(0))
-        {
-            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
-            b_mouseClick = false;
-            //MM_STATE = M_MAIN;
-        }
-    }
+	if (button_highlighted[7])
+	{
+		if (!b_mouseClick && Application::IsMousePressed(0))
+		{
+			b_mouseClick = true;
+		}
+		else if (b_mouseClick && !Application::IsMousePressed(0))
+		{
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
+			b_mouseClick = false;
+			P_STATE = P_MAIN;
+		}
+	}
 }
 
 void Pause::Exit()

@@ -52,11 +52,13 @@ public:
     bool b_Rocks;
     bool b_Nets;
     bool b_Baits;
+    bool b_Traps;
 
     // GAME HUD INVENTORY
     float f_RotateRock;
     float f_RotateNet;
     float f_RotateBait;
+    float f_RotateTrap;
 
     float f_HighlightPos;
 
@@ -76,8 +78,10 @@ public:
     void ShootNet();
     void ShootBait();
     void PlaceTrap(World *world);
+    void UpdateInventory();
 
     void UpdateParticles(World *world, double dt);
+	virtual void SpawnSceneParticles() = 0;
 
     bool CheckPickUpCaughtMonster(World *world, GameObject GO);
     virtual bool CheckInteractMoneyTree(World *world, GameObject GO);

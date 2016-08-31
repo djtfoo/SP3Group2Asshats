@@ -57,13 +57,13 @@ void ParticleManager::SpawnParticle(const Vector3& position, ParticleObject::PAR
         {
         case ParticleObject::P_HIDDENBONUS:
             particle->scale.Set(4, 4, 4);
-            particle->vel.Set(0.f, 8.f, 0.f);
+            particle->vel.Set(0.f, 10.f, 0.f);
             particle->rotationSpeed = Math::RandFloatMinMax(20.0f, 40.0f);
             particle->pos.Set(position.x, 5, position.z);
             break;
         case ParticleObject::P_VOLCANOSPARK:
-            particle->scale.Set(12.5f, 5, 12.5f);
-            particle->vel.Set(0.f, 1.f, 0.f);
+			particle->scale.Set(12.f, 4.f, 12.f);
+            particle->vel.Set(0.f, 5.f, 0.f);
             particle->rotationSpeed = Math::RandFloatMinMax(20.0f, 40.0f);
             particle->pos.Set(position.x + Math::RandFloatMinMax(-0.1f, 0.1f), 5, position.z + Math::RandFloatMinMax(-0.1f, 0.1f));
             break;
