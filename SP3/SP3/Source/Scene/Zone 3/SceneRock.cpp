@@ -38,6 +38,7 @@ void SceneRock::Init()
     memset(&rockWorld, 0, sizeof(rockWorld));
 
     // Load map
+	SharedData::GetInstance()->sound->PlayMusic("Sound//RockZone//RockScene.wav");
     Scene::LoadLevelMap("GameData/RockScene.csv");
     for (int rows = 0; rows < Scene::m_rows; ++rows)
     {
@@ -158,7 +159,7 @@ void SceneRock::Init()
     f_RotateBait = 0.f;
     f_RotateTrap = 0.f;
 
-    f_HighlightPos = -34.7f;
+    f_HighlightPos = -20.f;
 
     camera.Update();
 }
