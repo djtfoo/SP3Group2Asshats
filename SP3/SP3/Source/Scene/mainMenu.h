@@ -9,6 +9,7 @@ class MainMenu
 	{
 		M_MAIN = 0,
 		M_PLAY,
+		M_LOADGAME,
 		M_INSTRUCTION,
 		M_STORY,
 		M_OPTION,
@@ -17,47 +18,38 @@ class MainMenu
 
 		M_TOTAL
 	};
-	public:
-        Scene* scene; // to render on top
+public:
+	Scene* scene; // to render on top
 
-		MainMenu();
-		~MainMenu();
+	MainMenu();
+	~MainMenu();
 
-		virtual void Init();
-		virtual void Update(double dt);
-		virtual void Render();
-		virtual void Exit();
+	virtual void Init();
+	virtual void Update(double dt);
+	virtual void Render();
+	virtual void Exit();
 
-		bool b_mouseClick;
+	bool b_mouseClick;
 
-		float m_worldHeight;
-		float m_worldWidth;
+	float m_worldHeight;
+	float m_worldWidth;
 
-		MAINMENU_STATE MM_STATE;
-		bool button_highlighted[7];
+	MAINMENU_STATE MM_STATE;
+	bool button_highlighted[M_TOTAL];
 
-		bool b_StartBtnHL;
-		bool b_BackBtnHL;
+	bool b_StartBtnHL;
+	bool b_BackBtnHL;
 
-		void RenderMainMenuState();
-		void RenderInstructionState();
-		void RenderStoryState();
-		void RenderOptionState();
-		void RenderCreditState();
+	void RenderMainMenuState();
+	void RenderInstructionState();
+	void RenderStoryState();
+	void RenderOptionState();
+	void RenderCreditState();
 
-		void MainMenuButton();
-		void InstructionButton();
-		void OptionButton();
-		void BackButton();
-		void CreditsButton();
-		void ExitButton();
+	void MainMenuButton();
+	void BackButton();
 
-		void RenderStartButton();
-		void RenderInstructionButton();
-		void RenderOptionButton();
-		void RenderBackButton();
-		void RenderCreditsButton();
-		void RenderExitButton();
+	void RenderBackButton();
 };
 
 #endif
