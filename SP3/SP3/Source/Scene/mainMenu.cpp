@@ -166,16 +166,22 @@ void MainMenu::RenderMainMenuState()
 
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -50, 50);
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, 50);
+
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -50, 35);
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, 35);
+
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -50, 20);
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, 20);
+
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -50, 5);
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, 5);
+
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -50, -10);
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, -10);
+
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -50, -25);
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, -25);
+
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -50, -40);
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, -40);
 
@@ -249,16 +255,17 @@ void MainMenu::MainMenuButton()
 
 	if (button_highlighted[1])
 	{
-		if (!b_mouseClick && Application::IsMousePressed(0))
-		{
-			b_mouseClick = true;
-		}
-		else if (b_mouseClick && !Application::IsMousePressed(0))
-		{
-			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
-			b_mouseClick = false;
-			MM_STATE = M_INSTRUCTION;
-		}
+        // Load game
+        if (!b_mouseClick && Application::IsMousePressed(0))
+        {
+            b_mouseClick = true;
+        }
+        else if (b_mouseClick && !Application::IsMousePressed(0))
+        {
+            b_mouseClick = false;
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
+            std::cout << "LOADGAME" << std::endl;
+        }
 	}
 
 	if (x > 192 && x < 525 && y > 316 && y < 386)
@@ -272,16 +279,16 @@ void MainMenu::MainMenuButton()
 
 	if (button_highlighted[2])
 	{
-		if (!b_mouseClick && Application::IsMousePressed(0))
-		{
-			b_mouseClick = true;
-		}
-		else if (b_mouseClick && !Application::IsMousePressed(0))
-		{
-			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
-			b_mouseClick = false;
-			MM_STATE = M_STORY;
-		}
+        if (!b_mouseClick && Application::IsMousePressed(0))
+        {
+            b_mouseClick = true;
+        }
+        else if (b_mouseClick && !Application::IsMousePressed(0))
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
+            b_mouseClick = false;
+            MM_STATE = M_INSTRUCTION;
+        }
 	}
 
 	if (x > 192 && x < 525 && y > 450 && y < 520)
@@ -295,16 +302,16 @@ void MainMenu::MainMenuButton()
 
 	if (button_highlighted[3])
 	{
-		if (!b_mouseClick && Application::IsMousePressed(0))
-		{
-			b_mouseClick = true;
-		}
-		else if (b_mouseClick && !Application::IsMousePressed(0))
-		{
-			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
-			b_mouseClick = false;
-			MM_STATE = M_OPTION;
-		}
+        if (!b_mouseClick && Application::IsMousePressed(0))
+        {
+            b_mouseClick = true;
+        }
+        else if (b_mouseClick && !Application::IsMousePressed(0))
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
+            b_mouseClick = false;
+            MM_STATE = M_STORY;
+        }
 	}
 
 	if (x > 192 && x < 525 && y > 580 && y < 650)
@@ -318,16 +325,16 @@ void MainMenu::MainMenuButton()
 
 	if (button_highlighted[4])
 	{
-		if (!b_mouseClick && Application::IsMousePressed(0))
-		{
-			b_mouseClick = true;
-		}
-		else if (b_mouseClick && !Application::IsMousePressed(0))
-		{
-			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
-			b_mouseClick = false;
-			MM_STATE = M_CREDITS;
-		}
+        if (!b_mouseClick && Application::IsMousePressed(0))
+        {
+            b_mouseClick = true;
+        }
+        else if (b_mouseClick && !Application::IsMousePressed(0))
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
+            b_mouseClick = false;
+            MM_STATE = M_OPTION;
+        }
 	}
 
 	if (x > 192 && x < 525 && y > 710 && y < 780)
@@ -341,17 +348,16 @@ void MainMenu::MainMenuButton()
 
 	if (button_highlighted[5])
 	{
-		if (!b_mouseClick && Application::IsMousePressed(0))
-		{
-			b_mouseClick = true;
-		}
-		else if (b_mouseClick && !Application::IsMousePressed(0))
-		{
-			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
-			b_mouseClick = false;
-			std::cout << "EXIT" << std::endl;
-			SharedData::GetInstance()->sceneManager->SetToExit();
-		}
+        if (!b_mouseClick && Application::IsMousePressed(0))
+        {
+            b_mouseClick = true;
+        }
+        else if (b_mouseClick && !Application::IsMousePressed(0))
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//NPC.wav");
+            b_mouseClick = false;
+            MM_STATE = M_CREDITS;
+        }
 	}
 	if (x > 192 && x < 525 && y > 845 && y < 915)
 	{

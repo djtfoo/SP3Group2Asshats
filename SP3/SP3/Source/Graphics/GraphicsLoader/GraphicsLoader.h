@@ -121,6 +121,7 @@ public:
 		//SceneSwamp
 		GEO_SWAMP_TERRAIN,
 		GEO_SWAMP_SKYPLANE,
+        GEO_SWAMP_MUD,
         GEO_SWAMP_PLANT,
         GEO_SWAMP_ROOT,
         GEO_SWAMP_DEADTREE,

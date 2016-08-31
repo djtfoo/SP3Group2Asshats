@@ -1045,28 +1045,76 @@ void Scene::ShootBait()
 
 void Scene::PlaceTrap(World *world)
 {
-        GameObject trap = createGO(world);
+    if (ItemProjectile::d_trapCounter > ItemProjectile::d_trapCooldown)
+    {
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].Use())
+        {
+            GameObject trap = createGO(world);
 
-        world->mask[trap] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_TRAP;
+            world->mask[trap] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_TRAP;
 
-        world->position[trap].Set(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
-        world->appearance[trap].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP);
-        world->appearance[trap].scale.Set(3, 3, 3);
-        world->appearance[trap].angle = 0.f;
+            world->position[trap].Set(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
+            world->appearance[trap].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP);
+            world->appearance[trap].scale.Set(3, 3, 3);
+            world->appearance[trap].angle = 0.f;
 
-        world->trap[trap].triggerDuration = 3.0f;
-        world->trap[trap].triggerTimer = 0.f;
-        world->trap[trap].radius = 2.5f;
-        world->trap[trap].activated = false;
-        world->trap[trap].caughtMonster = 0;
-        world->trap[trap].caughtMonsterVel.SetZero();
+            world->trap[trap].triggerDuration = 3.0f;
+            world->trap[trap].triggerTimer = 0.f;
+            world->trap[trap].radius = 2.5f;
+            world->trap[trap].activated = false;
+            world->trap[trap].caughtMonster = 0;
+            world->trap[trap].caughtMonsterVel.SetZero();
 
-        SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//SetTrap.wav",
-            irrklang::vec3df(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
-            irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
-            irrklang::vec3df(world->position[trap].x, world->position[trap].y, world->position[trap].z));
+            SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//SetTrap.wav",
+                irrklang::vec3df(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
+                irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                irrklang::vec3df(world->position[trap].x, world->position[trap].y, world->position[trap].z));
 
-        //counter = 0;
+            ItemProjectile::d_trapCounter = 0.0;
+        }
+    }
+}
+
+void Scene::UpdateInventory()
+{
+    //Rocks
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].isPressed)
+    {
+        b_Rocks = true;
+        b_Baits = false;
+        b_Nets = false;
+        b_Traps = false;
+        f_HighlightPos = -34.7f;
+    }
+    //Nets
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_2].isPressed)
+    {
+        b_Nets = true;
+        b_Rocks = false;
+        b_Baits = false;
+        b_Traps = false;
+        f_HighlightPos = -24.8f;
+    }
+    //Baits
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_3].isPressed)
+    {
+        b_Baits = true;
+        b_Rocks = false;
+        b_Nets = false;
+        b_Traps = false;
+
+        f_HighlightPos = -14.9f;
+    }
+    //Traps
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_4].isPressed)
+    {
+        b_Baits = false;
+        b_Rocks = false;
+        b_Nets = false;
+        b_Traps = true;
+
+        f_HighlightPos = -5.f;
+    }
 }
 
 void Scene::UpdateParticles(World *world, double dt)
@@ -1312,8 +1360,6 @@ void Scene::RenderPressEText(World *world)
 
 void Scene::RenderHUD(World *world)
 {
-    glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), false);
-
     SetHUD(true);
 
     std::stringstream ss;
@@ -1344,16 +1390,36 @@ void Scene::RenderHUD(World *world)
     RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 80.f, 12.f, 0, -48);
 
     // 1: Rock
-    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2, 22.5f, 6.5f, f_RotateRock, f_RotateRock, 0, false);
+    if (b_Rocks) {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2.5f, 22.5f, 6.5f, f_RotateRock, f_RotateRock, 0, false);
+    }
+    else {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2, 22.5f, 6.5f, f_RotateRock, f_RotateRock, 0, false);
+    }
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss1.str(), Color(1, 1, 0), 1, 20.5f, 3.5f);
     // 2: Net
-    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 1, 27.5f, 5.5f, 0, f_RotateNet, 0, false);
+    if (b_Nets) {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 1.25f, 27.5f, 5.5f, 0, f_RotateNet, 0, false);
+    }
+    else {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 1, 27.5f, 5.5f, 0, f_RotateNet, 0, false);
+    }
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(1, 1, 0), 1, 25.5f, 3.5f);
     // 3: Bait
-    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2, 32.5f, 6.5f, f_RotateBait, f_RotateBait, 0, false);
+    if (b_Baits) {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2.5f, 32.5f, 6.5f, f_RotateBait, f_RotateBait, 0, false);
+    }
+    else {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2, 32.5f, 6.5f, f_RotateBait, f_RotateBait, 0, false);
+    }
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(1, 1, 0), 1, 30.5f, 3.5f);
     // 4: Trap
-    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2, 37.5f, 6.5f, 0, 0, 0, false);
+    if (b_Traps) {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2.5f, 37.5f, 6.5f, 0, f_RotateTrap, 0, false);
+    }
+    else {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2, 37.5f, 6.5f, 0, f_RotateTrap, 0, false);
+    }
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss4.str(), Color(1, 1, 0), 1, 35.5f, 3.5f);
     // 5: Meat
     RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT), 2, 42.5f, 6.2f, 45.f, 45.f, 0, false);

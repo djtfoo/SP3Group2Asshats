@@ -36,6 +36,7 @@ public:
         KEY_Q,
         KEY_E,
 
+        KEY_P,  // pause game
         KEY_C,  // temp debug key
 
         KEY_G,

@@ -24,6 +24,7 @@ InputManager::InputManager()
     keyState[KEY_G].Assign('G');
     keyState[KEY_X].Assign('X');
 
+    keyState[KEY_P].Assign('P');    // pause game
     keyState[KEY_C].Assign('C');    // temp debug keys
 
     keyState[KEY_CTRL].Assign(VK_CONTROL);

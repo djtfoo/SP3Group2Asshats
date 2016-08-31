@@ -42,10 +42,12 @@ public:
 	static double d_rockCounter;
 	static double d_netCounter;
 	static double d_baitCounter;
+    static double d_trapCounter;
 
 	static double d_rockCooldown;
 	static double d_netCooldown;
 	static double d_baitCooldown;
+    static double d_trapCooldown;
 
 	Vector3 position;
 	bool deleteBullet;

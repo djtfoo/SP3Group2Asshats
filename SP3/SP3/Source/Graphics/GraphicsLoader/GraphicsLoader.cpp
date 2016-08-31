@@ -196,11 +196,14 @@ void GraphicsLoader::Init()
 	//m_meshList[GEO_ROCKS5]->textureArray[0] = LoadTGA("Image//Rock5.tga");
 
     // Swamp Scene
-	m_meshList[GEO_SWAMP_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw", m_heightMap);
+	m_meshList[GEO_SWAMP_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//SwampZone/Swamp_HeightMap.raw", m_heightMap);
 	m_meshList[GEO_SWAMP_TERRAIN]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_terrain.tga");
 	
 	m_meshList[GEO_SWAMP_SKYPLANE] = MeshBuilder::GenerateSkyPlane("skyplane", Color(1, 1, 1), 128, 400.0f, 3000.0f, 1.0f, 1.0f);
 	m_meshList[GEO_SWAMP_SKYPLANE]->textureArray[0] = LoadTGA("Image//SwampZone//swamp_skyplane.tga");
+
+    m_meshList[GEO_SWAMP_MUD] = MeshBuilder::GenerateQuad("Swamp Mud", Color(1, 1, 1), 1.f, 10);
+    m_meshList[GEO_SWAMP_MUD]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_mud.tga");
 
     m_meshList[GEO_SWAMP_PLANT] = MeshBuilder::GenerateOBJ("swamp plant", "OBJ//SwampZone/swamp_plant.obj");
     m_meshList[GEO_SWAMP_PLANT]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_plant.tga");

@@ -67,7 +67,12 @@ void SceneRock::Init()
                 rockWorld.hitbox[go].m_origin = rockWorld.position[go];
                 rockWorld.hitbox[go].m_scale.Set(3.f, 7.f, 3.f);
                 rockWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
-                rockWorld.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(1.2f, 2.f), Math::RandFloatMinMax(0.8f, 1.f));
+                if (tile == 'E') {  // swamp plant
+                    rockWorld.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(0.5f, 1.f), Math::RandFloatMinMax(0.8f, 1.f));
+                }
+                else {
+                    rockWorld.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(1.2f, 2.f), Math::RandFloatMinMax(0.8f, 1.f));
+                }
                 rockWorld.appearance[go].angle = Math::RandFloatMinMax(0.f, 360.f);
                 rockWorld.appearance[go].billboard = false;
                 //grass.appearance[go].scale.Set(1, 1, 1);
@@ -145,10 +150,12 @@ void SceneRock::Init()
     b_Rocks = true;
     b_Nets = false;
     b_Baits = false;
+    b_Traps = false;
 
     f_RotateRock = 0.f;
     f_RotateNet = 0.f;
     f_RotateBait = 0.f;
+    f_RotateTrap = 0.f;
 
     f_HighlightPos = -34.7f;
 
@@ -159,6 +166,15 @@ void SceneRock::Update(double dt)
 {
 
     fps = (float)(1.f / dt);
+
+    //===============================================================================================================================//
+    //                                                             Pause                                                             //
+    //===============================================================================================================================//
+
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_P].isPressed)
+    {
+        SharedData::GetInstance()->sceneManager->SetPauseState();
+    }
 
     //===============================================================================================================================//
     //                                                            Updates                                                            //
@@ -217,37 +233,9 @@ void SceneRock::Update(double dt)
     //                                                            Key Inputs                                                         //
     //===============================================================================================================================//
 
-    //Place trap
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].Use())
-    {
-        PlaceTrap(&rockWorld);
-    }
 
-    //Rocks
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].isPressed)
-    {
-        b_Rocks = true;
-        b_Baits = false;
-        b_Nets = false;
-        f_HighlightPos = -34.7f;
-    }
-    //Nets
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_2].isPressed)
-    {
-        b_Nets = true;
-        b_Rocks = false;
-        b_Baits = false;
-        f_HighlightPos = -24.8f;
-    }
-    //Baits
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_3].isPressed)
-    {
-        b_Baits = true;
-        b_Rocks = false;
-        b_Nets = false;
-
-        f_HighlightPos = -14.9f;
-    }
+    // Update Player Inventory
+    UpdateInventory();
 
     if (b_Rocks)
     {
@@ -266,6 +254,11 @@ void SceneRock::Update(double dt)
         //Bait Projectile
         f_RotateBait += dt * 50;
         ShootBait();
+    }
+    if (b_Traps)
+    {
+        f_RotateTrap += dt * 50;
+        PlaceTrap(&rockWorld);
     }
 
     // Check pick up monster
@@ -327,6 +320,7 @@ void SceneRock::Update(double dt)
     ItemProjectile::d_rockCounter += dt;
     ItemProjectile::d_netCounter += dt;
     ItemProjectile::d_baitCounter += dt;
+    ItemProjectile::d_trapCounter += dt;
 
     //Update Projectiles vector - delete them from vector
     itemProjectile->UpdateProjectile(dt);
@@ -371,15 +365,19 @@ void SceneRock::Render()
     RenderRockScene();
 
     //Trap placing
-    double x, y;
-    Application::GetCursorPos(&x, &y);
-    modelStack.PushMatrix();
-    modelStack.Translate(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0.5, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
-    modelStack.Scale(1, 1, 1);
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
-    modelStack.PopMatrix();
+    if (b_Traps)
+    {
+        double x, y;
+        Application::GetCursorPos(&x, &y);
+        modelStack.PushMatrix();
+        modelStack.Translate(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0.5, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
+        modelStack.Scale(1, 1, 1);
+        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
+        modelStack.PopMatrix();
+    }
 
     // Render particles
+    glDepthMask(GL_FALSE);
     for (std::vector<ParticleObject* >::iterator it = SharedData::GetInstance()->particleManager->m_particleList.begin(); it != SharedData::GetInstance()->particleManager->m_particleList.end(); ++it)
     {
         ParticleObject* particle = (ParticleObject*)(*it);
@@ -388,6 +386,7 @@ void SceneRock::Render()
             RenderParticle(particle);
         }
     }
+    glDepthMask(GL_TRUE);
 
     for (GameObject tallGrass = 0; tallGrass < rockWorld.GAMEOBJECT_COUNT; ++tallGrass)
     {
@@ -485,8 +484,9 @@ bool SceneRock::CheckInteractMoneyTree(World *world, GameObject GO)
                       rockWorld.velocity[GO] = rockWorld.monster[GO]->m_velocity;
                       break;
             }
-            case 3:
+            default:
                 // Nothing
+                destroyGO(&rockWorld, GO);
                 break;
             }
 

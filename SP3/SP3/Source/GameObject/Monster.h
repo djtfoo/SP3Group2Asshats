@@ -56,7 +56,7 @@ public:
 	virtual void PlaySoundEffect() = 0;
 
 protected:
-    Monster() {}
+    Monster() : m_sellingPrice(0) {}
     Monster(std::string name, const std::vector<int>& stats);
 
     std::string m_name;
@@ -65,12 +65,14 @@ protected:
     float AggressionLevel;
     float FearLevel;
 
+    // Stats
     int m_healthStat;
     float m_captureRateStat;
     float m_aggressionStat;
     float m_fearStat;
 
     float m_speedStat;
+    const unsigned m_sellingPrice;
 
 	float m_originalAggression;
 	float m_originalFear;

@@ -144,10 +144,12 @@ void SceneGrass::Init()
 	b_Rocks = true;
 	b_Nets = false;
 	b_Baits = false;
+    b_Traps = false;
 
 	f_RotateRock = 0.f;
 	f_RotateNet = 0.f;
 	f_RotateBait = 0.f;
+    f_RotateTrap = 0.f;
 
     f_HighlightPos = -34.7f;
 
@@ -164,6 +166,15 @@ void SceneGrass::Update(double dt)
 	//m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
 	fps = (float)(1.f / dt);
+
+    //===============================================================================================================================//
+    //                                                             Pause                                                             //
+    //===============================================================================================================================//
+
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_P].isPressed)
+    {
+        SharedData::GetInstance()->sceneManager->SetPauseState();
+    }
 
 	//===============================================================================================================================//
 	//                                                            Updates                                                            //
@@ -222,37 +233,8 @@ void SceneGrass::Update(double dt)
 	//                                                            Key Inputs                                                         //
 	//===============================================================================================================================//
 
-	//Place trap
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].Use())
-    {
-        PlaceTrap(&grass);
-    }
-
-	//Rocks
-	if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].isPressed)
-	{
-		b_Rocks = true;
-		b_Baits = false;
-		b_Nets = false;
-		f_HighlightPos = -34.7f;
-	}
-	//Nets
-	if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_2].isPressed)
-	{
-		b_Nets = true;
-		b_Rocks = false;
-		b_Baits = false;
-		f_HighlightPos = -24.8f;
-	}
-	//Baits
-	if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_3].isPressed)
-	{
-		b_Baits = true;
-		b_Rocks = false;
-		b_Nets = false;
-
-		f_HighlightPos = -14.9f;
-	}
+    // Update Player Inventory
+    UpdateInventory();
 
 	if (b_Rocks)
 	{
@@ -272,6 +254,11 @@ void SceneGrass::Update(double dt)
 		f_RotateBait += dt * 50;
         ShootBait();
 	}
+    if (b_Traps)
+    {
+        f_RotateTrap += dt * 50;
+        PlaceTrap(&grass);
+    }
 
 	// Check pick up monster
 	if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_E].isPressed)
@@ -324,6 +311,7 @@ void SceneGrass::Update(double dt)
 	ItemProjectile::d_rockCounter += dt;
 	ItemProjectile::d_netCounter += dt;
 	ItemProjectile::d_baitCounter += dt;
+    ItemProjectile::d_trapCounter += dt;
 
     //Update Projectiles vector - delete them from vector
     itemProjectile->UpdateProjectile(dt);
@@ -379,15 +367,19 @@ void SceneGrass::Render()
 	//modelStack.PopMatrix();
 
     //Trap placing
-    double x, y;
-    Application::GetCursorPos(&x, &y);
-    modelStack.PushMatrix();
-    modelStack.Translate(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0.5, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
-    modelStack.Scale(1,1,1);
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
-    modelStack.PopMatrix();
+    if (b_Traps)
+    {
+        double x, y;
+        Application::GetCursorPos(&x, &y);
+        modelStack.PushMatrix();
+        modelStack.Translate(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0.5, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
+        modelStack.Scale(1, 1, 1);
+        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
+        modelStack.PopMatrix();
+    }
 
     // Render particles
+    glDepthMask(GL_FALSE);
     for (std::vector<ParticleObject* >::iterator it = SharedData::GetInstance()->particleManager->m_particleList.begin(); it != SharedData::GetInstance()->particleManager->m_particleList.end(); ++it)
     {
         ParticleObject* particle = (ParticleObject*)(*it);
@@ -396,6 +388,7 @@ void SceneGrass::Render()
             RenderParticle(particle);
         }
     }
+    glDepthMask(GL_TRUE);
 
     //for (GameObject tallGrass = 0; tallGrass < grass.GAMEOBJECT_COUNT; ++tallGrass)
     //{
