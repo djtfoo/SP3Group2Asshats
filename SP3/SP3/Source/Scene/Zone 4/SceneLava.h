@@ -36,7 +36,7 @@ public:
 	bool b_placing = false;
 
 	// check if collected
-	bool b_Collected;
+	bool b_RampageMode;
 
 	// monster rampage timer
 	float f_RampageTimer;

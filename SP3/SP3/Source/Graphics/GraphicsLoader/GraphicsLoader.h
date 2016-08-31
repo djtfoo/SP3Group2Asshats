@@ -201,6 +201,7 @@ public:
 
 		// Particles
 		GEO_HIDDENBONUS_PARTICLE,
+		GEO_VOLCANOSPARK_PARTICLE,
 
         // Monster states
         GEO_MONSTERSTATE_EXCLAMATION_MARK,

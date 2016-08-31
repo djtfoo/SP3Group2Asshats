@@ -161,7 +161,7 @@ void SceneLava::Init()
 	b_Baits = false;
     b_Traps = false;
 
-	b_Collected = false;
+	b_RampageMode = false;
     f_RampageTimer = 0.f;
 
 	f_RotateRock = 0.f;
@@ -301,7 +301,8 @@ void SceneLava::Update(double dt)
 			{
                 if (CheckPickUpCoin(&lava, GO))
                 {
-                    b_Collected = true;
+					b_RampageMode = true;
+					f_RampageTimer = 0.f;
                     for (GameObject GO = 0; GO < lava.GAMEOBJECT_COUNT; ++GO)
                     {
                         if ((lava.mask[GO] & COMPONENT_AI) == COMPONENT_AI)
@@ -332,19 +333,15 @@ void SceneLava::Update(double dt)
 
 	}
 
-	if (b_Collected == true)
+	//b_rampageMode
+	if (b_RampageMode == true)
 	{
 		f_RampageTimer += (float)(dt);
+
 		for (GameObject GO = 0; GO < lava.GAMEOBJECT_COUNT; ++GO)
 		{
-			if ((lava.mask[GO] & COMPONENT_AI) == COMPONENT_AI)
+			if ((lava.mask[GO] & COMPONENT_AI) == COMPONENT_AI && (lava.monster[GO]->m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < (5 * Scene::tileSize) * (5 * Scene::tileSize))
 			{
-				//lava.monster[GO]->m_velocity = lava.velocity[GO];
-				//lava.monster[GO]->m_strategy->SetState(AI_Strategy::STATE_ALERT);
-				//lava.monster[GO]->m_strategy->SetDestination(SharedData::GetInstance()->player->GetPositionVector());
-				////lava.monster[GO]->Update(dt);
-				//lava.velocity[GO].x = lava.monster[GO]->m_velocity.x * 50.f;
-				//lava.velocity[GO].z = lava.monster[GO]->m_velocity.z * 50.f;
 				if (lava.monster[GO]->GetStrategyState() == AI_Strategy::STATE_RAMPAGE) {
 					lava.monster[GO]->m_strategy->SetRampageStateDestination();
 					lava.velocity[GO] = lava.monster[GO]->m_velocity;
@@ -354,8 +351,8 @@ void SceneLava::Update(double dt)
 
 		if (f_RampageTimer >= 4.f)
 		{
-			b_Collected = false;
-            f_RampageTimer = 0.0;
+			b_RampageMode = false;
+			f_RampageTimer = 0.0;
 			for (GameObject GO = 0; GO < lava.GAMEOBJECT_COUNT; ++GO)
 			{
 				if ((lava.mask[GO] & COMPONENT_AI) == COMPONENT_AI)
@@ -516,11 +513,6 @@ void SceneLava::Exit()
 {
 	for (unsigned GO = 0; GO < lava.GAMEOBJECT_COUNT; ++GO)
 	{
-		//if (grass.monster[GO])
-		//{
-		//    delete grass.monster[GO];
-		//}
-
 		// call destroyGO instead
 		destroyGO(&lava, GO);
 	}
