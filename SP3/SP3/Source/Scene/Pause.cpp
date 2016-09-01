@@ -53,15 +53,6 @@ void Pause::Render()
 {
 	double x, y;
 	Application::GetCursorPos(&x, &y);
-	//std::stringstream ss;
-
-	//ss.str("");
-	//ss << "X: " << x;
-	//scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 30, 6);
-
-	//ss.str("");
-	//ss << "Y: " << y;
-	//scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 30, 9);
 
 	scene->SetHUD(true);
 	switch (P_STATE)
@@ -190,9 +181,29 @@ void Pause::RenderPauseMenuState()
 void Pause::RenderQuestState()
 {
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_QUEST_HL), false, 48.f, 12.f, 0, 45);
-
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 60.f, 15.f, 0, 45);
 
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 140.f, 70.f, 0, 0);
+
+	std::stringstream ss;
+	ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetQuestName();
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1,1), 6, 20, 37);
+
+	ss.str("");
+	ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetSerialNumber() << ". ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 15, 37);
+
+	ss.str("");
+	ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() << ":  ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 15,  30);
+
+	ss.str("");
+	ss << "0"<<" / " <<SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredQuantity() ;
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 25, 30);
+
+	ss.str("");
+	ss << "Location: " <<SharedData::GetInstance()->questManager->GetCurrentQuest()->GetZone();
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 15, 20);
 
 	RenderBackButton();
 }

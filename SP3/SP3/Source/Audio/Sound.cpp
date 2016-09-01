@@ -51,9 +51,9 @@ playMusic(string Music)
 a string to take in music file to play.
 */
 /****************************************************************************/
-void Sound::PlayMusic(string Music)
+void Sound::PlayMusic(string Music,float Volume)
 {
-	musicEngine->setSoundVolume(0.1);
+	musicEngine->setSoundVolume(Volume);
 	Song = musicEngine->play2D(Music.c_str(), true, false, true);
 }
 /****************************************************************************/

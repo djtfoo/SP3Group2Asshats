@@ -13,6 +13,7 @@ A Class that handles the different scenes
 //#include "../Scene/Scene.h"
 #include "../Scene/mainMenu.h"
 #include "../Scene/Pause.h"
+#include "../Scene/Faint.h"
 
 /****************************************************************************/
 /*!
@@ -29,6 +30,8 @@ public:
         GAMESTATE_GAMEPLAY,
         GAMESTATE_PAUSE,
         GAMESTATE_EXIT,
+		GAMESTATE_FAINT,
+
         GAMESTATE_TOTAL
     };
 
@@ -43,6 +46,7 @@ public:
 
     MainMenu* m_mainMenu;
     Pause* m_pause;
+	Faint* m_faint;
 
     GAME_STATE GetGameState();
 
@@ -51,6 +55,7 @@ public:
     void SetMainMenuState();
     void SetGameState();
     void SetPauseState();
+	void SetFaintState();
     void SetToExit();
 
 	void Update(double dt);

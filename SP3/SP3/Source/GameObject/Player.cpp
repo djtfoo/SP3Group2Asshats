@@ -500,7 +500,7 @@ void Player::TakeDamage(const int damage)
     if (d_damageTimer >= d_invulnerabilityTime)
     {
         this->m_health -= damage;
-        Math::Max(0.f, m_health);
+		this->m_health = Math::Max(0.f, m_health);
 
         if (m_health == 0.f)
         {

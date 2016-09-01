@@ -347,6 +347,9 @@
     <ClCompile Include="Source\General\Quest\QuestManager.cpp">
       <Filter>Source Files\General\Quest</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene\Faint.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\shader.hpp">
@@ -519,6 +522,9 @@
     </ClInclude>
     <ClInclude Include="Source\General\Quest\QuestManager.h">
       <Filter>Header Files\General\Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Faint.h">
+      <Filter>Header Files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

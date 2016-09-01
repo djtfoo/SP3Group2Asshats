@@ -188,18 +188,6 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_TEXT_CAPTURE] = MeshBuilder::GenerateQuad("CAPTURE", Color(0, 1, 0), 1.f);
 	m_meshList[GEO_TEXT_CAPTURE]->textureArray[0] = LoadTGA("Image//Captured.tga");
 
-	//m_meshList[GEO_ROCKS2] = MeshBuilder::GenerateOBJ("Bird", "OBJ//stone_2.obj");
-	//m_meshList[GEO_ROCKS2]->textureArray[0] = LoadTGA("Image//Rock2.tga");
-
-	//m_meshList[GEO_ROCKS3] = MeshBuilder::GenerateOBJ("Bird", "OBJ//stone_3.obj");
-	//m_meshList[GEO_ROCKS3]->textureArray[0] = LoadTGA("Image//Rock3.tga");
-
-	//m_meshList[GEO_ROCKS4] = MeshBuilder::GenerateOBJ("Bird", "OBJ//stone_4.obj");
-	//m_meshList[GEO_ROCKS4]->textureArray[0] = LoadTGA("Image//Rock4.tga");
-
-	//m_meshList[GEO_ROCKS5] = MeshBuilder::GenerateOBJ("Bird", "OBJ//stone_5.obj");
-	//m_meshList[GEO_ROCKS5]->textureArray[0] = LoadTGA("Image//Rock5.tga");
-
     // Swamp Scene
 	m_meshList[GEO_SWAMP_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//SwampZone/Swamp_HeightMap.raw", m_heightMapSwamp);
 	m_meshList[GEO_SWAMP_TERRAIN]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_terrain.tga");
@@ -368,6 +356,9 @@ void GraphicsLoader::Init()
 
 	m_meshList[GEO_GAMETITLE] = MeshBuilder::GenerateQuad("GameTitle", Color(1, 0, 0), 1.f);
 	m_meshList[GEO_GAMETITLE]->textureID = LoadTGA("Image//MenuText//GameTitle.tga");
+	
+	m_meshList[GEO_CONTROLS] = MeshBuilder::GenerateQuad("Controls", Color(1, 0, 0), 1.f);
+	m_meshList[GEO_CONTROLS]->textureID = LoadTGA("Image//MenuText//Controls.tga");
 
 	//Menu & Pause Icon 
 

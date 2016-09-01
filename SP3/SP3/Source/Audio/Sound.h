@@ -31,7 +31,7 @@ public:
 	Sound();
 	~Sound();
 	void Init();
-	void PlayMusic(string Music);
+	void PlayMusic(string Music,float Volume = 0.5);
 	void StopMusic(string Music);
 	void PlaySoundEffect(string Music);
 	//void playSoundEffect3D(string Music, irrklang::vec3df pos, irrklang::vec3df TargetPos);

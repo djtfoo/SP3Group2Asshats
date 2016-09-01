@@ -37,26 +37,37 @@ void MainMenu::Update(double dt)
 
 	switch (MM_STATE)
 	{
-	case M_MAIN:
-	{
-		MainMenuButton();
-	}
-	case M_INSTRUCTION:
-	{
-		BackButton();
-	}
-	case M_STORY:
-	{
-		BackButton();
-	}
-	case M_OPTION:
-	{
-		BackButton();
-	}
-	case M_CREDITS:
-	{
-		BackButton();
-	}
+		case M_MAIN:
+		{
+			MainMenuButton();
+		}
+		case M_INSTRUCTION:
+		{
+			BackButton();
+			NextButton();
+		}
+		case M_STORY:
+		{
+			BackButton();
+		}
+		case M_OPTION:
+		{
+			BackButton();
+		}
+		case M_CREDITS:
+		{
+			BackButton();
+		}
+		case M_INSTRUCTION2:
+		{
+			BackButton();
+			NextButtonMonstersPage();
+		}
+		case M_INSTRUCTION3:
+		{
+			BackButton();
+		}
+
 	}
 }
 
@@ -68,21 +79,28 @@ void MainMenu::Render()
 	scene->SetHUD(true);
 	switch (MM_STATE)
 	{
-	case M_MAIN:
-		RenderMainMenuState();
-		break;
-	case M_INSTRUCTION:
-		RenderInstructionState();
-		break;
-	case M_STORY:
-		RenderStoryState();
-		break;
-	case M_OPTION:
-		RenderOptionState();
-		break;
-	case M_CREDITS:
-		RenderCreditState();
-		break;
+		case M_MAIN:
+			RenderMainMenuState();
+			break;
+		case M_INSTRUCTION:
+			RenderInstructionState();
+			break;
+		case M_STORY:
+			RenderStoryState();
+			break;
+		case M_OPTION:
+			RenderOptionState();
+			break;
+		case M_CREDITS:
+			RenderCreditState();
+			break;
+		case M_INSTRUCTION2:
+			RenderInstructionState2();
+			break;
+		case M_INSTRUCTION3:
+		{
+			RenderInstructionState3();
+		}
 	}
 	scene->SetHUD(false);
 }
@@ -233,6 +251,103 @@ void MainMenu::RenderInstructionState()
 {
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS_HL), false, 48.f, 12.f, 0, 45);
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 60.f, 15.f, 0, 45);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CONTROLS), false, 110.f, 40.f, -5,-2);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 140.f, 70.f, 0, 0);
+
+	std::stringstream ss;
+	ss << "Controls: ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 6, 35, 40);
+
+	
+	
+	RenderBackButton();
+	RenderNextButton();
+}
+
+void MainMenu::RenderInstructionState2()
+{
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS_HL), false, 48.f, 12.f, 0, 45);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 60.f, 15.f, 0, 45);
+
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 140.f, 70.f, 0, 0);
+
+	std::stringstream ss;
+	ss << "Items: ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0),6, 35, 40);
+
+	ss.str("");
+	ss << " :Rocks will damage & increase the chance of catching monsters ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.5, 18, 37);
+	scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2, 15.f, 38.f, 0, 0, 0, false);
+
+	ss.str("");
+	ss << " :Nets are used to capture the monsters.";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.5, 18, 32);
+	scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET), 1, 15.f, 32.f, 0, 0, 0, false);
+
+	ss.str("");
+	ss << " :Baits are used to lure the monsters closer to you.";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.5, 18, 27);
+	scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2, 15.f, 28, 0, 0, 0, false);
+
+	ss.str("");
+	ss << " :Traps are used to immobilized the monsters for easier capture.";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.5, 18, 22);
+	scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2, 15.f, 23.f, 0, 0, 0, false);
+
+	ss.str("");
+	ss << " :Meats are used to create baits.";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.5, 18, 17);
+	scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT), 2, 15.f,18.f, 0, 0, 0, false);
+
+	RenderBackButton();
+	RenderButtonMonstersPage();
+}
+
+void MainMenu::RenderInstructionState3()
+{
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS_HL), false, 48.f, 12.f, 0, 45);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 60.f, 15.f, 0, 45);
+
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 140.f, 70.f, 0, 0);
+
+	std::stringstream ss;
+	scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), 2, 15.f, 38.f, 0, 0, 0, false);
+	scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTERSTATE_RAMPAGE), 4, 15.f, 34.f, 0, 0, 0, false);
+	scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTERSTATE_QUESTION_MARK), 4, 15.f, 30.f, 0, 0, 0, false);
+	scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTERSTATE_EXCLAMATION_MARK), 4, 15.f, 26.f, 0, 0, 0, false);
+	scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HP), 1, 15.f, 21.f, 0, 0, 0, false);
+	scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CAPTUREBAR), 1, 15.f, 23.f, 0, 0, 0, false);
+	scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT), 2, 15.f, 15.f, 0, 0, 0, false);
+
+	ss << "Monster Characteristics: ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0),4, 20, 41);
+
+	ss.str("");
+	ss << " :Monster in bait state(Will be lured to bait). ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.5, 17, 37);
+
+	ss.str("");
+	ss << " :Monster in Rampage state(Will be lured to player). ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.5, 17, 33);
+
+	ss.str("");
+	ss << " :Monster is alert and senses your presence. ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.5, 17, 29);
+
+	ss.str("");
+	ss << " :Monster will attack or run away from you depending on their behavior. ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.5, 17, 25);
+
+	ss.str("");
+	ss << " :CaptureRate of the monster. ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.5, 17, 22.5);
+
+	ss.str("");
+	ss << " :HP of the monster. ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.5, 17, 20);
+
+
 	RenderBackButton();
 }
 
@@ -240,6 +355,35 @@ void MainMenu::RenderStoryState()
 {
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_STORY_HL), false, 48.f, 12.f, 0, 45);
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 60.f, 15.f, 0, 45);
+
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 140.f, 70.f, 0, 0);
+
+	std::stringstream ss;
+
+	ss.str("");
+	ss << "Ever since Grandad died 5 years ago, the Mon'Colle zoo has been empty.";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.2,10, 40);
+
+	ss.str("");
+	ss << "And with no one to cull and keep the monsters under control, there has been an influx of monsters appearing near the city.  ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.2, 10, 37.5);
+
+	ss.str("");
+	ss << "As the only grandchild left in the family line that is fit to go hunting, it's up to you to capture  ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.2, 10, 35);
+
+	ss.str("");
+	ss << "the monsters and keep the town safe from the havoc that will reign if the monsters get out of control!  ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.2, 10, 32.5);
+
+	ss.str("");
+	ss << "Trust your instincts as you dive into the trecherous areas against the inhospitable climates. ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.2, 10, 30);
+
+	ss.str("");
+	ss << "Manage your coins to upgrade your items and capture all the monsters!";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.2, 10, 27.5);
+
 	RenderBackButton();
 }
 
@@ -247,6 +391,31 @@ void MainMenu::RenderCreditState()
 {
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CREDITS_HL), false, 48.f, 12.f, 0, 45);
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 60.f, 15.f, 0, 45);
+
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 140.f, 70.f, 0, 0);
+
+	std::stringstream ss;
+
+	ss.str("");
+	ss << "SP GROUP 2";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 3, 20, 40);
+
+	ss.str("");
+	ss << "(LEADER):   JING TING";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 3, 20, 35);
+
+	ss.str("");
+	ss << "(MEMBER): AMIRUL";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 3, 20, 30);
+
+	ss.str("");
+	ss << "(MEMBER): KUNTA";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 3, 20, 25);
+
+	ss.str("");
+	ss << "(MEMBER): RANDALL";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 3, 20, 20);
+
 	RenderBackButton();
 }
 
@@ -450,11 +619,62 @@ void MainMenu::RenderBackButton()
 	else
 	{
 		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACK), false, 24.f, 6.f, 45, -45);
-		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACK_ICON), false, 12.f, 4.f, 66, -45);
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS_ICON), false, 12.f, 4.f, 66, -45);
 		b_playOnes[7] = false;
 	}
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, 45, -45);
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, 50, -45);
+}
+
+void MainMenu::RenderNextButton()
+{
+	if (button_highlighted[8])
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS_ICON), false, 14.f, 4.5f, -50, -45);
+		if (!b_playOnes[8])
+		{
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseHover.wav");
+			b_playOnes[8] = true;
+		}
+	}
+	else
+	{
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS_ICON), false, 12.f, 4.f, -50, -45);
+		b_playOnes[8] = false;
+	}
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, -45);
+
+	//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_EXIT), false, 24.f, 6.f, -55, -40);
+	//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_EXIT_ICON), false, 12.f, 4.f, -34, -40);
+	//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -55, -40);
+	//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, -40);
+
+}
+
+void MainMenu::RenderButtonMonstersPage()
+{
+	if (button_highlighted[9])
+	{
+		scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT), 2, 15, 6, 0, 0, 0, false);
+		//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT), false, 14.f, 4.5f, -50, -45);
+		if (!b_playOnes[9])
+		{
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseHover.wav");
+			b_playOnes[9] = true;
+		}
+	}
+	else
+	{
+		scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT), 1, 15, 6, 0, 0, 0, false);
+		b_playOnes[9] = false;
+	}
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, -45);
+
+	//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_EXIT), false, 24.f, 6.f, -55, -40);
+	//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_EXIT_ICON), false, 12.f, 4.f, -34, -40);
+	//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, -55, -40);
+	//scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 48.f, 12.f, -50, -40);
+
 }
 
 void MainMenu::BackButton()
@@ -483,6 +703,68 @@ void MainMenu::BackButton()
 			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
 			b_mouseClick = false;
 			MM_STATE = M_MAIN;
+		}
+	}
+}
+
+void MainMenu::NextButton()
+{
+	bool b_StartBtnHL;
+	bool b_BackBtnHL;
+	double x, y;
+	Application::GetCursorPos(&x, &y);
+
+	if (x > 192 && x < 525 && y > 888 && y < 960)
+	{
+		button_highlighted[8] = true;
+	}
+	else
+	{
+		button_highlighted[8] = false;
+	}
+
+	if (button_highlighted[8])
+	{
+		if (!b_mouseClick && Application::IsMousePressed(0))
+		{
+			b_mouseClick = true;
+		}
+		else if (b_mouseClick && !Application::IsMousePressed(0))
+		{
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+			b_mouseClick = false;
+			MM_STATE = M_INSTRUCTION2;
+		}
+	}
+}
+
+void MainMenu::NextButtonMonstersPage()
+{
+	bool b_StartBtnHL;
+	bool b_BackBtnHL;
+	double x, y;
+	Application::GetCursorPos(&x, &y);
+
+	if (x > 192 && x < 525 && y > 888 && y < 960)
+	{
+		button_highlighted[9] = true;
+	}
+	else
+	{
+		button_highlighted[9] = false;
+	}
+
+	if (button_highlighted[9])
+	{
+		if (!b_mouseClick && Application::IsMousePressed(0))
+		{
+			b_mouseClick = true;
+		}
+		else if (b_mouseClick && !Application::IsMousePressed(0))
+		{
+			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+			b_mouseClick = false;
+			MM_STATE = M_INSTRUCTION3;
 		}
 	}
 }

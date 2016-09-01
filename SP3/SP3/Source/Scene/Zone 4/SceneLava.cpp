@@ -38,7 +38,7 @@ void SceneLava::Init()
 	memset(&lava, 0, sizeof(lava));
 
 	// Load map
-	SharedData::GetInstance()->sound->PlayMusic("Sound//LavaZone//LavaScene.mp3");
+	SharedData::GetInstance()->sound->PlayMusic("Sound//LavaZone//LavaScene.mp3",0.1);
 	Scene::LoadLevelMap("GameData/LavaScene.csv");
 	for (int rows = 0; rows < Scene::m_rows; ++rows)
 	{

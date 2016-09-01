@@ -14,6 +14,8 @@ class MainMenu
 		M_STORY,
 		M_OPTION,
 		M_CREDITS,
+		M_INSTRUCTION2,
+		M_INSTRUCTION3,
 		M_EXIT,
 
 		M_TOTAL
@@ -44,13 +46,19 @@ public:
 
 	void RenderMainMenuState();
 	void RenderInstructionState();
+	void RenderInstructionState2();
+	void RenderInstructionState3();
 	void RenderStoryState();
 	void RenderOptionState();
 	void RenderCreditState();
 
 	void MainMenuButton();
 	void BackButton();
+	void NextButton();
+	void NextButtonMonstersPage();
 
+	void RenderNextButton();
+	void RenderButtonMonstersPage();
 	void RenderBackButton();
 };
 

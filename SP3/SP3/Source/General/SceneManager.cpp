@@ -34,6 +34,10 @@ SceneManager::SceneManager() : m_gamestate(GAMESTATE_MAINMENU), m_scene(0)
     case GAMESTATE_PAUSE:
         Application::SetNormalCursor();
         break;
+
+	case GAMESTATE_FAINT:
+		Application::SetNormalCursor();
+		break;
     }
 
     m_mainMenu = new MainMenu();
@@ -41,6 +45,9 @@ SceneManager::SceneManager() : m_gamestate(GAMESTATE_MAINMENU), m_scene(0)
 
     m_pause = new Pause();
     m_pause->Init();
+
+	m_faint = new Faint();
+	m_faint->Init();
 }
 
 SceneManager::~SceneManager()
@@ -88,6 +95,7 @@ void SceneManager::ChangeScene(short id)
 		m_scene->Init();
         m_mainMenu->scene = m_scene;
         m_pause->scene = m_scene;
+		m_faint->scene = m_scene;
 	}
 
     SharedData::GetInstance()->player->ResetPlayer();
@@ -116,6 +124,12 @@ void SceneManager::SetPauseState()
     Application::SetNormalCursor();
 }
 
+void SceneManager::SetFaintState()
+{
+	m_gamestate = GAMESTATE_FAINT;
+	Application::SetNormalCursor();
+}
+
 void SceneManager::SetToExit()
 {
     m_gamestate = GAMESTATE_EXIT;
@@ -137,6 +151,10 @@ void SceneManager::Update(double dt)
         }
         break;
 
+	case GAMESTATE_FAINT:
+			m_faint->Update(dt);
+		break;
+
     case GAMESTATE_PAUSE:
         m_pause->Update(dt);
         break;
@@ -144,7 +162,7 @@ void SceneManager::Update(double dt)
 
     if (SharedData::GetInstance()->player->IsDead())
     {
-        ChangeScene(5);
+		SetFaintState();
     }
 }
 
@@ -163,6 +181,10 @@ void SceneManager::Render()
     {
         m_pause->Render();
     }
+	else if (m_gamestate == GAMESTATE_FAINT)
+	{
+		m_faint->Render();
+	}
 }
 
 void SceneManager::Exit()
@@ -184,4 +206,10 @@ void SceneManager::Exit()
         m_pause->Exit();
         delete m_pause;
     }
+
+	if (m_faint)
+	{
+		m_faint->Exit();
+		delete m_faint;
+	}
 }

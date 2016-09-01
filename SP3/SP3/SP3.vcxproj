@@ -80,6 +80,7 @@
     <ClCompile Include="Source\Graphics\Particle\ParticleManager.cpp" />
     <ClCompile Include="Source\Graphics\Vertex\Utility.cpp" />
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Scene\Faint.cpp" />
     <ClCompile Include="Source\Scene\mainMenu.cpp" />
     <ClCompile Include="Source\Scene\Pause.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
@@ -139,6 +140,7 @@
     <ClInclude Include="Source\Graphics\Particle\ParticleManager.h" />
     <ClInclude Include="Source\Graphics\Vertex\Utility.h" />
     <ClInclude Include="Source\Graphics\Vertex\Vertex.h" />
+    <ClInclude Include="Source\Scene\Faint.h" />
     <ClInclude Include="Source\Scene\mainMenu.h" />
     <ClInclude Include="Source\Scene\Pause.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
