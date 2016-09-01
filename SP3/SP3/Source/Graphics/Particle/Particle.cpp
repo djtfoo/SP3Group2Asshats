@@ -89,9 +89,10 @@ void ParticleObject::UpdateParticle(double dt)
 		this->scale.y += 0.5f * (float)dt;
 		this->scale.z += 0.5f * (float)dt;
 		this->rotation += Math::RandIntMinMax(-this->rotationSpeed, this->rotationSpeed) * (float)dt * 10.0f;
-		if (this->scale.x >= 1 ||
-			this->scale.y >= 1 ||
-			this->scale.z >= 1)
+		//if (this->scale.x >= 1 ||
+		//	this->scale.y >= 1 ||
+		//	this->scale.z >= 1)
+		if (this->pos.y > 0.5f)
 		{
 			b_toDelete = true;
 		}

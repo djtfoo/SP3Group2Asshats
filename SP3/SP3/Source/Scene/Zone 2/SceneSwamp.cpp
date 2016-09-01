@@ -201,6 +201,7 @@ void SceneSwamp::Update(double dt)
     //                                                            Updates                                                            //
     //===============================================================================================================================//
 
+	//std::cout << SharedData::GetInstance()->player->GetPositionVector() << std::endl;
     //Monster Update
     UpdateMonsters(dt, &swamp);
 
@@ -315,17 +316,6 @@ void SceneSwamp::Update(double dt)
             }
         }
 
-    }
-
-    // TEMPORARY DEBUG: check of inventory
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_C].isPressed)
-    {
-        std::cout << "MONSTER INVENTORY: ";
-        for (unsigned i = 0; i < SharedData::GetInstance()->player->monsterList.size(); ++i)
-        {
-            std::cout << SharedData::GetInstance()->player->monsterList[i] << " ";
-        }
-        std::cout << std::endl;
     }
 
     //Update Projectiles vector - delete them from vector
@@ -456,7 +446,41 @@ void SceneSwamp::Exit()
 
 void SceneSwamp::SpawnSceneParticles()
 {
-		SharedData::GetInstance()->particleManager->SpawnParticle(Vector3(Math::RandFloatMinMax(-100, 100), 3, Math::RandFloatMinMax(-100, 100)), ParticleObject::P_MUDBUBBLE);
+
+	//SharedData::GetInstance()->particleManager->SpawnParticle(Vector3(Math::RandFloatMinMax(-100, 100), 3, Math::RandFloatMinMax(-100, 100)), ParticleObject::P_MUDBUBBLE);
+
+
+	unsigned int spawnCount = Math::RandIntMinMax(0, 20);
+	bool spawn = false;
+	float randRow;
+	float randCol;
+
+	for (unsigned i = 0; i < spawnCount; ++i)
+	{
+		int runCount = 0;
+		//while (!spawn)
+		//{
+		for (unsigned run = 0; run < 3; ++run)
+		{
+			randRow = (float)(Math::RandIntMinMax(0, 200));
+			randCol = (float)(Math::RandIntMinMax(0, 200));
+
+			//char tile = m_levelMap[randRow][randCol];
+
+			if (30.f * ReadHeightMap(SharedData::GetInstance()->graphicsLoader->m_heightMapSwamp, (randCol - 100.f) / 300.f, (randRow - 100.f) / 300.f) < 5.f)
+			{
+				spawn = true;
+				Vector3 position(randCol, Math::RandFloatMinMax(-3.f, -0.5f), randRow);
+				SharedData::GetInstance()->particleManager->SpawnParticle(position, ParticleObject::P_MUDBUBBLE);
+			}
+		}
+		
+		//}
+
+		//Vector3 position(randCol, 0.f, randRow);
+		//SharedData::GetInstance()->particleManager->SpawnParticle(position, ParticleObject::P_MUDBUBBLE);
+		spawn = false;
+	}
 }
 
 void SceneSwamp::SceneEnvironmentEffect()

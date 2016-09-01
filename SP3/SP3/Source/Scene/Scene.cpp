@@ -1409,6 +1409,8 @@ void Scene::RenderHUD(World *world)
 
     SetHUD(true);
 
+	Vector3 playerPos = SharedData::GetInstance()->player->GetPositionVector();
+
     std::stringstream ss;
     ss << "FPS: " << fps;
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 3);
@@ -1420,6 +1422,19 @@ void Scene::RenderHUD(World *world)
     ss.str("");
     ss << "PLAYER HEALTH:" << SharedData::GetInstance()->player->GetHealth();
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 9);
+
+
+	if (m_sceneName == "Swamp")
+	{
+		if (30.f * ReadHeightMap(SharedData::GetInstance()->graphicsLoader->m_heightMapSwamp, (playerPos.x - 100.f) / 300.f, (playerPos.z - 100.f) / 300.f) < 5.f && !SharedData::GetInstance()->player->IsJumping()) {
+			//std::cout << "ON MUD!! ";
+			SceneEnvironmentEffect();
+			ss.str("");
+			ss << "PLAYER POSITION:" << SharedData::GetInstance()->player->GetPositionVector();
+			RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 12);
+			RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "ON MUD", Color(1, 1, 0), 3, 0, 15);
+		}
+	}
 
     RenderPressEText(world);
 	
