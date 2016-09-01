@@ -37,6 +37,7 @@ Scene::Scene(std::string name) : m_sceneName(name)
     f_RotateNet = 0.f;
     f_RotateBait = 0.f;
     f_RotateTrap = 0.f;
+	f_RotateMonster = 0.f;
 
     f_HighlightPos = -20.f;
 }
@@ -1421,6 +1422,9 @@ void Scene::RenderHUD(World *world)
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 9);
 
     RenderPressEText(world);
+	
+	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HP_UI), false, 13.f, 62.f, 72, -22);
+	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HP), false, 3.f, SharedData::GetInstance()->player->GetHealth() / 2, 72.2, -43 + 0.5 * (SharedData::GetInstance()->player->GetHealth()/2));
 
     std::stringstream ss1, ss2, ss3, ss4, ss5;
     ss1 << "Rocks: " << SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetCount();
@@ -1485,7 +1489,85 @@ void Scene::RenderHUD(World *world)
     //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BAIT), false, 30.f, 10, -30, false);
     //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), true, 10.0f, 40, -48);
 
-	RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT), 2, 75.f, 20.5f, 0, f_RotateTrap, 0, false);
+	if (m_sceneName == "Grass")
+	{
+		//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 50.f, 30.f, 50, 40);
+		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT), 2, 68.f, 55.f, 0, f_RotateMonster, 0, false);
+		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_BIRD), 2, 68.f, 50.f, 0, f_RotateMonster * -1, 0, false);
+		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_FAIRY), 2, 68.f, 45.f, 0, f_RotateMonster * 2, 0, false);
+
+		ss.str("");
+		ss << "X " << "0";
+		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3,72.f, 55.f);
+
+		ss.str("");
+		ss << "X " << "0";
+		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 50.f);
+
+		ss.str("");
+		ss << "X " << "0";
+		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 45.f);
+	}
+
+	if (m_sceneName == "Swamp")
+	{
+		//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 50.f, 30.f, 50, 40);
+		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_SEAMONSTER), 2, 68.f, 55.f, 0, f_RotateMonster, 0, false);
+		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_GRIMEJAM), 2, 68.f, 50.f, 0, f_RotateMonster* -1, 0, false);
+		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_MUKBOSS), 2, 68.f, 45.f, 0, f_RotateMonster* 2, 0, false);
+
+		ss.str("");
+		ss << "X " << "0";
+		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 55.f);
+
+		ss.str("");
+		ss << "X " << "0";
+		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 50.f);
+
+		ss.str("");
+		ss << "X " << "0";
+		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 45.f);
+	}
+
+	if (m_sceneName == "Rock")
+	{
+		//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 50.f, 30.f, 50, 40);
+		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_FOSSIL), 2, 68.f, 55.f, 0, f_RotateMonster, 0, false);
+		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_GOLEM), 2, 68.f, 50.f, 0, f_RotateMonster* -1, 0, false);
+		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_ROCKSNAKE), 2, 68.f, 45.f, 0, f_RotateMonster* 2, 0, false);
+
+		ss.str("");
+		ss << "X " << "0";
+		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 55.f);
+
+		ss.str("");
+		ss << "X " << "0";
+		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 50.f);
+
+		ss.str("");
+		ss << "X " << "0";
+		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 45.f);
+	}
+
+	if (m_sceneName == "Lava")
+	{
+		//RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 50.f, 30.f, 50, 40);
+		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_MAGMA), 2, 68.f, 55.f, 0, f_RotateMonster, 0, false);
+		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_FIREBUG), 2, 68.f, 50.f, 0, f_RotateMonster* -1, 0, false);
+		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_MAGMA_BERZEKER), 2, 68.f, 45.f, 0, f_RotateMonster* 2, 0, false);
+
+		ss.str("");
+		ss << "X " << "0";
+		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 55.f);
+
+		ss.str("");
+		ss << "X " << "0";
+		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 50.f);
+
+		ss.str("");
+		ss << "X " << "0";
+		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 45.f);
+	}
 
     SetHUD(false);
 }

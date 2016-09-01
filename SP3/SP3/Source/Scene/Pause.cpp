@@ -189,13 +189,18 @@ void Pause::RenderPauseMenuState()
 
 void Pause::RenderQuestState()
 {
-	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_QUEST), false, 48.f, 12.f, 0, 45);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_QUEST_HL), false, 48.f, 12.f, 0, 45);
+
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 60.f, 15.f, 0, 45);
+
+
 	RenderBackButton();
 }
 
 void Pause::RenderOptionState()
 {
-	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS), false, 48.f, 12.f, 0, 45);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS_HL), false, 48.f, 12.f, 0, 45);
+	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 60.f, 15.f, 0, 45);
 	RenderBackButton();
 }
 

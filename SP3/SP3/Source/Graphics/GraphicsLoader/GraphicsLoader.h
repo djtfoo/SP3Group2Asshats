@@ -96,6 +96,8 @@ public:
         GEO_BOX_TRANSLUCENT,
 		GEO_HUD,
 		GEO_HUDHIGHLIGHT,
+		GEO_HP_UI,
+		GEO_HP,
 
 		//SceneGrass
 		GEO_GRASS_TERRAIN,

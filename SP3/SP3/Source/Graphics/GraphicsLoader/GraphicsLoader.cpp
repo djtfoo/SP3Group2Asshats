@@ -128,6 +128,11 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_HUDHIGHLIGHT] = MeshBuilder::GenerateQuad("HUDHIGHLIGHT", Color(0, 1, 0), 1.f);
 	m_meshList[GEO_HUDHIGHLIGHT]->textureID = LoadTGA("Image//HUD//HudHighlights.tga");
 
+	m_meshList[GEO_HP_UI] = MeshBuilder::GenerateQuad("HP_UI", Color(0, 1, 0), 1.f);
+	m_meshList[GEO_HP_UI]->textureID = LoadTGA("Image//HUD//HP_UI.tga");
+
+	m_meshList[GEO_HP] = MeshBuilder::GenerateQuad("HP", Color(1, 0, 0), 1.f);
+
     // Grass Scene
 	m_meshList[GEO_GRASS_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw",m_heightMapGrass);
 	m_meshList[GEO_GRASS_TERRAIN]->textureArray[0] = LoadTGA("Image//GrassZone//Grass.tga");

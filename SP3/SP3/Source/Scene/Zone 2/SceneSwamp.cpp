@@ -256,7 +256,7 @@ void SceneSwamp::Update(double dt)
 
     // Update Player Inventory
     UpdateInventory();
-
+	f_RotateMonster += dt * 50;
     if (b_Rocks)
     {
         //Rock projectile

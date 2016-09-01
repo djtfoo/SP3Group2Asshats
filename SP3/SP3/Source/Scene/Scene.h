@@ -60,6 +60,7 @@ public:
     float f_RotateNet;
     float f_RotateBait;
     float f_RotateTrap;
+	float f_RotateMonster;
 
     float f_HighlightPos;
 
