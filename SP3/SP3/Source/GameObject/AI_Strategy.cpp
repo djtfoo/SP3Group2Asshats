@@ -104,7 +104,6 @@ void AI_Strategy::Update()
         if (currentState != STATE_ATTACK)
         {
             SetState(STATE_ATTACK);
-            std::cout << "ATTACK!";
         }
         SetAttackStateDestination();
 	}
@@ -113,7 +112,6 @@ void AI_Strategy::Update()
         if (currentState != STATE_RUN)
         {
             SetState(STATE_RUN);
-            std::cout << "RUN!";
         }
 	}
 
@@ -121,7 +119,6 @@ void AI_Strategy::Update()
     {
         if (currentState != STATE_ALERT && currentState != STATE_BAITED)
         {
-            std::cout << "LMAO";
             SetState(STATE_ALERT);
         }
     }
@@ -131,7 +128,6 @@ void AI_Strategy::Update()
 		monster->ResetAggression();
 		monster->ResetFear();
 		SetState(STATE_IDLE);
-        std::cout << "IDLE";
 	}
 
     if (CheckDestinationReached())

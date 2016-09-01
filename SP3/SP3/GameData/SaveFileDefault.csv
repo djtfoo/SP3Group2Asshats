@@ -1,8 +1,17 @@
-Quest Count,0
-bool questActivated,0
+Quest Count,1
+bool questActivated,1
 Currency,0
+Rock quantity,50
+Net quantity,50
+Bait quantity,50
+Trap quantity,50
+Meat quantity,0
 Rock Level,0
 Net Level,0
 Bait Level,0
 Trap Level,0
+Grass size,10
+Swamp size,10
+Rock size,10
+Lava size,10
 Monsters Caught,end,

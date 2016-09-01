@@ -1,8 +1,17 @@
-Quest Count,0
-bool questActivated,0
-Currency,0
-Rock Level,0
-Net Level,0
-Bait Level,0
-Trap Level,0
-Monsters Caught,end,
+Quest Count,10
+bool questActivated,1
+Currency,2250
+Rock quantity,43
+Net quantity,35
+Bait quantity,15
+Trap quantity,39
+Meat quantity,13
+Rock Level,3
+Net Level,3
+Bait Level,2
+Trap Level,1
+Grass size,50
+Swamp size,40
+Rock size,20
+Lava size,30
+Monsters Caught,Rabbit,Bird,Bird,Rabbit,Fairy,Fairy,Rabbit,Rabbit,Rabbit,Grimejam,Grimejam,Grimejam,SeaMonster,SeaMonster,MukBoss,SeaMonster,SeaMonster,Golem,Golem,Golem,Fossil,Fossil,Magma,Magma,FireBug,end,

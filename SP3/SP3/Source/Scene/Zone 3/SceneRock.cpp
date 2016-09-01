@@ -315,17 +315,6 @@ void SceneRock::Update(double dt)
         d_spawnRocksTimer = 0.0;
     }
 
-    // TEMPORARY DEBUG: check of inventory
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_C].isPressed)
-    {
-        std::cout << "MONSTER INVENTORY: ";
-        for (unsigned i = 0; i < SharedData::GetInstance()->player->monsterList.size(); ++i)
-        {
-            std::cout << SharedData::GetInstance()->player->monsterList[i] << " ";
-        }
-        std::cout << std::endl;
-    }
-
     //Update Projectiles vector - delete them from vector
     itemProjectile->UpdateProjectile(dt);
     rockProjectile->UpdateRockProjectile(dt);
@@ -554,7 +543,6 @@ void SceneRock::UpdateFallingRocks(double dt)
             // Check collision with player
             if (rockWorld.hitbox[GO].CheckCollision(SharedData::GetInstance()->player->PlayerHitBox))
             {
-                std::cout << SharedData::GetInstance()->player->PlayerHitBox.m_origin << SharedData::GetInstance()->player->GetPositionVector() << std::endl;
                 SharedData::GetInstance()->player->TakeDamage(10);
                 destroyGO(&rockWorld, GO);
             }

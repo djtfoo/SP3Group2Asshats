@@ -13,7 +13,6 @@ unsigned int createGO(World *world)
 	}
 
 	//Already at Max GOs
-	std::cout << "at max go" << std::endl;
 	return(world->GAMEOBJECT_COUNT);
 }
 
@@ -75,5 +74,4 @@ void destroyGO(World *world, GameObject GO)
 
 
 	world->mask[GO] = COMPONENT_NONE;
-    //std::cout << "destroyed go" << std::endl;
 }

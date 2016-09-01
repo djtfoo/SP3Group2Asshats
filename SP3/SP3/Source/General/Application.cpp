@@ -119,9 +119,13 @@ void Application::Init()
 	//Create a window and create its OpenGL context
 	//m_width = 1920;
 	//m_height = 1080;
+
+    m_width = 800;
+    m_height = 600;
+
     GetMonitorResolution();
-	m_window = glfwCreateWindow(m_width, m_height, "Mon'Colle", NULL, NULL);
-    //m_window = glfwCreateWindow(1280, 768, "Mon'Colle", glfwGetPrimaryMonitor(), NULL);
+	//m_window = glfwCreateWindow(m_width, m_height, "Mon'Colle", NULL, NULL);
+    m_window = glfwCreateWindow(m_width, m_height, "Mon'Colle", glfwGetPrimaryMonitor(), NULL);
     //1280, 768
 
 	//If the window couldn't be created

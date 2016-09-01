@@ -202,7 +202,7 @@ void Pause::RenderQuestState()
         {
             std::stringstream ss;
             ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetQuestName();
-            scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 17, 37);
+            scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 19, 37);
 
             ss.str("");
             ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetSerialNumber() << ". ";
@@ -494,7 +494,6 @@ void Pause::PauseMenuButton()
 		{
 			b_mouseClick = false;
 			//SharedData::GetInstance()->sound->playSoundEffect("Sound//Click.mp3");
-			std::cout << "RESUME GAME" << std::endl;
 			SharedData::GetInstance()->sceneManager->SetGameState();
             Application::SetDisabledCursor();
 		}
@@ -519,7 +518,6 @@ void Pause::PauseMenuButton()
 		{
 			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
 			b_mouseClick = false;
-			std::cout << "BACK TO TOWN" << std::endl;
             SharedData::GetInstance()->sceneManager->SetGameState();
             SharedData::GetInstance()->sceneManager->ChangeScene(5);
 		}

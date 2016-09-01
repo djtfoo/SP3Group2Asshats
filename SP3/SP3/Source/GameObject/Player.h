@@ -101,6 +101,10 @@ public:
     bool m_bHiding;
 
     void Move(const double dt);
+
+    void MoveX(const double dt);
+    void MoveZ(const double dt);
+
     void UpdatePlayerHeight(const double dt);
     void UpdateNoiseFactor();
 

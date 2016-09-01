@@ -131,7 +131,6 @@ void LoadLevelGenerationData(std::ifstream& fileStream)
             COMPONENTS tempComponent = ConvertStringToComponent(data);
             if (tempComponent != COMPONENT_NONE) {
                 tempComponents.push_back(tempComponent);
-                //std::cout << "Converted " << data << std::endl;
             }
             prevData = data;
         }
@@ -326,6 +325,49 @@ void LoadSaveData(std::ifstream& fileStream)
     int tempCurrency = std::stoi(data);
     SharedData::GetInstance()->saveData->playerCurrency = tempCurrency;
 
+    //==================================
+    // 4th - 8th content: item quantity
+    //==================================
+    // Rock
+    std::getline(fileStream, line);
+    std::stringstream dataStreamI1(line);
+    std::getline(dataStreamI1, data, ',');
+    std::getline(dataStreamI1, data);
+    int tempRockQuantity = std::stoi(data);
+    SharedData::GetInstance()->saveData->rockQuantity = tempRockQuantity;
+
+    // Net
+    std::getline(fileStream, line);
+    std::stringstream dataStreamI2(line);
+    std::getline(dataStreamI2, data, ',');
+    std::getline(dataStreamI2, data);
+    int tempNetQuantity = std::stoi(data);
+    SharedData::GetInstance()->saveData->netQuantity = tempNetQuantity;
+
+    // Bait
+    std::getline(fileStream, line);
+    std::stringstream dataStreamI3(line);
+    std::getline(dataStreamI3, data, ',');
+    std::getline(dataStreamI3, data);
+    int tempBaitQuantity = std::stoi(data);
+    SharedData::GetInstance()->saveData->baitQuantity = tempBaitQuantity;
+
+    // Trap
+    std::getline(fileStream, line);
+    std::stringstream dataStreamI4(line);
+    std::getline(dataStreamI4, data, ',');
+    std::getline(dataStreamI4, data);
+    int tempTrapQuantity = std::stoi(data);
+    SharedData::GetInstance()->saveData->trapQuantity = tempTrapQuantity;
+
+    // Meat
+    std::getline(fileStream, line);
+    std::stringstream dataStreamI5(line);
+    std::getline(dataStreamI5, data, ',');
+    std::getline(dataStreamI5, data);
+    int tempMeatQuantity = std::stoi(data);
+    SharedData::GetInstance()->saveData->meatQuantity = tempMeatQuantity;
+
     //==========================
     // FOURTH LINE - ROCK LEVEL
     //==========================
@@ -366,16 +408,55 @@ void LoadSaveData(std::ifstream& fileStream)
     int tempTrapLevel = std::stoi(data);
     SharedData::GetInstance()->saveData->trapUpgradeLevel = tempTrapLevel;
 
-    //===============================
-    // EIGHTH LINE - MONSTERS CAUGHT
-    //===============================
+    //===================================
+    // EIGHTH LINE - ZOO GRASS AREA SIZE
+    //===================================
     std::getline(fileStream, line);
     std::stringstream dataStream8(line);
     std::getline(dataStream8, data, ',');
-    std::getline(dataStream8, data, ',');
-    for (; data != "end"; std::getline(dataStream8, data, ','))
+    std::getline(dataStream8, data);
+    int tempGrassSize = std::stoi(data);
+    SharedData::GetInstance()->saveData->grassZooSize = tempGrassSize;
+
+    //==================================
+    // NINTH LINE - ZOO SWAMP AREA SIZE
+    //==================================
+    std::getline(fileStream, line);
+    std::stringstream dataStream9(line);
+    std::getline(dataStream9, data, ',');
+    std::getline(dataStream9, data);
+    int tempSwampSize = std::stoi(data);
+    SharedData::GetInstance()->saveData->swampZooSize = tempSwampSize;
+
+    //=================================
+    // TENTH LINE - ZOO ROCK AREA SIZE
+    //=================================
+    std::getline(fileStream, line);
+    std::stringstream dataStream10(line);
+    std::getline(dataStream10, data, ',');
+    std::getline(dataStream10, data);
+    int tempRockSize = std::stoi(data);
+    SharedData::GetInstance()->saveData->rockZooSize = tempRockSize;
+
+    //====================================
+    // ELEVENTH LINE - ZOO LAVA AREA SIZE
+    //====================================
+    std::getline(fileStream, line);
+    std::stringstream dataStream11(line);
+    std::getline(dataStream11, data, ',');
+    std::getline(dataStream11, data);
+    int tempLavaSize = std::stoi(data);
+    SharedData::GetInstance()->saveData->lavaZooSize = tempLavaSize;
+
+    //================================
+    // TWELFTH LINE - MONSTERS CAUGHT
+    //================================
+    std::getline(fileStream, line);
+    std::stringstream dataStream12(line);
+    std::getline(dataStream12, data, ',');
+    std::getline(dataStream12, data, ',');
+    for (; data != "end"; std::getline(dataStream12, data, ','))
     {
-        std::cout << "Line: " << data << std::endl;
         SharedData::GetInstance()->saveData->monsterList.push_back(data);
     }
 }

@@ -121,7 +121,6 @@ void Faint::FaintMenuButton()
 		{
 			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
 			b_mouseClick = false;
-			std::cout << "BACK TO TOWN" << std::endl;
 			SharedData::GetInstance()->sceneManager->SetGameState();
 			SharedData::GetInstance()->sceneManager->ChangeScene(5);
 			b_DeathSound = false;

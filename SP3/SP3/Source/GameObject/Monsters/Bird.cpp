@@ -34,7 +34,6 @@ void Monster_Bird::Update(double dt)
 	//If near Player, increase aggro
     else if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < (5 * Scene::tileSize) * (5 * Scene::tileSize))
     {
-        //std::cout << "increasing aggression...";
         AggressionLevel = 40 * dt * SharedData::GetInstance()->player->GetNoiseFactor();
     }
 	//If health < 25, decrease aggro

@@ -4,7 +4,7 @@
 #include <string>
 
 static const int MAX_UPGRADE_LEVEL = 5;
-static const int MAX_ITEM_TYPE_COUNT = 100;
+static const int MAX_ITEM_TYPE_COUNT = 1000;
 
 class Item
 {

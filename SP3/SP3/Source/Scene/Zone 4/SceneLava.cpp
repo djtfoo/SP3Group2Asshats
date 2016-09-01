@@ -352,18 +352,6 @@ void SceneLava::Update(double dt)
 		}
 	}
 
-
-	// TEMPORARY DEBUG: check of inventory
-	if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_C].isPressed)
-	{
-		std::cout << "MONSTER INVENTORY: ";
-		for (unsigned i = 0; i < SharedData::GetInstance()->player->monsterList.size(); ++i)
-		{
-			std::cout << SharedData::GetInstance()->player->monsterList[i] << " ";
-		}
-		std::cout << std::endl;
-	}
-
     //Update Projectiles
     itemProjectile->UpdateProjectile(dt);
     rockProjectile->UpdateRockProjectile(dt);

@@ -39,10 +39,10 @@ public:
 
     const int AREA_MAX_SIZE;
 
-    int grassAreaSize;
-    int fireAreaSize;
-    int rockAreaSize;
-    int swampAreaSize;
+    static int grassAreaSize;
+    static int fireAreaSize;
+    static int rockAreaSize;
+    static int swampAreaSize;
 
     std::vector<GameObject> grassZone;
     std::vector<GameObject> fireZone;
@@ -151,6 +151,12 @@ public:
     float f_Rotate;
     float rotateEnclosureIcon1;
     float rotateEnclosureIcon2;
+
+    bool b_savedGame;
+    bool b_unableToGo;
+    double d_textTimer;
+
+    bool b_returnToMainMenu;
 };
 
 #endif

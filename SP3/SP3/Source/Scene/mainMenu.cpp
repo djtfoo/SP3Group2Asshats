@@ -354,6 +354,13 @@ void MainMenu::RenderInstructionState3()
 	ss << " :HP of the monster. ";
 	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.5, 17, 20);
 
+    // Trap
+    scene->RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), 2, 35.f, 19.f, 0, 0, 0, false);
+
+    ss.str("");
+    ss << " :Monster will be immobilised when trap triggers";
+    scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.5, 37, 18);
+
 
 	RenderBackButton();
 }
@@ -416,7 +423,7 @@ void MainMenu::RenderCreditState()
 	std::stringstream ss;
 
 	ss.str("");
-	ss << "SP GROUP 2";
+	ss << "SP GROUP 2      2016 Y2S1";
 	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 3, 20, 40);
 
 	ss.str("");
@@ -523,7 +530,7 @@ void MainMenu::MainMenuButton()
 		{
 			b_mouseClick = false;
 			//SharedData::GetInstance()->sound->playSoundEffect("Sound//Click.mp3");
-			std::cout << "STARTGAME" << std::endl;
+            SharedData::GetInstance()->saveData->ClearGame();
 			SharedData::GetInstance()->sceneManager->SetGameState();
             SharedData::GetInstance()->sceneManager->ChangeScene(5);
 		}
@@ -550,7 +557,10 @@ void MainMenu::MainMenuButton()
         {
 			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
 			b_mouseClick = false;
-			//LoadStuff Here5
+			//LoadStuff Here
+            SharedData::GetInstance()->saveData->LoadGame();
+            SharedData::GetInstance()->sceneManager->SetGameState();
+            SharedData::GetInstance()->sceneManager->ChangeScene(5);
 		}
 	}
 
@@ -664,7 +674,6 @@ void MainMenu::MainMenuButton()
 		{
 			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
 			b_mouseClick = false;
-			std::cout << "EXIT" << std::endl;
 			SharedData::GetInstance()->sceneManager->SetToExit();
 		}
 	}

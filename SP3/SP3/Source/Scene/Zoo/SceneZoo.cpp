@@ -2,12 +2,15 @@
 
 #include "SceneZoo.h"
 #include "../../General/Application.h"
-//#include "../../Graphics/LoadOBJ/LoadTGA.h"
-//#include "../../Graphics/Mesh/MeshBuilder.h"
 #include "../../General/SharedData.h"
 #include "../../GameObject/MonsterFactory.h"
 
 #include <sstream>
+
+int SceneZoo::grassAreaSize = 10;
+int SceneZoo::fireAreaSize = 10;
+int SceneZoo::rockAreaSize = 10;
+int SceneZoo::swampAreaSize = 10;
 
 SceneZoo::SceneZoo(std::string name) : Scene(name), AREA_MAX_SIZE(50)
 {
@@ -37,10 +40,10 @@ void SceneZoo::Init()
 
     memset(&zooWorld, 0, sizeof(zooWorld));
 
-    grassAreaSize = 10;
-    fireAreaSize = 10;
-    rockAreaSize = 10;
-    swampAreaSize = 10;
+    //grassAreaSize = 10;
+    //fireAreaSize = 10;
+    //rockAreaSize = 10;
+    //swampAreaSize = 10;
 
     /*SharedData::GetInstance()->player->monsterList.push_back("Bird");
     SharedData::GetInstance()->player->monsterList.push_back("Bird");
@@ -85,11 +88,32 @@ void SceneZoo::Init()
         rockRands[i] = rockAreaPosition + Vector3(Math::RandFloatMinMax(-50.0f, 50.0f), 0, (Math::RandFloatMinMax(-50.0f, 50.0f)));
         swampPlantRands[i] = swampAreaPosition + Vector3(Math::RandFloatMinMax(-50.0f, 50.0f), 0, (Math::RandFloatMinMax(-50.0f, 50.0f)));
     }
+
+    b_savedGame = false;
+    b_unableToGo = false;
+    d_textTimer = 0.0;
+    b_returnToMainMenu = false;
 }
 
 void SceneZoo::Update(double dt)
 {
     fps = (float)(1.f / dt);
+
+    if (b_returnToMainMenu)
+    {
+        SharedData::GetInstance()->sceneManager->SetMainMenuState();
+        SharedData::GetInstance()->sceneManager->ChangeScene(Math::RandIntMinMax(1, 4));
+        return;
+    }
+
+    if (b_savedGame || b_unableToGo)
+    {
+        d_textTimer += dt;
+        if (d_textTimer > 3.0) {
+            b_savedGame = false;
+            b_unableToGo = false;
+        }
+    }
 
     f_RotateMonster -= 50.f * (float)(dt);
     if (f_RotateMonster <= -360.f)
@@ -135,7 +159,7 @@ void SceneZoo::Update(double dt)
     //                                                            Checks                                                             //
     //===============================================================================================================================//
 
-    //Boundry check;
+    //Boundary check;
     for (unsigned i = 0; i < grassZone.size(); ++i)
     {
         if (zooWorld.position[grassZone[i]].x < grassAreaPosition.x - grassAreaSize + 5 ||
@@ -177,60 +201,60 @@ void SceneZoo::Update(double dt)
     //===============================================================================================================================//
 
     //Changing vision to be able to see zone
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].isPressed)
-    {
-        zooCamera.position = grassAreaPosition + Vector3(0, 75, -50);
-        zooCamera.target = grassAreaPosition;
+    //if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].isPressed)
+    //{
+    //    zooCamera.position = grassAreaPosition + Vector3(0, 75, -50);
+    //    zooCamera.target = grassAreaPosition;
+    //
+    //    currentArea = AREA_GRASS;
+    //
+    //    isFollowingMonster = false;
+    //    currentState = STATE_ENCLOSURE;
+    //}
+    //else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_2].isPressed)
+    //{
+    //    zooCamera.position = swampAreaPosition + Vector3(0, 75, -50);
+    //    zooCamera.target = swampAreaPosition;
+    //
+    //    currentArea = AREA_SWAMP;
+    //
+    //    isFollowingMonster = false;
+    //    currentState = STATE_ENCLOSURE;
+    //}
+    //else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_3].isPressed)
+    //{
+    //    zooCamera.position = rockAreaPosition + Vector3(0, 75, -50);
+    //    zooCamera.target = rockAreaPosition;
+    //
+    //    currentArea = AREA_ROCK;
+    //
+    //    isFollowingMonster = false;
+    //    currentState = STATE_ENCLOSURE;
+    //}
+    //else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_4].isPressed)
+    //{
+    //    zooCamera.position = fireAreaPosition + Vector3(0, 75, -50);
+    //    zooCamera.target = fireAreaPosition;
+    //
+    //    currentArea = AREA_FIRE;
+    //
+    //    isFollowingMonster = false;
+    //    currentState = STATE_ENCLOSURE;
+    //}
 
-        currentArea = AREA_GRASS;
-
-        isFollowingMonster = false;
-        currentState = STATE_ENCLOSURE;
-    }
-    else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_2].isPressed)
-    {
-        zooCamera.position = swampAreaPosition + Vector3(0, 75, -50);
-        zooCamera.target = swampAreaPosition;
-
-        currentArea = AREA_SWAMP;
-
-        isFollowingMonster = false;
-        currentState = STATE_ENCLOSURE;
-    }
-    else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_3].isPressed)
-    {
-        zooCamera.position = rockAreaPosition + Vector3(0, 75, -50);
-        zooCamera.target = rockAreaPosition;
-
-        currentArea = AREA_ROCK;
-
-        isFollowingMonster = false;
-        currentState = STATE_ENCLOSURE;
-    }
-    else if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_4].isPressed)
-    {
-        zooCamera.position = fireAreaPosition + Vector3(0, 75, -50);
-        zooCamera.target = fireAreaPosition;
-
-        currentArea = AREA_FIRE;
-
-        isFollowingMonster = false;
-        currentState = STATE_ENCLOSURE;
-    }
-
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isPressed)
-    {
-        isFollowingMonster = false;
-        currentArea = AREA_OVERVIEW;
-        currentState = STATE_SHOP;
-    }
-
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed)
-    {
-        isFollowingMonster = false;
-        currentArea = AREA_OVERVIEW;
-        currentState = STATE_CHANGE_SCENE;
-    }
+    //if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ENTER].isPressed)
+    //{
+    //    isFollowingMonster = false;
+    //    currentArea = AREA_OVERVIEW;
+    //    currentState = STATE_SHOP;
+    //}
+    //
+    //if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_G].isPressed)
+    //{
+    //    isFollowingMonster = false;
+    //    currentArea = AREA_OVERVIEW;
+    //    currentState = STATE_CHANGE_SCENE;
+    //}
 
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_UP].isHeldDown)
     {
@@ -369,7 +393,25 @@ void SceneZoo::Render()
         break;
     }
 
-    std::cout << Application::cursorXPos / Application::m_width << " | " << Application::cursorYPos / Application::m_height << std::endl;
+    if (currentState != STATE_SHOP)
+    {
+        // currency at top left corner
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN), 10, 4.0f, 55.f, 0, 0, 0, false);
+        std::stringstream ss;
+        ss << SharedData::GetInstance()->player->m_currency;
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 7, 55);
+    }
+
+    if (b_savedGame)
+    {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Game Saved!", Color(1, 1, 0), 3, 30, 35);
+        d_textTimer = 0.0;
+    }
+    if (b_unableToGo)
+    {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Can't go there yet!", Color(1, 1, 0), 3, 28, 27);
+        d_textTimer = 0.0;
+    }
 }
 
 void SceneZoo::RenderZooScene()
@@ -1374,19 +1416,31 @@ void SceneZoo::RenderShopInterface()
     case SHOP_UPGRADE:
     {
         std::stringstream ss;
-        ss << "Net: (" << SharedData::GetInstance()->player->inventory[Item::TYPE_NET].GetUpgradeCost() << ")";
+        ss << "Net";
+        if (SharedData::GetInstance()->player->inventory[Item::TYPE_NET].GetCurrentUpgradeLevel() < MAX_UPGRADE_LEVEL) {
+            ss << ": (" << SharedData::GetInstance()->player->inventory[Item::TYPE_NET].GetUpgradeCost() << ")";
+        }
         RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0.95, 0.95, 0), 3.f, 18.75f, 48.5f);
 
         std::stringstream ss3;
-        ss3 << "Bait: (" << SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].GetUpgradeCost() << ")";
+        ss3 << "Bait";
+        if (SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].GetCurrentUpgradeLevel() < MAX_UPGRADE_LEVEL) {
+            ss3 << ": (" << SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].GetUpgradeCost() << ")";
+        }
         RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss3.str(), Color(0.95, 0.95, 0), 3.f, 18.75f, 38.5f);
 
         std::stringstream ss1;
-        ss1 << "Trap: (" << SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].GetUpgradeCost() << ")";
+        ss1 << "Trap";
+        if (SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].GetCurrentUpgradeLevel() < MAX_UPGRADE_LEVEL) {
+            ss1 << ": (" << SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].GetUpgradeCost() << ")";
+        }
         RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss1.str(), Color(0.95, 0.95, 0), 3.f, 18.75f, 28.5f);
 
         std::stringstream ss2;
-        ss2 << "Rock: (" << SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetUpgradeCost() << ")";
+        ss2 << "Rock";
+        if (SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetCurrentUpgradeLevel() < MAX_UPGRADE_LEVEL) {
+            ss2 << ": (" << SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetUpgradeCost() << ")";
+        }
         RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss2.str(), Color(0.95, 0.95, 0), 3.f, 18.75f, 18.5f);
 
         RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Back", Color(0.95, 0.95, 0), 2.5f, 18.75f, 8.5f);
@@ -1396,7 +1450,9 @@ void SceneZoo::RenderShopInterface()
 
     //Always Render Player coins
     std::stringstream ss;
-    ss << "Coins: " << SharedData::GetInstance()->player->m_currency;
+    ss << SharedData::GetInstance()->player->m_currency;
+    
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN), 8, 37.f, 50.f, 0, 0, 0, false);
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0.95, 0.95, 0), 3.f, 40.f, 50.f);
 
     SetHUD(false);
@@ -2086,8 +2142,14 @@ void SceneZoo::RenderHuntingScenesInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
-            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
-            changeSceneTo = AREA_SWAMP;
+            if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetSerialNumber() < 4) {
+                b_unableToGo = true;
+                d_textTimer = 0.0;
+            }
+            else {
+                SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+                changeSceneTo = AREA_SWAMP;
+            }
         }
     }
     else
@@ -2103,8 +2165,14 @@ void SceneZoo::RenderHuntingScenesInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
-            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
-            changeSceneTo = AREA_ROCK;
+            if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetSerialNumber() < 7) {
+                b_unableToGo = true;
+                d_textTimer = 0.0;
+            }
+            else {
+                SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+                changeSceneTo = AREA_ROCK;
+            }
         }
 
     }
@@ -2121,8 +2189,14 @@ void SceneZoo::RenderHuntingScenesInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
-            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
-            changeSceneTo = AREA_FIRE;
+            if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetSerialNumber() < 10) {
+                b_unableToGo = true;
+                d_textTimer = 0.0;
+            }
+            else {
+                SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+                changeSceneTo = AREA_FIRE;
+            }
         }
     }
     else
@@ -2357,6 +2431,7 @@ void SceneZoo::RenderMenuInterface()
         {
             SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             // save game here
+            b_savedGame = SharedData::GetInstance()->saveData->SaveGame();
         }
     }
     else
@@ -2399,8 +2474,7 @@ void SceneZoo::RenderMenuInterface()
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
             SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
-            SharedData::GetInstance()->sceneManager->SetMainMenuState();
-            SharedData::GetInstance()->sceneManager->ChangeScene(Math::RandIntMinMax(1, 4));
+            b_returnToMainMenu = true;
             return;
         }
     }
@@ -2571,7 +2645,7 @@ void SceneZoo::RenderQuestInterface()
         {
             std::stringstream ss;
             ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetQuestName();
-            RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 17, 37);
+            RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 19, 37);
 
             ss.str("");
             ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetSerialNumber() << ". ";
@@ -2647,6 +2721,23 @@ void SceneZoo::RenderQuestInterface()
                     if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
                     {
                         SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+                        // remove required monsters from world
+                        int count = 0;
+                        for (unsigned GO = 0; GO < zooWorld.GAMEOBJECT_COUNT; ++GO)
+                        {
+                            if ((zooWorld.mask[GO] & COMPONENT_AI) == COMPONENT_AI)
+                            {
+                                if (zooWorld.monster[GO]->GetName() == SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster())
+                                {
+                                    ++count;
+                                    destroyGO(&zooWorld, GO);
+                                    
+                                    if (count >= SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredQuantity())
+                                        break;
+                                }
+                            }
+                        }
+
                         // complete quest
                         SharedData::GetInstance()->questManager->CompleteCurrentQuest();
                     }

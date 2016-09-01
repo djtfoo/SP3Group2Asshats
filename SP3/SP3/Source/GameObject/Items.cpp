@@ -36,12 +36,17 @@ bool Item::Upgrade()
         {
             case TYPE_NET:
                 this->m_effectiveness++;
+                ItemProjectile::d_netCounter -= 0.2;
                 ItemProjectile::d_netCooldown -= 0.2;
                 this->m_currentUpgradeLevel++;
+                this->m_upgradeCost *= 2;
+                this->m_buyCost *= 2;
                 return true;
             case TYPE_BAIT:
                 this->m_effectiveness++;
                 this->m_currentUpgradeLevel++;
+                this->m_upgradeCost *= 2;
+                this->m_buyCost *= 2;
                 return true;
             case TYPE_MEAT:
                 //You cannot upgrade meat
@@ -49,10 +54,14 @@ bool Item::Upgrade()
             case TYPE_TRAP:
                 this->m_effectiveness++;
                 this->m_currentUpgradeLevel++;
+                this->m_upgradeCost *= 2;
+                this->m_buyCost *= 2;
                 return true;
             case TYPE_ROCK:
                 this->m_effectiveness += 5;
                 this->m_currentUpgradeLevel++;
+                this->m_upgradeCost *= 2;
+                this->m_buyCost *= 2;
                 return true;
 
             default:

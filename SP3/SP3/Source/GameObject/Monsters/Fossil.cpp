@@ -18,51 +18,42 @@ Monster_Fossil::~Monster_Fossil()
 
 void Monster_Fossil::Update(double dt)
 {
-    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > 24)
-	{
-		//reInit AggressionStat && FearStat
-		ResetAggression();
-		ResetFear();
-	}
-	//If near Player, increase aggro
-    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < 16)
-	{
-		AggressionLevel = 10;
-		changeAggressionStat(m_aggressionStat + AggressionLevel);
-		if (AggressionLevel >= 100)
-		{
-			AggressionLevel = 100;
-		}
-	}
-	//If health < 25, decrease aggro, increase fear 
-	if (GetHealthStat() < 25)
-	{
-		AggressionLevel = -15;
-		FearLevel = 40;
-		changeAggressionStat(m_aggressionStat + AggressionLevel);
-		changeFearStat(m_fearStat + FearLevel);
-		if (AggressionLevel <= 0)
-		{
-			AggressionLevel = 0;
-		}
-		if (FearLevel >= 100)
-		{
-			FearLevel = 100;
-		}
-	}
+    AggressionLevel = 0.f;
+    FearLevel = 0.f;
 
-	//Get Aggression Stat and Fear Stat
-	GetAggressionStat();
-	GetFearStat();
+    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > (8 * Scene::tileSize) * (8 * Scene::tileSize))
+    {
+        //reInit AggressionStat && FearStat
+        ResetAggression();
+        ResetFear();
+    }
 
-	//Update Strategy accordingly
-	m_strategy->Update();
+    //If near Player, increase aggro
+    else if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < (5 * Scene::tileSize) * (5 * Scene::tileSize))
+    {
+        AggressionLevel = 40 * dt * SharedData::GetInstance()->player->GetNoiseFactor();
+    }
+    //If health < 25, decrease aggro
+    else if (GetHealthStat() < 60)
+    {
+        AggressionLevel = -15 * dt * SharedData::GetInstance()->player->GetNoiseFactor();
+        FearLevel = 30 * dt * SharedData::GetInstance()->player->GetNoiseFactor();
+    }
+
+    updateStats(dt);
+
+    //Update Strategy accordingly
+    m_strategy->Update();
 }
 
 void Monster_Fossil::TakeDamage(const int damage)
 {
-    changeHealthStat(m_healthStat - damage);
-	changeCaptureRateStat(m_captureRateStat + 0.1f * damage);
+    // take lesser damage as he is a rock
+    changeHealthStat(m_healthStat - 0.2f * damage);
+    changeCaptureRateStat(m_captureRateStat + 0.05f * damage);
+
+    FearLevel = 5.f;
+    changeAggressionStat(m_fearStat + FearLevel);
 }
 
 void Monster_Fossil::PlaySoundEffect()

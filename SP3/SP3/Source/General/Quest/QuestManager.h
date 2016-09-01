@@ -24,6 +24,10 @@ public:
     bool IsQuestActive();
     bool IsCurrentQuestCompletable();
     void SetQuestActive();
+    
+    // for loading game
+    void SetQuestInactive();
+    void PopQuest();
 };
 
 #endif

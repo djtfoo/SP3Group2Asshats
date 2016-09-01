@@ -43,6 +43,27 @@ void QuestManager::CompleteCurrentQuest()
 {
     Quest* quest = m_questList.front();
     m_questList.pop();
+
+    // remove monsters
+    int count = 0;
+    for (std::vector<std::string>::iterator it = SharedData::GetInstance()->player->monsterList.begin(); it != SharedData::GetInstance()->player->monsterList.end(); )
+    {
+        if (*it == quest->GetRequiredMonster())
+        {
+            ++count;
+            it = SharedData::GetInstance()->player->monsterList.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+
+        if (count >= quest->GetRequiredQuantity())
+            break;
+    }
+
+    // reward player
+    SharedData::GetInstance()->player->m_currency += 100 * quest->GetSerialNumber();
     delete quest;
 
     b_questActive = false;
@@ -76,4 +97,17 @@ bool QuestManager::IsCurrentQuestCompletable()
 void QuestManager::SetQuestActive()
 {
     b_questActive = true;
+}
+
+void QuestManager::SetQuestInactive()
+{
+    b_questActive = false;
+}
+
+void QuestManager::PopQuest()
+{
+    Quest* quest = m_questList.front();
+    m_questList.pop();
+
+    delete quest;
 }

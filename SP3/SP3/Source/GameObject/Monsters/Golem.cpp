@@ -18,51 +18,42 @@ Monster_Golem::~Monster_Golem()
 
 void Monster_Golem::Update(double dt)
 {
-    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > 24)
-	{
-		//reInit AggressionStat && FearStat
-		ResetAggression();
-		ResetFear();
-	}
-	//If near Player, increase aggro
-    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < 16)
-	{
-		AggressionLevel = 5;
-		changeAggressionStat(m_aggressionStat + AggressionLevel);
-		if (AggressionLevel >= 100)
-		{
-			AggressionLevel = 100;
-		}
-	}
-	//If health < 25, decrease aggro, increase fear 
-	if (GetHealthStat() < 25)
-	{
-		AggressionLevel = -10;
-		FearLevel = 50;
-		changeAggressionStat(m_aggressionStat + AggressionLevel);
-		changeFearStat(m_fearStat + FearLevel);
-		if (AggressionLevel <= 0)
-		{
-			AggressionLevel = 0;
-		}
-		if (FearLevel >= 100)
-		{
-			FearLevel = 100;
-		}
-	}
+    AggressionLevel = 0.f;
+    FearLevel = 0.f;
 
-	//Get Aggression Stat and Fear Stat
-	GetAggressionStat();
-	GetFearStat();
+    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > (8 * Scene::tileSize) * (8 * Scene::tileSize))
+    {
+        //reInit AggressionStat && FearStat
+        ResetAggression();
+        ResetFear();
+    }
 
-	//Update Strategy accordingly
-	m_strategy->Update();
+    //If near Player, increase aggro
+    else if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < (5 * Scene::tileSize) * (5 * Scene::tileSize))
+    {
+        AggressionLevel = 10 * dt * SharedData::GetInstance()->player->GetNoiseFactor();
+    }
+
+    else if (GetHealthStat() < 50)
+    {
+        AggressionLevel = -10 * dt * SharedData::GetInstance()->player->GetNoiseFactor();
+        FearLevel = 50 * dt * SharedData::GetInstance()->player->GetNoiseFactor();
+    }
+
+    updateStats(dt);
+
+    //Update Strategy accordingly
+    m_strategy->Update();
 }
 
 void Monster_Golem::TakeDamage(const int damage)
 {
-    changeHealthStat(m_healthStat - damage);
-	changeCaptureRateStat(m_captureRateStat + 0.1f * damage);
+    // take lesser damage as he is a rock
+    changeHealthStat(m_healthStat - 0.2f * damage);
+	changeCaptureRateStat(m_captureRateStat + 0.02f * damage);
+
+    AggressionLevel = 3.f;
+    changeAggressionStat(m_aggressionStat + AggressionLevel);
 }
 
 void Monster_Golem::PlaySoundEffect()

@@ -18,51 +18,41 @@ Boss_MukBoss::~Boss_MukBoss()
 
 void Boss_MukBoss::Update(double dt)
 {
-    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > 24)
-	{
-		//reInit AggressionStat && FearStat
-		ResetAggression();
-		ResetFear();
-	}
-	//If near Player, increase aggro
-    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < 16)
-	{
-		AggressionLevel = 20;
-		changeAggressionStat(m_aggressionStat + AggressionLevel);
-		if (AggressionLevel >= 100)
-		{
-			AggressionLevel = 100;
-		}
-	}
-	//If health < 25, decrease aggro, increase fear 
-	if (GetHealthStat() < 25)
-	{
-		AggressionLevel = -25;
-		FearLevel = 20;
-		changeAggressionStat(m_aggressionStat + AggressionLevel);
-		changeFearStat(m_fearStat + FearLevel);
-		if (AggressionLevel <= 0)
-		{
-			AggressionLevel = 0;
-		}
-		if (FearLevel >= 100)
-		{
-			FearLevel = 100;
-		}
-	}
+    AggressionLevel = 0.f;
+    FearLevel = 0.f;
 
-	//Get Aggression Stat and Fear Stat
-	GetAggressionStat();
-	GetFearStat();
+    if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() > (8 * Scene::tileSize) * (8 * Scene::tileSize))
+    {
+        //reInit AggressionStat && FearStat
+        ResetAggression();
+        ResetFear();
+    }
 
-	//Update Strategy accordingly
-	m_strategy->Update();
+    //If near Player, increase aggro
+    else if ((m_position - SharedData::GetInstance()->player->GetPositionVector()).LengthSquared() < (5 * Scene::tileSize) * (5 * Scene::tileSize))
+    {
+        AggressionLevel = 30 * dt * SharedData::GetInstance()->player->GetNoiseFactor();
+    }
+
+    else if (GetHealthStat() < 50)
+    {
+        AggressionLevel = -20 * dt * SharedData::GetInstance()->player->GetNoiseFactor();
+        //FearLevel = 50 * dt * SharedData::GetInstance()->player->GetNoiseFactor();
+    }
+
+    updateStats(dt);
+
+    //Update Strategy accordingly
+    m_strategy->Update();
 }
 
 void Boss_MukBoss::TakeDamage(const int damage)
 {
     changeHealthStat(m_healthStat - damage);
-	changeCaptureRateStat(m_captureRateStat + 0.1f * damage);
+    changeCaptureRateStat(m_captureRateStat + 0.1f * damage);
+
+    AggressionLevel = 25.f;
+    changeAggressionStat(m_aggressionStat + AggressionLevel);
 }
 
 void Boss_MukBoss::PlaySoundEffect()

@@ -40,7 +40,7 @@ Player::Player() : d_invulnerabilityTime(0.2)
     Item tempInventory[Item::NUM_TYPE] =
     {
         Item("Net", Item::TYPE_NET, 10, 100, 0),
-        Item("Bait", Item::TYPE_BAIT, 1, 100, 0),
+        Item("Bait", Item::TYPE_BAIT, 10, 100, 0),
         Item("Meat", Item::TYPE_MEAT, 10, 100, 10),
         Item("Trap", Item::TYPE_TRAP, 10, 100, 10),
         Item("Rock", Item::TYPE_ROCK, 10, 100, 10)
@@ -327,8 +327,16 @@ void Player::yaw(const double dt)
 void Player::Move(const double dt)
 {
     m_position += m_velocity * m_speed * (float)dt;
-    //std::cout << m_movementState << " | " << m_heightState  << " | " << m_speed << std::endl;
-    //std::cout << m_position << std::endl;
+}
+
+void Player::MoveX(const double dt)
+{
+    m_position.x += m_velocity.x * m_speed * (float)dt;
+}
+
+void Player::MoveZ(const double dt)
+{
+    m_position.z += m_velocity.z * m_speed * (float)dt;
 }
 
 void Player::UpdatePlayerHeight(const double dt)
