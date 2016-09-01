@@ -22,6 +22,7 @@ public:
     virtual void Exit();
 	void RenderGrassScene();
 	virtual void SpawnSceneParticles();
+    virtual void SceneEnvironmentEffect();
 
     //Test stuff
 	ItemProjectile* itemProjectile;

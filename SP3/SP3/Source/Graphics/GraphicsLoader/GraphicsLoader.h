@@ -255,6 +255,11 @@ public:
 	Light GetLights();
 	//RENDER_PASS GetRenderPass();
 
+    std::vector<unsigned char> m_heightMapGrass;
+    std::vector<unsigned char> m_heightMapSwamp;
+    std::vector<unsigned char> m_heightMapRock;
+    std::vector<unsigned char> m_heightMapLava;
+
 	/*Mtx44*/
 
 private:
@@ -264,8 +269,6 @@ private:
 
 	unsigned m_programID;
 	unsigned m_parameters[U_TOTAL];
-
-	std::vector<unsigned char> m_heightMap;
 
 	unsigned m_gPassShaderID;
 	DepthFBO m_lightDepthFBO;

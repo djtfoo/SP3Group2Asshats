@@ -77,8 +77,9 @@ void SceneSwamp::Init()
 				}
 				if (tile == 'I')
 				{
-					swamp.hitbox[go].m_origin = swamp.position[go] + Vector3(0, 2, 0);
+					swamp.hitbox[go].m_origin = swamp.position[go];
 					swamp.hitbox[go].m_scale.Set(4.f, 4.f, 4.f);
+                    swamp.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(1.2f, 1.5f), Math::RandFloatMinMax(0.8f, 1.f));
 				}
                 //swamp.appearance[go].scale.Set(1, 1, 1);
             }
@@ -109,8 +110,8 @@ void SceneSwamp::Init()
                 case '3':
                     swamp.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_MUKBOSS);
                     swamp.monster[go] = MonsterFactory::CreateMonster("MukBoss");
-                    swamp.hitbox[go].m_scale.Set(20.f, 20.f, 20.f);
-                    swamp.appearance[go].scale.Set(6, 6, 6);
+                    swamp.hitbox[go].m_scale.Set(17.f, 17.f, 17.f);
+                    swamp.appearance[go].scale.Set(5, 5, 5);
                     break;
                 }
                 swamp.monster[go]->m_position = swamp.position[go];
@@ -162,18 +163,6 @@ void SceneSwamp::Init()
 	glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_TYPE), fog.type);
 	glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), fog.enabled);
 
-    b_Rocks = true;
-    b_Nets = false;
-    b_Baits = false;
-    b_Traps = false;
-
-    f_RotateRock = 0.f;
-    f_RotateNet = 0.f;
-    f_RotateBait = 0.f;
-    f_RotateTrap = 0.f;
-
-    f_HighlightPos = -20.f;
-
     camera.Update();
 }
 static double counter = 0;
@@ -192,11 +181,18 @@ void SceneSwamp::Update(double dt)
 {
     fps = (float)(1.f / dt);
 
+    // for buffer time between projectile launches
+    SharedData::GetInstance()->particleManager->d_timeCounter += dt;
+    ItemProjectile::d_rockCounter += dt;
+    ItemProjectile::d_netCounter += dt;
+    ItemProjectile::d_baitCounter += dt;
+    ItemProjectile::d_trapCounter += dt;
+
     //===============================================================================================================================//
     //                                                             Pause                                                             //
     //===============================================================================================================================//
 
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_P].isPressed)
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ESCAPE].isPressed)
     {
         SharedData::GetInstance()->sceneManager->SetPauseState();
     }
@@ -332,12 +328,6 @@ void SceneSwamp::Update(double dt)
         std::cout << std::endl;
     }
 
-    // for buffer time between projectile launches
-    ItemProjectile::d_rockCounter += dt;
-    ItemProjectile::d_netCounter += dt;
-    ItemProjectile::d_baitCounter += dt;
-    ItemProjectile::d_trapCounter += dt;
-
     //Update Projectiles vector - delete them from vector
     itemProjectile->UpdateProjectile(dt);
     rockProjectile->UpdateRockProjectile(dt);
@@ -396,16 +386,7 @@ void SceneSwamp::Render()
     glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), false);
 
     // Render particles
-    glDepthMask(GL_FALSE);
-    for (std::vector<ParticleObject* >::iterator it = SharedData::GetInstance()->particleManager->m_particleList.begin(); it != SharedData::GetInstance()->particleManager->m_particleList.end(); ++it)
-    {
-        ParticleObject* particle = (ParticleObject*)(*it);
-        if (particle->active)
-        {
-            RenderParticle(particle);
-        }
-    }
-    glDepthMask(GL_TRUE);
+    RenderParticles();
 
     //for (GameObject tallGrass = 0; tallGrass < swamp.GAMEOBJECT_COUNT; ++tallGrass)
     //{
@@ -482,4 +463,9 @@ void SceneSwamp::SpawnSceneParticles()
 		}
 	}
 
+}
+
+void SceneSwamp::SceneEnvironmentEffect()
+{
+    SharedData::GetInstance()->player->SetMudSlow();
 }

@@ -166,7 +166,7 @@ void Application::Run()
 
     //Main Loop
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
-    while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE) && SharedData::GetInstance()->sceneManager->GetGameState() != SceneManager::GAMESTATE_EXIT)
+    while (!glfwWindowShouldClose(m_window) && SharedData::GetInstance()->sceneManager->GetGameState() != SceneManager::GAMESTATE_EXIT)
 	{
 		//if (Application::IsKeyPressed('V'))
 		//{

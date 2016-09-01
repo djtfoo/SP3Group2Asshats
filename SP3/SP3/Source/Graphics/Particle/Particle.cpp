@@ -21,68 +21,70 @@ void ParticleObject::UpdateParticle(double dt)
     switch (this->type)
     {
     case P_HIDDENBONUS:
-        this->vel.y -= 3.f * (float)dt;
-        this->vel.x += Math::RandFloatMinMax(-3.2f, 3.2f) * float(dt);
-        this->vel.z += Math::RandFloatMinMax(-3.2f, 3.2f) * float(dt);
-        this->pos += vel * float(dt);
+        vel.y -= 3.f * (float)dt;
+        vel.x += Math::RandFloatMinMax(-3.2f, 3.2f) * float(dt);
+        vel.z += Math::RandFloatMinMax(-3.2f, 3.2f) * float(dt);
+        pos += vel * float(dt);
         //this->pos.y += vel.y * float(dt);
         //this->pos.x += Math::RandFloatMinMax(-5.f, 5.f) * float(dt);
         //this->pos.z += Math::RandFloatMinMax(-5.f, 5.f) * float(dt);
-        this->rotation += Math::RandIntMinMax(-this->rotationSpeed, this->rotationSpeed) * (float)dt * 10.0f;
+        rotation += Math::RandIntMinMax(-rotationSpeed, rotationSpeed) * (float)dt * 10.0f;
 
-        if (this->pos.y < 0.f/*(ReadHeightMap(m_heightMap, particle->pos.x / 4000.0f, particle->pos.z / 4000.0f) * 350.0f)*/)
+        if (pos.y < 0.f/*(ReadHeightMap(m_heightMap, particle->pos.x / 4000.0f, particle->pos.z / 4000.0f) * 350.0f)*/)
         {
-            this->b_toDelete = true;
+            b_toDelete = true;
         }
         break;
 
     case P_VOLCANOSPARK:
-        this->vel.y += 0.001f * (float)dt;
-        this->pos.y += this->vel.y * float(dt);
-        this->rotation += Math::RandIntMinMax(-this->rotationSpeed, this->rotationSpeed) * (float)dt * 10.0f;
-        if (this->pos.y > 20.f)
+        vel.y += 0.001f * (float)dt;
+        pos.y += vel.y * float(dt);
+        rotation += Math::RandIntMinMax(-rotationSpeed, rotationSpeed) * (float)dt * 10.0f;
+        if (pos.y > 20.f)
         {
-            this->b_toDelete = true;
+            b_toDelete = true;
         }
         break;
 	case P_FALLINGLEAF:
-		this->vel.y -= 0.5f * (float)dt;
-		this->pos.y += this->vel.y * float(dt);
-		this->pos.x += Math::RandIntMinMax(-2, 2) * (float)dt;
-		this->rotation += Math::RandIntMinMax(-this->rotationSpeed, this->rotationSpeed) * (float)dt * 10.0f;
-		if (this->pos.y < 0.f)
+		vel.y -= (float)dt;
+        vel.x += Math::RandFloatMinMax(-5.f, 5.f) * (float)dt;
+		//this->pos.y += this->vel.y * float(dt);
+		//this->pos.x += Math::RandFloatMinMax(-2.f, 2.f) * (float)dt;
+        pos += vel * float(dt);
+		rotation += Math::RandIntMinMax(-rotationSpeed, rotationSpeed) * (float)dt * 10.0f;
+		if (pos.y < -scale.y)
 		{
-			this->b_toDelete = true;
+			b_toDelete = true;
 		}
 		break;
 	case P_ROCK:
-		this->vel.y -= 0.5f * (float)dt;
-		this->pos.y += this->vel.y * float(dt);
-		this->rotation += Math::RandIntMinMax(-this->rotationSpeed, this->rotationSpeed) * (float)dt * 10.0f;
-		if (this->pos.y < 0.f)
+		vel.y -= 0.5f * (float)dt;
+		pos.y += this->vel.y * float(dt);
+		rotation += Math::RandIntMinMax(-rotationSpeed, rotationSpeed) * (float)dt * 10.0f;
+		if (pos.y < 0.f)
 		{
-			this->b_toDelete = true;
+			b_toDelete = true;
 		}
 		break;
 	case P_DUST:
-		this->vel.y += 0.001f * (float)dt;
-		this->pos.y += this->vel.y * float(dt);
-		this->rotation += Math::RandIntMinMax(-this->rotationSpeed, this->rotationSpeed) * (float)dt * 10.0f;
-		if (this->pos.y > 2.f)
+		vel.y += 0.001f * (float)dt;
+		pos.y += vel.y * float(dt);
+		rotation += Math::RandIntMinMax(-rotationSpeed, rotationSpeed) * (float)dt * 10.0f;
+		if (pos.y > 2.f)
 		{
-			this->b_toDelete = true;
+			b_toDelete = true;
 		}
 		break;
 	case P_MUDBUBBLE:
-		this->vel.y += 0.001f * (float)dt;
-		this->pos.y += this->vel.y * float(dt);
-		this->scale += 0.001f * (float)dt;
-		this->rotation += Math::RandIntMinMax(-this->rotationSpeed, this->rotationSpeed) * (float)dt * 10.0f;
-		if (this->scale.x >= 5 ||
-			this->scale.y >= 5 ||
-			this->scale.z >= 5)
+		vel.y += 0.001f * (float)dt;
+		pos.y += this->vel.y * float(dt);
+		scale += 0.001f * (float)dt;
+		rotation += Math::RandIntMinMax(-rotationSpeed, rotationSpeed) * (float)dt * 10.0f;
+		if (scale.x >= 5 ||
+			scale.y >= 5 ||
+			scale.z >= 5)
 		{
-			this->b_toDelete = true;
+			b_toDelete = true;
 		}
 		break;
     }

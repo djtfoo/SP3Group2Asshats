@@ -38,7 +38,6 @@ void SceneGrass::Init()
     memset(&grass, 0, sizeof(grass));
 
     // Load map
-	SharedData::GetInstance()->sound->PlayMusic("Sound//GrassZone//GrassScene.wav");
     Scene::LoadLevelMap("GameData/GrassScene.csv");
     for (int rows = 0; rows < Scene::m_rows; ++rows)
     {
@@ -68,7 +67,12 @@ void SceneGrass::Init()
                 grass.hitbox[go].m_origin = grass.position[go] + Vector3(0, 2, 0);
                 grass.hitbox[go].m_scale.Set(4.f, 8.f, 4.f);
                 grass.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh((it->second).first);
-                grass.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(0.5f, 1.f), Math::RandFloatMinMax(0.8f, 1.f));
+                if (tile == 'G') {      // money tree
+                    grass.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(1.f, 1.3f), Math::RandFloatMinMax(0.8f, 1.f));
+                }
+                else {
+                    grass.appearance[go].scale.Set(Math::RandFloatMinMax(0.8f, 1.f), Math::RandFloatMinMax(0.5f, 1.f), Math::RandFloatMinMax(0.8f, 1.f));
+                }
                 grass.appearance[go].angle = Math::RandFloatMinMax(0.f, 360.f);
                 grass.appearance[go].billboard = false;
                 //grass.appearance[go].scale.Set(1, 1, 1);
@@ -124,45 +128,6 @@ void SceneGrass::Init()
         }
     }
 
-    //monster = createGO(&grass);
-    //grass.mask[monster] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_AI;
-    //grass.position[monster].SetZero();
-    //grass.velocity[monster].Set(0, 0, 1);
-    //grass.hitbox[monster].m_origin = grass.position[monster] + Vector3(0, 0.75f, -0.3);
-    //grass.hitbox[monster].m_scale.Set(1.5f, 1.5f, 1.75f);
-    //grass.appearance[monster].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT);
-    //grass.appearance[monster].scale.Set(1, 1, 1);
-    //grass.appearance[monster].angle = 0.f;
-    //
-	//rock = createGO(&grass);
-	//grass.mask[rock] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX;
-	//grass.position[rock].Set(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z);
-	//grass.appearance[rock].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1);
-	//grass.appearance[rock].scale.Set(1, 1, 1);
-    //grass.appearance[rock].angle = 0.f;
-    //
-	//net = createGO(&grass);
-	//grass.mask[net] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE;
-	//grass.position[net].SetZero();
-	//grass.appearance[net].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_NET);
-	//grass.appearance[net].scale.Set(2, 2, 2);
-    //grass.appearance[net].angle = 0.f;
-
-	//HITBOX.m_origin = Vector3(0, 5, 0);
-	//HITBOX.m_scale = Vector3(10, 10, 10);
-
-	b_Rocks = true;
-	b_Nets = false;
-	b_Baits = false;
-    b_Traps = false;
-
-	f_RotateRock = 0.f;
-	f_RotateNet = 0.f;
-	f_RotateBait = 0.f;
-    f_RotateTrap = 0.f;
-
-    f_HighlightPos = -20.f;
-
     // disable fog
     glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), false);
 
@@ -177,11 +142,19 @@ void SceneGrass::Update(double dt)
 
 	fps = (float)(1.f / dt);
 
+    // for buffer time between projectile launches
+    SharedData::GetInstance()->particleManager->d_timeCounter += dt;
+    ItemProjectile::d_rockCounter += dt;
+    ItemProjectile::d_netCounter += dt;
+    ItemProjectile::d_baitCounter += dt;
+    ItemProjectile::d_trapCounter += dt;
+
+
     //===============================================================================================================================//
     //                                                             Pause                                                             //
     //===============================================================================================================================//
 
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_P].isPressed)
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ESCAPE].isPressed)
     {
         SharedData::GetInstance()->sceneManager->SetPauseState();
     }
@@ -317,12 +290,6 @@ void SceneGrass::Update(double dt)
 		std::cout << std::endl;
 	}
 
-	// for buffer time between projectile launches
-	ItemProjectile::d_rockCounter += dt;
-	ItemProjectile::d_netCounter += dt;
-	ItemProjectile::d_baitCounter += dt;
-    ItemProjectile::d_trapCounter += dt;
-
     //Update Projectiles vector - delete them from vector
     itemProjectile->UpdateProjectile(dt);
     rockProjectile->UpdateRockProjectile(dt);
@@ -389,16 +356,7 @@ void SceneGrass::Render()
     }
 
     // Render particles
-    glDepthMask(GL_FALSE);
-    for (std::vector<ParticleObject* >::iterator it = SharedData::GetInstance()->particleManager->m_particleList.begin(); it != SharedData::GetInstance()->particleManager->m_particleList.end(); ++it)
-    {
-        ParticleObject* particle = (ParticleObject*)(*it);
-        if (particle->active)
-        {
-            RenderParticle(particle);
-        }
-    }
-    glDepthMask(GL_TRUE);
+    RenderParticles();
 
     //for (GameObject tallGrass = 0; tallGrass < grass.GAMEOBJECT_COUNT; ++tallGrass)
     //{
@@ -458,11 +416,60 @@ void SceneGrass::Exit()
 
 void SceneGrass::SpawnSceneParticles()
 {
-	for (GameObject GO = 0; GO < grass.GAMEOBJECT_COUNT; ++GO)
-	{
-		if ((grass.mask[GO] & COMPONENT_OBSTACLE) == COMPONENT_OBSTACLE)
-		{
-			SharedData::GetInstance()->particleManager->SpawnParticle(grass.position[GO], ParticleObject::P_FALLINGLEAF);
-		}
-	}
+    if (SharedData::GetInstance()->particleManager->d_timeCounter > 0.8)
+    {
+        //for (GameObject GO = 0; GO < grass.GAMEOBJECT_COUNT; ++GO)
+        //{
+        //    if ((grass.mask[GO] & COMPONENT_OBSTACLE) == COMPONENT_OBSTACLE)
+        //    {
+        //        SharedData::GetInstance()->particleManager->SpawnParticle(grass.position[GO], ParticleObject::P_FALLINGLEAF);
+        //    }
+        //}
+
+        //for (int rows = 0; rows < Scene::m_rows; ++rows)
+        //{
+        //    for (int cols = 0; cols < Scene::m_cols; ++cols)
+        //    {
+        //        char tile = m_levelMap[rows][cols];
+        //
+        //        if (tile == 'C' || tile == 'D')
+        //        {
+        //            Vector3 position(cols * Scene::tileSize, 0.f, rows * Scene::tileSize);
+        //            SharedData::GetInstance()->particleManager->SpawnParticle(position, ParticleObject::P_FALLINGLEAF);
+        //        }
+        //    }
+        //}
+
+        unsigned int spawnCount = Math::RandIntMinMax(0, 50);
+        bool spawn = false;
+        int randRow;
+        int randCol;
+
+        for (unsigned i = 0; i < spawnCount; ++i)
+        {
+            int runCount = 0;
+            while (!spawn)
+            {
+                randRow = Math::RandIntMinMax(0, 39);
+                randCol = Math::RandIntMinMax(0, 39);
+
+                char tile = m_levelMap[randRow][randCol];
+
+                //if (tile == 'C' || tile == 'D')
+                //{
+                    spawn = true;
+                //}
+            }
+
+            Vector3 position(randCol * Scene::tileSize, 0.f, randRow * Scene::tileSize);
+            SharedData::GetInstance()->particleManager->SpawnParticle(position, ParticleObject::P_FALLINGLEAF);
+            spawn = false;
+        }
+
+    }
+}
+
+void SceneGrass::SceneEnvironmentEffect()
+{
+
 }

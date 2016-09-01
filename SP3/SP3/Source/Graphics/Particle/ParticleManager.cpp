@@ -59,7 +59,7 @@ void ParticleManager::SpawnParticle(const Vector3& position, ParticleObject::PAR
         {
         case ParticleObject::P_HIDDENBONUS:
             particle->scale.Set(4, 4, 4);
-            particle->vel.Set(0.f, 10.f, 0.f);
+            particle->vel.Set(0.f, 6.f, 0.f);
             particle->rotationSpeed = Math::RandFloatMinMax(20.0f, 40.0f);
             particle->pos.Set(position.x, 5, position.z);
             break;
@@ -71,9 +71,9 @@ void ParticleManager::SpawnParticle(const Vector3& position, ParticleObject::PAR
             break;
 		case ParticleObject::P_FALLINGLEAF:
 			particle->scale.Set(2.f, 2.f, 2.f);
-			particle->vel.Set(0.f, 0.5f, 0.f);
+			particle->vel.Set(0.f, -1.f, 0.f);
 			particle->rotationSpeed = Math::RandFloatMinMax(20.0f, 40.0f);
-			particle->pos.Set(position.x + Math::RandFloatMinMax(-0.1f, 0.1f), 5, position.z + Math::RandFloatMinMax(-0.1f, 0.1f));
+			particle->pos.Set(position.x + Math::RandFloatMinMax(-0.1f, 0.1f), 3.f, position.z + Math::RandFloatMinMax(-0.1f, 0.1f));
 			break;
 		case ParticleObject::P_ROCK:
 			particle->scale.Set(2.f, 2.f, 2.f);

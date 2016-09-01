@@ -129,7 +129,7 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_HUDHIGHLIGHT]->textureID = LoadTGA("Image//HUD//HudHighlights.tga");
 
     // Grass Scene
-	m_meshList[GEO_GRASS_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw",m_heightMap);
+	m_meshList[GEO_GRASS_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw",m_heightMapGrass);
 	m_meshList[GEO_GRASS_TERRAIN]->textureArray[0] = LoadTGA("Image//GrassZone//Grass.tga");
 
 	m_meshList[GEO_GRASS_SKYPLANE] = MeshBuilder::GenerateSkyPlane("skyplane", Color(1, 1, 1), 128, 400.0f, 3000.0f, 1.0f, 1.0f);
@@ -196,7 +196,7 @@ void GraphicsLoader::Init()
 	//m_meshList[GEO_ROCKS5]->textureArray[0] = LoadTGA("Image//Rock5.tga");
 
     // Swamp Scene
-	m_meshList[GEO_SWAMP_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//SwampZone/Swamp_HeightMap.raw", m_heightMap);
+	m_meshList[GEO_SWAMP_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//SwampZone/Swamp_HeightMap.raw", m_heightMapSwamp);
 	m_meshList[GEO_SWAMP_TERRAIN]->textureArray[0] = LoadTGA("Image//SwampZone/swamp_terrain.tga");
 	
 	m_meshList[GEO_SWAMP_SKYPLANE] = MeshBuilder::GenerateSkyPlane("skyplane", Color(1, 1, 1), 128, 400.0f, 3000.0f, 1.0f, 1.0f);
@@ -224,7 +224,7 @@ void GraphicsLoader::Init()
     m_meshList[GEO_BOSS_MUKBOSS]->textureArray[0] = LoadTGA("Image//SwampZone/MukBoss.tga");
 
     // Rock Scene
-    m_meshList[GEO_ROCK_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw", m_heightMap);
+    m_meshList[GEO_ROCK_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//HeightMap.raw", m_heightMapRock);
     m_meshList[GEO_ROCK_TERRAIN]->textureArray[0] = LoadTGA("Image//RockZone/RockZone_Terrain.tga");
 
     m_meshList[GEO_ROCK_SKYPLANE] = MeshBuilder::GenerateSkyPlane("Rock Skyplane", Color(1, 1, 1), 128, 400.0f, 3000.0f, 1.0f, 1.0f);
@@ -249,7 +249,7 @@ void GraphicsLoader::Init()
     m_meshList[GEO_BOSS_ROCKSNAKE]->textureArray[0] = LoadTGA("Image//RockZone/RockSnake.tga");
 
     // Lava Scene
-	m_meshList[GEO_LAVA_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//FireZone/heightmaplava.raw", m_heightMap);
+	m_meshList[GEO_LAVA_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//FireZone/heightmaplava.raw", m_heightMapLava);
 	m_meshList[GEO_LAVA_TERRAIN]->textureArray[0] = LoadTGA("Image//FireZone/lava_terrain.tga");
 
 	m_meshList[GEO_LAVA] = MeshBuilder::GenerateQuad("GEO_TERRAIN", Color(1,1,1), 1.f, 10);

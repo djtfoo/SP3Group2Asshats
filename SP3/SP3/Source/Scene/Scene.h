@@ -33,9 +33,9 @@ public:
 
     const std::string m_sceneName;
 
-	Scene() {}
-    Scene(std::string name) : m_sceneName(name) {}
-	~Scene() {}
+    Scene();
+    Scene(std::string name);
+    ~Scene();
 
 	virtual void Init() = 0;
 	virtual void Update(double dt) = 0;
@@ -95,7 +95,11 @@ public:
     void RenderProjectiles();
     void RenderPressEText(World *world);
     void RenderHUD(World *world);
+
+    void RenderParticles();
     void RenderParticle(ParticleObject *particle);
+
+    virtual void SceneEnvironmentEffect() = 0;
 
 	// To render
 	// ideal case is put objects in a vector; then use for loop to go through the list to render them

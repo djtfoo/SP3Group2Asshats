@@ -149,18 +149,6 @@ void SceneRock::Init()
     //b_captured = false;
     //captureCounter = 0;
 
-    b_Rocks = true;
-    b_Nets = false;
-    b_Baits = false;
-    b_Traps = false;
-
-    f_RotateRock = 0.f;
-    f_RotateNet = 0.f;
-    f_RotateBait = 0.f;
-    f_RotateTrap = 0.f;
-
-    f_HighlightPos = -20.f;
-
     camera.Update();
 }
 
@@ -169,11 +157,18 @@ void SceneRock::Update(double dt)
 
     fps = (float)(1.f / dt);
 
+    // for buffer time between projectile launches
+    SharedData::GetInstance()->particleManager->d_timeCounter += dt;
+    ItemProjectile::d_rockCounter += dt;
+    ItemProjectile::d_netCounter += dt;
+    ItemProjectile::d_baitCounter += dt;
+    ItemProjectile::d_trapCounter += dt;
+
     //===============================================================================================================================//
     //                                                             Pause                                                             //
     //===============================================================================================================================//
 
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_P].isPressed)
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ESCAPE].isPressed)
     {
         SharedData::GetInstance()->sceneManager->SetPauseState();
     }
@@ -318,12 +313,6 @@ void SceneRock::Update(double dt)
         std::cout << std::endl;
     }
 
-    // for buffer time between projectile launches
-    ItemProjectile::d_rockCounter += dt;
-    ItemProjectile::d_netCounter += dt;
-    ItemProjectile::d_baitCounter += dt;
-    ItemProjectile::d_trapCounter += dt;
-
     //Update Projectiles vector - delete them from vector
     itemProjectile->UpdateProjectile(dt);
     rockProjectile->UpdateRockProjectile(dt);
@@ -379,16 +368,7 @@ void SceneRock::Render()
     }
 
     // Render particles
-    glDepthMask(GL_FALSE);
-    for (std::vector<ParticleObject* >::iterator it = SharedData::GetInstance()->particleManager->m_particleList.begin(); it != SharedData::GetInstance()->particleManager->m_particleList.end(); ++it)
-    {
-        ParticleObject* particle = (ParticleObject*)(*it);
-        if (particle->active)
-        {
-            RenderParticle(particle);
-        }
-    }
-    glDepthMask(GL_TRUE);
+    RenderParticles();
 
     //for (GameObject tallGrass = 0; tallGrass < rockWorld.GAMEOBJECT_COUNT; ++tallGrass)
     //{
@@ -503,5 +483,10 @@ void SceneRock::SpawnSceneParticles()
 			//SharedData::GetInstance()->particleManager->SpawnParticle(rockWorld.position[GO], ParticleObject::P_VOLCANOSPARK);
 		}
 	}
+
+}
+
+void SceneRock::SceneEnvironmentEffect()
+{
 
 }

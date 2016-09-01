@@ -324,7 +324,9 @@ void Pause::PauseMenuButton()
 		{
 			SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
 			b_mouseClick = false;
-			SharedData::GetInstance()->sceneManager->SetToExit();
+            SharedData::GetInstance()->sceneManager->ChangeScene(Math::RandIntMinMax(1, 4));
+            SharedData::GetInstance()->sceneManager->SetMainMenuState();
+            //SharedData::GetInstance()->sceneManager->SetToExit();
 		}
 	}
 }

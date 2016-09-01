@@ -36,13 +36,13 @@ public:
         KEY_Q,
         KEY_E,
 
-        KEY_P,  // pause game
         KEY_C,  // temp debug key
 
         KEY_G,
         KEY_X,
 
         KEY_SPACE,
+        KEY_ESCAPE, // pause key
 
         KEY_TAB,
         KEY_ENTER,

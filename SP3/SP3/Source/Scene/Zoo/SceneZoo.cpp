@@ -1751,3 +1751,8 @@ void SceneZoo::SpawnSceneParticles()
 {
 
 }
+
+void SceneZoo::SceneEnvironmentEffect()
+{
+
+}

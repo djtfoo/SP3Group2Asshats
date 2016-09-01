@@ -25,6 +25,7 @@ public:
 	virtual void Exit();
     virtual bool CheckInteractMoneyTree(World *world, GameObject GO);
 	virtual void SpawnSceneParticles();
+    virtual void SceneEnvironmentEffect();
 
 	//Test stuff
 	ItemProjectile* itemProjectile;

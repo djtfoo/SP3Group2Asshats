@@ -20,6 +20,7 @@ public:
     virtual void Exit();
 
     virtual void SpawnSceneParticles();
+    virtual void SceneEnvironmentEffect();
 
     void populateMonsterList();
 

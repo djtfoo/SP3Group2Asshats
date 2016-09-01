@@ -22,6 +22,29 @@ Abstract class for scenes in gameplay
 LevelGenerationMap Scene::m_levelGenerationData = {};
 char** Scene::m_levelMap = 0;
 
+Scene::Scene()
+{
+}
+
+Scene::Scene(std::string name) : m_sceneName(name)
+{
+    b_Rocks = true;
+    b_Nets = false;
+    b_Baits = false;
+    b_Traps = false;
+
+    f_RotateRock = 0.f;
+    f_RotateNet = 0.f;
+    f_RotateBait = 0.f;
+    f_RotateTrap = 0.f;
+
+    f_HighlightPos = -20.f;
+}
+
+Scene::~Scene()
+{
+}
+
 void Scene::LoadLevelGenerationData(const char* file_path)
 {
     LoadFile(file_path, FILE_LEVELGENERATIONDATA);
@@ -595,14 +618,30 @@ void Scene::UpdatePlayer(double dt, World *world)
     SharedData::GetInstance()->inputManager->Update();
     SharedData::GetInstance()->player->Update(dt);
 
+    Vector3 playerPos = SharedData::GetInstance()->player->GetPositionVector();
+
+    if (m_sceneName == "Swamp")
+    {
+        if (30.f * ReadHeightMap(SharedData::GetInstance()->graphicsLoader->m_heightMapSwamp, (playerPos.x - 100.f) / 300.f, (playerPos.z - 100.f) / 300.f) < 5.f && !SharedData::GetInstance()->player->IsJumping()) {
+            std::cout << "ON MUD!! ";
+            SceneEnvironmentEffect();
+        }
+    }
+    else if (m_sceneName == "Lava")
+    {
+        if (30.f * ReadHeightMap(SharedData::GetInstance()->graphicsLoader->m_heightMapSwamp, (playerPos.x - 100.f) / 300.f, (playerPos.z - 100.f) / 300.f) < 5.f && !SharedData::GetInstance()->player->IsJumping()) {
+            std::cout << "ON LAVA!! ";
+            SceneEnvironmentEffect();
+        }
+    }
+
     bool collision = false;
+    playerPos += SharedData::GetInstance()->player->GetVelocityVector();
+    playerPos.y = 0.f;
     for (GameObject obstacle = 0; obstacle < world->GAMEOBJECT_COUNT; ++obstacle)
     {
         if ((world->mask[obstacle] & COMPONENT_OBSTACLE) == COMPONENT_OBSTACLE)
         {
-            Vector3 playerPos = SharedData::GetInstance()->player->GetPositionVector() + SharedData::GetInstance()->player->GetVelocityVector();
-            playerPos.y = 0.f;
-
             if (world->hitbox[obstacle].CheckCollision(playerPos))
             {
                 collision = true;
@@ -730,7 +769,7 @@ void Scene::UpdateNetProjectiles(World *world)
                             world->mask[text_C] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_VELOCITY | COMPONENT_TEXT;
                             world->appearance[text_C].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_CAPTURE);
                             world->position[text_C] = world->position[net];
-                            world->position[text_C].y += 1;
+                            world->position[text_C].y += world->appearance[ai].scale.y;
                             world->velocity[text_C] = (world->position[text_C] - camera.position).Normalized();
                             world->velocity[text_C].y = 3;
                             world->appearance[text_C].scale.Set(2, 2, 2);
@@ -744,7 +783,7 @@ void Scene::UpdateNetProjectiles(World *world)
                             world->mask[text_M] = COMPONENT_DISPLACEMENT | COMPONENT_APPEARANCE | COMPONENT_VELOCITY | COMPONENT_TEXT;
                             world->appearance[text_M].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_MISS);
                             world->position[text_M] = world->position[net];
-                            world->position[text_M].y += 1;
+                            world->position[text_M].y += world->appearance[ai].scale.y;
                             world->velocity[text_M] = (world->position[text_M] - camera.position).Normalized();
                             world->velocity[text_M].y = 3;
                             world->appearance[text_M].scale.Set(2, 2, 2);
@@ -1118,9 +1157,7 @@ void Scene::UpdateInventory()
 
 void Scene::UpdateParticles(World *world, double dt)
 {
-    SharedData::GetInstance()->particleManager->d_timeCounter += dt;
-
-    if (SharedData::GetInstance()->particleManager->d_timeCounter > 0.5)
+    if (SharedData::GetInstance()->particleManager->d_timeCounter > 0.8)
     {
         for (GameObject GO = 0; GO < world->GAMEOBJECT_COUNT; ++GO)
         {
@@ -1449,9 +1486,24 @@ void Scene::RenderHUD(World *world)
     SetHUD(false);
 }
 
+void Scene::RenderParticles()
+{
+    glDepthMask(GL_FALSE);
+    glBlendFunc(GL_ONE, GL_ONE);
+    for (std::vector<ParticleObject* >::iterator it = SharedData::GetInstance()->particleManager->m_particleList.begin(); it != SharedData::GetInstance()->particleManager->m_particleList.end(); ++it)
+    {
+        ParticleObject* particle = (ParticleObject*)(*it);
+        if (particle->active)
+        {
+            RenderParticle(particle);
+        }
+    }
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthMask(GL_TRUE);
+}
+
 void Scene::RenderParticle(ParticleObject* particle)
 {
-    glBlendFunc(GL_ONE, GL_ONE);
     switch (particle->type)
     {
     case ParticleObject::P_HIDDENBONUS:
@@ -1505,5 +1557,4 @@ void Scene::RenderParticle(ParticleObject* particle)
     default:
         break;
     }
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

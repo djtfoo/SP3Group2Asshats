@@ -157,37 +157,25 @@ void SceneLava::Init()
 	glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_TYPE), fog.type);
 	glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), fog.enabled);
 
-	b_Rocks = true;
-	b_Nets = false;
-	b_Baits = false;
-    b_Traps = false;
-
-	b_RampageMode = false;
-    f_RampageTimer = 0.f;
-
-	f_RotateRock = 0.f;
-	f_RotateNet = 0.f;
-	f_RotateBait = 0.f;
-    f_RotateTrap = 0.f;
-
-    f_HighlightPos = -20.f;
-    
     camera.Update();
 }
 
 void SceneLava::Update(double dt)
 {
-	//Calculating aspect ratio
-	//m_worldHeight = 100.f;
-	//m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
-
 	fps = (float)(1.f / dt);
+
+    // for buffer time between projectile launches
+    SharedData::GetInstance()->particleManager->d_timeCounter += dt;
+    ItemProjectile::d_rockCounter += dt;
+    ItemProjectile::d_netCounter += dt;
+    ItemProjectile::d_baitCounter += dt;
+    ItemProjectile::d_trapCounter += dt;
 
     //===============================================================================================================================//
     //                                                             Pause                                                             //
     //===============================================================================================================================//
 
-    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_P].isPressed)
+    if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_ESCAPE].isPressed)
     {
         SharedData::GetInstance()->sceneManager->SetPauseState();
     }
@@ -376,12 +364,6 @@ void SceneLava::Update(double dt)
 		std::cout << std::endl;
 	}
 
-	// for buffer time between projectile launches
-	ItemProjectile::d_rockCounter += dt;
-	ItemProjectile::d_netCounter += dt;
-	ItemProjectile::d_baitCounter += dt;
-    ItemProjectile::d_trapCounter += dt;
-
     //Update Projectiles
     itemProjectile->UpdateProjectile(dt);
     rockProjectile->UpdateRockProjectile(dt);
@@ -452,16 +434,7 @@ void SceneLava::Render()
     glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), false);
 
     // Render particles
-    glDepthMask(GL_FALSE);
-    for (std::vector<ParticleObject* >::iterator it = SharedData::GetInstance()->particleManager->m_particleList.begin(); it != SharedData::GetInstance()->particleManager->m_particleList.end(); ++it)
-    {
-        ParticleObject* particle = (ParticleObject*)(*it);
-        if (particle->active)
-        {
-            RenderParticle(particle);
-        }
-    }
-    glDepthMask(GL_TRUE);
+    RenderParticles();
 
 	//for (GameObject tallGrass = 0; tallGrass < lava.GAMEOBJECT_COUNT; ++tallGrass)
 	//{
@@ -571,4 +544,9 @@ void SceneLava::SpawnSceneParticles()
 				SharedData::GetInstance()->particleManager->SpawnParticle(lava.position[GO], ParticleObject::P_VOLCANOSPARK);
 			}
 		}
+}
+
+void SceneLava::SceneEnvironmentEffect()
+{
+
 }

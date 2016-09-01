@@ -434,6 +434,19 @@ float Player::GetNoiseFactor()
     return this->m_noiseFactor;
 }
 
+bool Player::IsJumping()
+{
+    if (m_heightState == HEIGHT_STATE_JUMP)
+        return true;
+
+    return false;
+}
+
+void Player::SetMudSlow()
+{
+    m_speed /= 2.f;
+}
+
 float Player::GetHealth()
 {
     return this->m_health;

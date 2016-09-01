@@ -95,7 +95,10 @@ public:
     void UpdateNoiseFactor();
 
     float GetNoiseFactor();
-    void SetToHiding();
+    //void SetToHiding();
+
+    bool IsJumping();
+    void SetMudSlow();
 
     void Update(double dt);
 	AABB PlayerHitBox;
