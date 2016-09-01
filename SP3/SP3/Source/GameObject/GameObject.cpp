@@ -75,5 +75,5 @@ void destroyGO(World *world, GameObject GO)
 
 
 	world->mask[GO] = COMPONENT_NONE;
-    std::cout << "destroyed go" << std::endl;
+    //std::cout << "destroyed go" << std::endl;
 }

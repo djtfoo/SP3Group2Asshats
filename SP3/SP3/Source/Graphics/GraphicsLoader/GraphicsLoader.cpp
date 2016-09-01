@@ -432,10 +432,84 @@ void GraphicsLoader::Init()
     m_meshList[GEO_ZOO_LAVA_GROUND] = MeshBuilder::GenerateQuad("Grass Ground", Color(0, 1, 0), 1.f, 10);
     m_meshList[GEO_ZOO_LAVA_GROUND]->textureArray[0] = LoadTGA("Image//FireZone/lava_terrain.tga");
 
+    m_meshList[GEO_ZOO_DIRT_GROUND] = MeshBuilder::GenerateQuad("Dirt Ground", Color(0, 1, 0), 1.f, 10);
+    m_meshList[GEO_ZOO_DIRT_GROUND]->textureArray[0] = LoadTGA("Image//ZooIcons/DirtGround.tga");
+
     // Shop stuff
-    m_meshList[GEO_SHOP_BACKGROUND] = MeshBuilder::GenerateQuad("Rock Terrain", Color(0.5f, 0.5f, 0.5f), 1.f, 100);
-    m_meshList[GEO_SHOP_SELECTION] = MeshBuilder::GenerateQuad("Rock Terrain", Color(0, 0, 0), 1.f, 100);
-    m_meshList[GEO_SHOP_SELECTION_ALT] = MeshBuilder::GenerateQuad("Rock Terrain", Color(1, 1, 1), 1.f, 100);
+    m_meshList[GEO_SHOP_BACKGROUND] = MeshBuilder::GenerateQuad("Shop Background", Color(0.5f, 0.5f, 0.5f));
+    m_meshList[GEO_SHOP_BACKGROUND]->textureArray[0] = LoadTGA("Image//ZooIcons/ShopBackground.tga");
+
+    m_meshList[GEO_SHOP_SELECTION] = MeshBuilder::GenerateQuad("Shop selection", Color(0, 0, 0));
+    m_meshList[GEO_SHOP_SELECTION]->textureArray[0] = LoadTGA("Image//MenuText/MenuBoard.tga");
+
+    m_meshList[GEO_SHOP_SELECTION_ALT] = MeshBuilder::GenerateQuad("Shop selection alt", Color(1, 1, 1));
+    m_meshList[GEO_SHOP_SELECTION_ALT]->textureArray[0] = LoadTGA("Image//MenuText/MenuBoardHL.tga");
+
+    m_meshList[GEO_ENCLOSURE_INTERFACE] = MeshBuilder::GenerateQuad("Enclosure interface", Color(1, 1, 1));
+    m_meshList[GEO_ENCLOSURE_INTERFACE]->textureArray[0] = LoadTGA("Image//ZooIcons/EnclosureInterface.tga");
+
+    m_meshList[GEO_ICON_LEFT_ARROW] = MeshBuilder::GenerateQuad("Arrow icon left", Color(1, 1, 1));
+    m_meshList[GEO_ICON_LEFT_ARROW]->textureArray[0] = LoadTGA("Image//ZooIcons/ArrowIconLeft.tga");
+
+    m_meshList[GEO_ICON_RIGHT_ARROW] = MeshBuilder::GenerateQuad("Arrow icon right", Color(1, 1, 1));
+    m_meshList[GEO_ICON_RIGHT_ARROW]->textureArray[0] = LoadTGA("Image//ZooIcons/ArrowIconRight.tga");
+
+    m_meshList[GEO_ICON_EYE] = MeshBuilder::GenerateQuad("eye icon", Color(1, 1, 1));
+    m_meshList[GEO_ICON_EYE]->textureArray[0] = LoadTGA("Image//ZooIcons/EyeIcon.tga");
+
+    m_meshList[GEO_FENCE] = MeshBuilder::GenerateOBJ("fence", "OBJ//Fence.obj");
+    m_meshList[GEO_FENCE]->textureArray[0] = LoadTGA("Image//ZooIcons/FenceTexture.tga");
+
+    m_meshList[GEO_HUNTING_GROUNDS_INTERFACE] = MeshBuilder::GenerateQuad("Hunting grounds interface", Color(1, 1, 1));
+    m_meshList[GEO_HUNTING_GROUNDS_INTERFACE]->textureArray[0] = LoadTGA("Image//ZooIcons/HuntingGroundsInterface.tga");
+
+    m_meshList[GEO_ICON_GRASS] = MeshBuilder::GenerateQuad("grass icon", Color(1, 1, 1));
+    m_meshList[GEO_ICON_GRASS]->textureArray[0] = LoadTGA("Image//ZooIcons/GrassIcon.tga");
+
+    m_meshList[GEO_ICON_FIRE] = MeshBuilder::GenerateQuad("fire icon", Color(1, 1, 1));
+    m_meshList[GEO_ICON_FIRE]->textureArray[0] = LoadTGA("Image//ZooIcons/FireIcon.tga");
+
+    m_meshList[GEO_ICON_ROCK] = MeshBuilder::GenerateQuad("rock icon", Color(1, 1, 1));
+    m_meshList[GEO_ICON_ROCK]->textureArray[0] = LoadTGA("Image//ZooIcons/RockIcon.tga");
+
+    m_meshList[GEO_ICON_SWAMP] = MeshBuilder::GenerateQuad("swamp icon", Color(1, 1, 1));
+    m_meshList[GEO_ICON_SWAMP]->textureArray[0] = LoadTGA("Image//ZooIcons/SwampIcon.tga");
+
+    m_meshList[GEO_ICON_GRASS_ALT] = MeshBuilder::GenerateQuad("grass icon Alt", Color(1, 1, 1));
+    m_meshList[GEO_ICON_GRASS_ALT]->textureArray[0] = LoadTGA("Image//ZooIcons/GrassIconAlt.tga");
+
+    m_meshList[GEO_ICON_FIRE_ALT] = MeshBuilder::GenerateQuad("fire icon Alt", Color(1, 1, 1));
+    m_meshList[GEO_ICON_FIRE_ALT]->textureArray[0] = LoadTGA("Image//ZooIcons/FireIconAlt.tga");
+
+    m_meshList[GEO_ICON_ROCK_ALT] = MeshBuilder::GenerateQuad("rock icon Alt", Color(1, 1, 1));
+    m_meshList[GEO_ICON_ROCK_ALT]->textureArray[0] = LoadTGA("Image//ZooIcons/RockIconAlt.tga");
+
+    m_meshList[GEO_ICON_SWAMP_ALT] = MeshBuilder::GenerateQuad("swamp icon Alt", Color(1, 1, 1));
+    m_meshList[GEO_ICON_SWAMP_ALT]->textureArray[0] = LoadTGA("Image//ZooIcons/SwampIconAlt.tga");
+
+    m_meshList[GEO_GRASSZONE_CAPTURE] = MeshBuilder::GenerateQuad("grass scene icon", Color(1, 1, 1));
+    m_meshList[GEO_GRASSZONE_CAPTURE]->textureArray[0] = LoadTGA("Image//ZooIcons/GrassScene.tga");
+
+    m_meshList[GEO_GRASSZONE_CAPTURE_ALT] = MeshBuilder::GenerateQuad("grass scene icon alt", Color(1, 1, 1));
+    m_meshList[GEO_GRASSZONE_CAPTURE_ALT]->textureArray[0] = LoadTGA("Image//ZooIcons/GrassSceneAlt.tga");
+
+    m_meshList[GEO_FIREZONE_CAPTURE] = MeshBuilder::GenerateQuad("fire scene icon", Color(1, 1, 1));
+    m_meshList[GEO_FIREZONE_CAPTURE]->textureArray[0] = LoadTGA("Image//ZooIcons/LavaScene.tga");
+
+    m_meshList[GEO_FIREZONE_CAPTURE_ALT] = MeshBuilder::GenerateQuad("fire scene icon alt", Color(1, 1, 1));
+    m_meshList[GEO_FIREZONE_CAPTURE_ALT]->textureArray[0] = LoadTGA("Image//ZooIcons/LavaSceneAlt.tga");
+
+    m_meshList[GEO_ROCKZONE_CAPTURE] = MeshBuilder::GenerateQuad("rock scene icon", Color(1, 1, 1));
+    m_meshList[GEO_ROCKZONE_CAPTURE]->textureArray[0] = LoadTGA("Image//ZooIcons/RockScene.tga");
+
+    m_meshList[GEO_ROCKZONE_CAPTURE_ALT] = MeshBuilder::GenerateQuad("rock scene icon alt", Color(1, 1, 1));
+    m_meshList[GEO_ROCKZONE_CAPTURE_ALT]->textureArray[0] = LoadTGA("Image//ZooIcons/RockSceneAlt.tga");
+
+    m_meshList[GEO_SWAMPZONE_CAPTURE] = MeshBuilder::GenerateQuad("swamp scene icon", Color(1, 1, 1));
+    m_meshList[GEO_SWAMPZONE_CAPTURE]->textureArray[0] = LoadTGA("Image//ZooIcons/SwampScene.tga");
+
+    m_meshList[GEO_SWAMPZONE_CAPTURE_ALT] = MeshBuilder::GenerateQuad("swamp scene icon alt", Color(1, 1, 1));
+    m_meshList[GEO_SWAMPZONE_CAPTURE_ALT]->textureArray[0] = LoadTGA("Image//ZooIcons/SwampSceneAlt.tga");
 
 	// Particle Loading
 	m_meshList[GEO_HIDDENBONUS_PARTICLE] = MeshBuilder::GenerateQuad("Hidden Bonus", Color(0, 1, 0), 1.f);

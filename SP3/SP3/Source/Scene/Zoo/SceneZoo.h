@@ -20,7 +20,7 @@ public:
     virtual void Exit();
 
     virtual void SpawnSceneParticles();
-    virtual void SceneEnvironmentEffect();
+    virtual void SceneEnvironmentEffect() {};
 
     void populateMonsterList();
 
@@ -32,13 +32,17 @@ public:
     Vector3 rockAreaPosition;
     Vector3 swampAreaPosition;
 
-    //Probably needs to be in SharedData or Player class
+    Vector3 treeRands[50];
+    Vector3 volcanoRands[50];
+    Vector3 rockRands[50];
+    Vector3 swampPlantRands[50];
+
     const int AREA_MAX_SIZE;
 
-    float grassAreaSize;
-    float fireAreaSize;
-    float rockAreaSize;
-    float swampAreaSize;
+    int grassAreaSize;
+    int fireAreaSize;
+    int rockAreaSize;
+    int swampAreaSize;
 
     std::vector<GameObject> grassZone;
     std::vector<GameObject> fireZone;
@@ -63,9 +67,12 @@ public:
         STATE_SHOP,
         STATE_CHANGE_SCENE,
 
+        STATE_MENU,
+        STATE_QUEST,
+
         NUM_STATE
     };
-    
+
     enum SHOP
     {
         SHOP_MAIN,
@@ -88,6 +95,7 @@ public:
 
         TEXT_THANK,
         TEXT_INSUFFICIENT_COINS,
+        TEXT_INSUFFICIENT_MEAT,
         TEXT_AT_MAX_UPGRADE,
 
         NUM_TEXT
@@ -103,19 +111,23 @@ public:
     GameObject targetedMonster;
     GameObject cycleIter;
 
+    void RenderOverviewInterface();
+
     void DisplayMonsterInterface(Monster* monster);
-    void CycleThroughZoneArea(std::vector<GameObject> area);
     bool UpgradeEnclosureSize(AREA area);
     void RenderEnclosures();
     void RenderEnclosureInterface();
 
     void SellMonster();
     void SlaughterMonster();
-    
+
     int transactionCounter;
     bool isInTransaction;
     void RenderTransactionInterface();
     void RenderShopInterface();
+
+    void RenderMenuInterface();
+    void RenderQuestInterface();
 
     void RenderUpgradeInterface(Item::TYPE item);
 
@@ -129,7 +141,7 @@ public:
 
     //shit for debugging
     float updown, leftright;
-    
+
     //HUD stuff
     void RenderHUD();
     float f_Rotate;

@@ -127,7 +127,7 @@ bool Item::Sell(int count)
     if (this->m_count >= count)
     {
         this->m_count -= count;
-        SharedData::GetInstance()->player->m_currency += count * this->m_buyCost;
+        SharedData::GetInstance()->player->m_currency += count * this->m_buyCost * 0.5;
         return true;
     }
     
