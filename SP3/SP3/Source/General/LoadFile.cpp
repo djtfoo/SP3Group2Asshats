@@ -13,6 +13,7 @@ Function to read CSV files for game data
 
 #include "../GameObject/MonsterFactory.h"
 #include "../Scene/Scene.h"
+#include "SharedData.h"
 
 bool LoadFile(const char* file_path, FILE_TYPE file_type)
 {
@@ -50,6 +51,10 @@ bool LoadFile(const char* file_path, FILE_TYPE file_type)
 
     case FILE_LEVELMAPDATA:
         LoadLevelMapData(fileStream);
+        break;
+
+    case FILE_QUESTDATA:
+        LoadQuestData(fileStream);
         break;
 
     case FILE_SAVEDATA:
@@ -134,6 +139,45 @@ void LoadLevelGenerationData(std::ifstream& fileStream)
         // push into map
         Scene::AddToMap(tempTileCount, AssignMeshType(tempTileCount - 65), tempComponents);
     }
+}
+
+void LoadQuestData(std::ifstream& fileStream)
+{
+    while (!fileStream.eof())
+    {
+        std::string line;
+        std::getline(fileStream, line);
+
+        if (line == "" || line[0] == '#')   // empty line OR comment
+            continue;
+
+        std::stringstream dataStream(line);
+        std::string data;
+
+        // first content is quest serial number
+        std::getline(dataStream, data, ',');
+        int tempSerialNum = std::stoi(data);
+
+        // second content is quest name
+        std::getline(dataStream, data, ',');
+        std::string tempQuestName = data;
+
+        // third content is required monster
+        std::getline(dataStream, data, ',');
+        std::string tempReqMonster = data;
+
+        // fourth content is required monster quantity
+        std::getline(dataStream, data, ',');
+        int tempMonsterQuantity = std::stoi(data);
+
+        // fifth content is the zone the quest is at
+        std::getline(dataStream, data, ',');
+        std::string tempZone = data;
+
+        // push into queue
+        SharedData::GetInstance()->questManager->AddToQueue(new Quest(tempSerialNum, tempQuestName, tempReqMonster, tempMonsterQuantity, tempZone));
+    }
+
 }
 
 GraphicsLoader::GEOMETRY_TYPE AssignMeshType(int num)

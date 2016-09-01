@@ -19,6 +19,8 @@ void SharedData::Init()
     sound = new Sound();
     sceneManager = new SceneManager();
 	particleManager = new ParticleManager();
+    questManager = new QuestManager();
+    questManager->Init();
 
     MonsterFactory::LoadMonsterData("GameData/MonstersData.csv");
     Scene::LoadLevelGenerationData("GameData/LevelGenerationData.csv");

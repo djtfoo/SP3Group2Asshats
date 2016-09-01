@@ -16,6 +16,7 @@ Singleton class that contains variables and objects needed by different files
 #include "SceneManager.h"
 #include "../Audio/Sound.h"
 #include "../Graphics/Particle/ParticleManager.h"
+#include "Quest/QuestManager.h"
 
 /******************************************************************************/
 /*!
@@ -45,6 +46,7 @@ public:
 	ParticleManager* particleManager;
 
     SceneManager* sceneManager;
+    QuestManager* questManager;
 };
 
 #endif

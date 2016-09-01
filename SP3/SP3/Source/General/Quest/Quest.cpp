@@ -1,11 +1,21 @@
 #include "Quest.h"
 
-Quest::Quest(unsigned int serialNum, std::string reqMonster, unsigned int reqQUantity) : m_serialNumber(serialNum), m_requiredMonster(reqMonster), m_requiredQuantity(reqQUantity)
+Quest::Quest(unsigned int serialNum, std::string questName, std::string reqMonster, unsigned int reqQuantity, std::string zone)
+: m_serialNumber(serialNum)
+, m_questName(questName)
+, m_requiredMonster(reqMonster)
+, m_requiredQuantity(reqQuantity)
+, m_zone(zone)
 {
 }
 
 Quest::~Quest()
 {
+}
+
+std::string Quest::GetQuestName()
+{
+    return m_questName;
 }
 
 unsigned int Quest::GetSerialNumber()
@@ -21,4 +31,9 @@ std::string Quest::GetRequiredMonster()
 unsigned int Quest::GetRequiredQuantity()
 {
     return m_requiredQuantity;
+}
+
+std::string Quest::GetZone()
+{
+    return m_zone;
 }

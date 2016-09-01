@@ -14,6 +14,9 @@ public:
     QuestManager();
     ~QuestManager();
 
+    void Init();
+    void Exit();
+
     Quest* GetCurrentQuest();
     void AddToQueue(Quest* newQuest);
     void CompleteCurrentQuest();

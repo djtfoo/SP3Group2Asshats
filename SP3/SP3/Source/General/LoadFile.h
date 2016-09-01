@@ -20,6 +20,7 @@ enum FILE_TYPE
     FILE_MONSTERDATA,
     FILE_LEVELGENERATIONDATA,
     FILE_LEVELMAPDATA,
+    FILE_QUESTDATA,
     FILE_SAVEDATA,
     FILE_TOTAL
 };
@@ -35,6 +36,7 @@ bool LoadFile(const char* file_path, FILE_TYPE file_type);
 void LoadMonsterData(std::ifstream& fileStream);
 void LoadLevelGenerationData(std::ifstream& fileStream);
 void LoadLevelMapData(std::ifstream& fileStream);
+void LoadQuestData(std::ifstream& fileStream);
 void LoadSaveData(std::ifstream& fileStream);
 
 GraphicsLoader::GEOMETRY_TYPE AssignMeshType(int num);
