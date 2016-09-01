@@ -209,7 +209,7 @@ void SceneGrass::Update(double dt)
     //////////////////////////////////////////////
     ////////PARTICLES ////////////////////////////
     //////////////////////////////////////////////
-	SpawnSceneParticles();
+	//SpawnSceneParticles();
     UpdateParticles(&grass, dt);
 
 	//===============================================================================================================================//
@@ -416,8 +416,8 @@ void SceneGrass::Exit()
 
 void SceneGrass::SpawnSceneParticles()
 {
-    if (SharedData::GetInstance()->particleManager->d_timeCounter > 0.8)
-    {
+    //if (SharedData::GetInstance()->particleManager->d_timeCounter > 0.8)
+    //{
         //for (GameObject GO = 0; GO < grass.GAMEOBJECT_COUNT; ++GO)
         //{
         //    if ((grass.mask[GO] & COMPONENT_OBSTACLE) == COMPONENT_OBSTACLE)
@@ -466,7 +466,7 @@ void SceneGrass::SpawnSceneParticles()
             spawn = false;
         }
 
-    }
+    //}
 }
 
 void SceneGrass::SceneEnvironmentEffect()

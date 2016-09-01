@@ -59,7 +59,7 @@ void ParticleManager::SpawnParticle(const Vector3& position, ParticleObject::PAR
         {
         case ParticleObject::P_HIDDENBONUS:
             particle->scale.Set(4, 4, 4);
-            particle->vel.Set(0.f, 6.f, 0.f);
+            particle->vel.Set(0.f, 7.f, 0.f);
             particle->rotationSpeed = Math::RandFloatMinMax(20.0f, 40.0f);
             particle->pos.Set(position.x, 5, position.z);
             break;

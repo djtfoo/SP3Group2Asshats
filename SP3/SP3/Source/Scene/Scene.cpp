@@ -1157,8 +1157,9 @@ void Scene::UpdateInventory()
 
 void Scene::UpdateParticles(World *world, double dt)
 {
-    if (SharedData::GetInstance()->particleManager->d_timeCounter > 0.8)
+    if (SharedData::GetInstance()->particleManager->d_timeCounter > 2.0)
     {
+        SpawnSceneParticles();
         for (GameObject GO = 0; GO < world->GAMEOBJECT_COUNT; ++GO)
         {
             if ((world->mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
