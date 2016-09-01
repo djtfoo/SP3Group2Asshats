@@ -170,10 +170,6 @@ void Application::Run()
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
     while (!glfwWindowShouldClose(m_window) && SharedData::GetInstance()->sceneManager->GetGameState() != SceneManager::GAMESTATE_EXIT)
 	{
-		//if (Application::IsKeyPressed('V'))
-		//{
-        //    SharedData::GetInstance()->sceneManager->ChangeScene(3);
-		//}
         SharedData::GetInstance()->sceneManager->Update(m_timer.getElapsedTime());
 		GetCursorPos(&cursorXPos, &cursorYPos);
         SharedData::GetInstance()->sceneManager->Render();

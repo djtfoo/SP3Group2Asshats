@@ -53,6 +53,7 @@ public:
 	void RenderCreditState();
 
 	void MainMenuButton();
+    void OptionButton();
 	void BackButton();
 	void NextButton();
 	void NextButtonMonstersPage();

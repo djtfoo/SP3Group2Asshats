@@ -80,7 +80,7 @@ public:
     void ShootNet();
     void ShootBait();
     void PlaceTrap(World *world);
-    void UpdateInventory();
+    void UpdateInventory(double dt);
 
     void UpdateParticles(World *world, double dt);
 	virtual void SpawnSceneParticles() = 0;

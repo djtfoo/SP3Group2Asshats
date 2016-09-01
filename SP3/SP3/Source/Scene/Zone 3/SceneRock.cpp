@@ -37,7 +37,7 @@ void SceneRock::Init()
     memset(&rockWorld, 0, sizeof(rockWorld));
 
     // Load map
-	SharedData::GetInstance()->sound->PlayMusic("Sound//RockZone//RockScene.wav");
+	//SharedData::GetInstance()->sound->PlayMusic("Sound//RockZone//RockScene.wav");
     Scene::LoadLevelMap("GameData/RockScene.csv");
     for (int rows = 0; rows < Scene::m_rows; ++rows)
     {
@@ -160,12 +160,12 @@ void SceneRock::Update(double dt)
 
     fps = (float)(1.f / dt);
 
-    // for buffer time between projectile launches
+    // for buffer time
     SharedData::GetInstance()->particleManager->d_timeCounter += dt;
-    ItemProjectile::d_rockCounter += dt;
-    ItemProjectile::d_netCounter += dt;
-    ItemProjectile::d_baitCounter += dt;
-    ItemProjectile::d_trapCounter += dt;
+    //ItemProjectile::d_rockCounter += dt;
+    //ItemProjectile::d_netCounter += dt;
+    //ItemProjectile::d_baitCounter += dt;
+    //ItemProjectile::d_trapCounter += dt;
     d_spawnRocksTimer += dt;
 
     //===============================================================================================================================//
@@ -236,7 +236,7 @@ void SceneRock::Update(double dt)
 
 
     // Update Player Inventory
-    UpdateInventory();
+    UpdateInventory(dt);
 	f_RotateMonster += dt * 50;
     if (b_Rocks)
     {

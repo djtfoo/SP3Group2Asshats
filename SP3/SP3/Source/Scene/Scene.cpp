@@ -1069,7 +1069,7 @@ void Scene::CheckMonsterAttack(World *world)
 
 void Scene::ShootRock()
 {
-    if (ItemProjectile::d_rockCounter > ItemProjectile::d_rockCooldown)
+    if (ItemProjectile::d_rockCounter >= ItemProjectile::d_rockCooldown)
     {
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].Use())
         {
@@ -1092,7 +1092,7 @@ void Scene::ShootRock()
 
 void Scene::ShootNet()
 {
-    if (ItemProjectile::d_netCounter > ItemProjectile::d_netCooldown)
+    if (ItemProjectile::d_netCounter >= ItemProjectile::d_netCooldown)
     {
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_NET].Use())
         {
@@ -1115,7 +1115,7 @@ void Scene::ShootNet()
 
 void Scene::ShootBait()
 {
-    if (ItemProjectile::d_baitCounter > ItemProjectile::d_baitCooldown)
+    if (ItemProjectile::d_baitCounter >= ItemProjectile::d_baitCooldown)
     {
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].Use())
         {
@@ -1138,7 +1138,7 @@ void Scene::ShootBait()
 
 void Scene::PlaceTrap(World *world)
 {
-    if (ItemProjectile::d_trapCounter > ItemProjectile::d_trapCooldown)
+    if (ItemProjectile::d_trapCounter >= ItemProjectile::d_trapCooldown)
     {
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].Use())
         {
@@ -1168,8 +1168,32 @@ void Scene::PlaceTrap(World *world)
     }
 }
 
-void Scene::UpdateInventory()
+void Scene::UpdateInventory(double dt)
 {
+    if (ItemProjectile::d_rockCounter < ItemProjectile::d_rockCooldown)
+    {
+        ItemProjectile::d_rockCounter += dt;
+        ItemProjectile::d_rockCounter = Math::Min(ItemProjectile::d_rockCounter, ItemProjectile::d_rockCooldown);
+    }
+
+    if (ItemProjectile::d_netCounter < ItemProjectile::d_netCooldown)
+    {
+        ItemProjectile::d_netCounter += dt;
+        ItemProjectile::d_netCounter = Math::Min(ItemProjectile::d_netCounter, ItemProjectile::d_netCooldown);
+    }
+
+    if (ItemProjectile::d_baitCounter < ItemProjectile::d_baitCooldown)
+    {
+        ItemProjectile::d_baitCounter += dt;
+        ItemProjectile::d_baitCounter = Math::Min(ItemProjectile::d_baitCounter, ItemProjectile::d_baitCooldown);
+    }
+
+    if (ItemProjectile::d_trapCounter < ItemProjectile::d_trapCooldown)
+    {
+        ItemProjectile::d_trapCounter += dt;
+        ItemProjectile::d_trapCounter = Math::Min(ItemProjectile::d_trapCounter, ItemProjectile::d_trapCooldown);
+    }
+
     //Rocks
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_1].isPressed)
     {
@@ -1503,8 +1527,12 @@ void Scene::RenderHUD(World *world)
     RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUDHIGHLIGHT), false, 11.f, 12.f, f_HighlightPos, -48);
     RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 50.f, 12.f, 0, -48);
 
-    // background
-    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 50.f, 12.f, 0, -48);
+    // inventory background
+    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 11.f, ItemProjectile::d_netCounter * 4, -10, -54 + 0.5 * (ItemProjectile::d_netCounter * 4));
+    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 11.f, ItemProjectile::d_rockCounter * 40, -20, -54 + 0.5 * (ItemProjectile::d_rockCounter * 40));//ROCK
+    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 11.f, ItemProjectile::d_baitCounter * 40, 0, -54 + 0.5 * (ItemProjectile::d_baitCounter * 40));
+    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 11.f, ItemProjectile::d_trapCounter * 12, 10, -54 + 0.5 * (ItemProjectile::d_trapCounter * 12));
+    //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 50.f, 12.f, 0, -48);
 
     // 1: Rock
     if (b_Rocks) {

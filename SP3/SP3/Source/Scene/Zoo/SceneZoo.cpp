@@ -58,6 +58,8 @@ void SceneZoo::Init()
     isFollowingMonster = false;
     cycleIter = 0;
 
+    f_rotateMonster = 0.f;
+
     currentArea = AREA_OVERVIEW;
     currentState = STATE_ZOO;
 
@@ -88,6 +90,13 @@ void SceneZoo::Init()
 void SceneZoo::Update(double dt)
 {
     fps = (float)(1.f / dt);
+
+    f_RotateMonster -= 50.f * (float)(dt);
+    if (f_RotateMonster <= -360.f)
+    {
+        f_RotateMonster += 360.f;
+    }
+
     //===============================================================================================================================//
     //                                                            Updates                                                            //
     //===============================================================================================================================//
@@ -353,6 +362,10 @@ void SceneZoo::Render()
 
         RenderQuestInterface();
 
+        break;
+
+    case STATE_OPTIONS:
+        RenderOptionsInterface();
         break;
     }
 
@@ -642,6 +655,7 @@ void SceneZoo::DisplayMonsterInterface(Monster* monster)
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             switch (currentArea)
             {
             case AREA_GRASS:
@@ -704,6 +718,7 @@ void SceneZoo::DisplayMonsterInterface(Monster* monster)
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             switch (currentArea)
             {
             case AREA_GRASS:
@@ -760,6 +775,8 @@ void SceneZoo::DisplayMonsterInterface(Monster* monster)
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            //SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+            zooWorld.monster[targetedMonster]->PlaySoundEffect();
             SlaughterMonster();
         }
     }
@@ -779,6 +796,7 @@ void SceneZoo::DisplayMonsterInterface(Monster* monster)
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed && grassZone.size())
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//PickUp.wav");
             SellMonster();
         }
     }
@@ -797,6 +815,7 @@ void SceneZoo::DisplayMonsterInterface(Monster* monster)
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             cycleIter = 0;
             targetedMonster = NULL;
 
@@ -1083,8 +1102,10 @@ void SceneZoo::RenderShopInterface()
                 RenderUpgradeInterface(Item::TYPE_NET);
 
             if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
-                switch (currentShop)
             {
+                SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+                switch (currentShop)
+                {
                 case SHOP_MAIN:
                     shopKeeperTextChoice = static_cast<SHOPKEEPER_TEXT>(Math::RandIntMinMax(1, 5));
                     break;
@@ -1112,6 +1133,7 @@ void SceneZoo::RenderShopInterface()
                     else
                         shopKeeperTextChoice = TEXT_INSUFFICIENT_COINS;
                     break;
+                }
             }
         }
         else
@@ -1127,8 +1149,10 @@ void SceneZoo::RenderShopInterface()
                 RenderUpgradeInterface(Item::TYPE_BAIT);
 
             if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
-                switch (currentShop)
             {
+                SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+                switch (currentShop)
+                {
                 case SHOP_MAIN:
                     currentShop = SHOP_BUY;
                     shopKeeperTextChoice = TEXT_NONE;
@@ -1157,7 +1181,9 @@ void SceneZoo::RenderShopInterface()
                     else
                         shopKeeperTextChoice = TEXT_INSUFFICIENT_COINS;
                     break;
+                }
             }
+                
         }
         else
             RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 13.5f, 4.5f, 1.f, 25.f, 40.f, 0.f, 0.f, 0.f, false);
@@ -1172,8 +1198,10 @@ void SceneZoo::RenderShopInterface()
                 RenderUpgradeInterface(Item::TYPE_TRAP);
 
             if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
-                switch (currentShop)
             {
+                SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+                switch (currentShop)
+                {
                 case SHOP_MAIN:
                     currentShop = SHOP_SELL;
                     shopKeeperTextChoice = TEXT_NONE;
@@ -1202,6 +1230,7 @@ void SceneZoo::RenderShopInterface()
                     else
                         shopKeeperTextChoice = TEXT_INSUFFICIENT_COINS;
                     break;
+                }
             }
         }
         else
@@ -1217,8 +1246,10 @@ void SceneZoo::RenderShopInterface()
                 RenderUpgradeInterface(Item::TYPE_ROCK);
 
             if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
-                switch (currentShop)
             {
+                SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+                switch (currentShop)
+                {
                 case SHOP_MAIN:
                     currentShop = SHOP_UPGRADE;
                     shopKeeperTextChoice = TEXT_NONE;
@@ -1247,6 +1278,7 @@ void SceneZoo::RenderShopInterface()
                     else
                         shopKeeperTextChoice = TEXT_INSUFFICIENT_COINS;
                     break;
+                }
             }
         }
         else
@@ -1259,8 +1291,10 @@ void SceneZoo::RenderShopInterface()
             RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 13.5f, 4.5f, 1.f, 25.f, 10.f, 0.f, 0.f, 0.f, false);
 
             if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
-                switch (currentShop)
             {
+                SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+                switch (currentShop)
+                {
                 case SHOP_MAIN:
                     currentState = STATE_ZOO;
                     break;
@@ -1272,6 +1306,7 @@ void SceneZoo::RenderShopInterface()
                     currentItem = Item::NUM_TYPE;
                     zooCamera.Reset();
                     break;
+                }
             }
         }
         else
@@ -1382,6 +1417,7 @@ void SceneZoo::RenderEnclosureInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             switch (currentArea)
             {
             case AREA_GRASS:
@@ -1441,6 +1477,7 @@ void SceneZoo::RenderEnclosureInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             if (SharedData::GetInstance()->player->m_currency >= upgradeCost)
             {
                 SharedData::GetInstance()->player->m_currency -= upgradeCost;
@@ -1462,6 +1499,7 @@ void SceneZoo::RenderEnclosureInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             currentArea = AREA_OVERVIEW;
             currentState = STATE_ZOO;
             zooCamera.Reset();
@@ -1575,7 +1613,10 @@ void SceneZoo::RenderTransactionInterface()
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 3.5f, 3.5f, 3.5f, 45.5f, 23.f, 0.f, 0.f, 0.f, false);
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             transactionCounter--;
+        }
 
         if (transactionCounter <= 0)
         {
@@ -1607,6 +1648,7 @@ void SceneZoo::RenderTransactionInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             transactionCounter++;
         }
 
@@ -1625,8 +1667,10 @@ void SceneZoo::RenderTransactionInterface()
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 12.5f, 3.5f, 3.5f, 50.f, 18.5f, 0.f, 0.f, 0.f, false);
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
-            switch (currentShop)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+            switch (currentShop)
+            {
             case SHOP_BUY:
 
                 if (currentItem == Item::TYPE_BAIT)
@@ -1670,7 +1714,9 @@ void SceneZoo::RenderTransactionInterface()
                     transactionCounter = 1;
                 }
                 break;
+            }
         }
+            
     }
     else
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 12.5f, 3.5f, 3.5f, 50.f, 18.5f, 0.f, 0.f, 0.f, false);
@@ -2022,7 +2068,10 @@ void SceneZoo::RenderHuntingScenesInterface()
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASSZONE_CAPTURE_ALT), 22.5f, 17.5f, 1.f, 26.5f, 38.f, 0, 0, 0, false);
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             changeSceneTo = AREA_GRASS;
+        }
     }
     else
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASSZONE_CAPTURE), 22.5f, 17.5f, 1.f, 26.5f, 38.f, 0, 0, 0, false);
@@ -2036,7 +2085,10 @@ void SceneZoo::RenderHuntingScenesInterface()
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SWAMPZONE_CAPTURE_ALT), 22.5f, 17.5f, 1.f, 53.5f, 38.f, 0, 0, 0, false);
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             changeSceneTo = AREA_SWAMP;
+        }
     }
     else
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SWAMPZONE_CAPTURE), 22.5f, 17.5f, 1.f, 53.5f, 38.f, 0, 0, 0, false);
@@ -2050,7 +2102,10 @@ void SceneZoo::RenderHuntingScenesInterface()
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKZONE_CAPTURE_ALT), 22.5f, 17.5f, 1.f, 26.5f, 18.f, 0, 0, 0, false);
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             changeSceneTo = AREA_ROCK;
+        }
 
     }
     else
@@ -2065,7 +2120,10 @@ void SceneZoo::RenderHuntingScenesInterface()
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_FIREZONE_CAPTURE_ALT), 22.5f, 17.5f, 1.f, 53.5f, 18.f, 0, 0, 0, false);
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             changeSceneTo = AREA_FIRE;
+        }
     }
     else
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_FIREZONE_CAPTURE), 22.5f, 17.5f, 1.f, 53.5f, 18.f, 0, 0, 0, false);
@@ -2081,6 +2139,7 @@ void SceneZoo::RenderHuntingScenesInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             currentArea = AREA_OVERVIEW;
             currentState = STATE_ZOO;
         }
@@ -2088,7 +2147,7 @@ void SceneZoo::RenderHuntingScenesInterface()
     else
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 8.5f, 3.5f, 3.5f, 73.f, 6.5f, 0.f, 0.f, 0.f, false);
 
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Go Hunting!", Color(0.95, 0.95, 0), 4.f, 30.f, 48.5f);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Go Hunting!", Color(0.95, 0.95, 0), 5.f, 27.f, 50.f);
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Back", Color(0.95, 0.95, 0), 3.f, 70.f, 5.f);
 
     SetHUD(false);
@@ -2107,6 +2166,7 @@ void SceneZoo::RenderOverviewInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             currentState = STATE_MENU;
         }
     }
@@ -2124,7 +2184,9 @@ void SceneZoo::RenderOverviewInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             currentState = STATE_QUEST;
+            f_RotateMonster = -30.f;
         }
     }
     else
@@ -2141,6 +2203,7 @@ void SceneZoo::RenderOverviewInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             currentState = STATE_SHOP;
         }
     }
@@ -2158,6 +2221,7 @@ void SceneZoo::RenderOverviewInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             currentState = STATE_CHANGE_SCENE;
         }
     }
@@ -2175,6 +2239,8 @@ void SceneZoo::RenderOverviewInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+
             zooCamera.position = grassAreaPosition + Vector3(0, 75, -50);
             zooCamera.target = grassAreaPosition;
 
@@ -2196,6 +2262,8 @@ void SceneZoo::RenderOverviewInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+
             zooCamera.position = fireAreaPosition + Vector3(0, 75, -50);
             zooCamera.target = fireAreaPosition;
 
@@ -2217,6 +2285,8 @@ void SceneZoo::RenderOverviewInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+
             zooCamera.position = rockAreaPosition + Vector3(0, 75, -50);
             zooCamera.target = rockAreaPosition;
 
@@ -2238,6 +2308,8 @@ void SceneZoo::RenderOverviewInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+
             zooCamera.position = swampAreaPosition + Vector3(0, 75, -50);
             zooCamera.target = swampAreaPosition;
 
@@ -2268,26 +2340,11 @@ void SceneZoo::RenderOverviewInterface()
 
 void SceneZoo::RenderMenuInterface()
 {
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), 30.f, 7.5f, 0.f, 40.f, 52.5f, 0.f, 0.f, 0.f, false);
+
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Menu", Color(0.95, 0.95, 0), 5.f, 35.f, 50.5f);
+
     // Button 1: Save Game
-    if (Application::cursorXPos / Application::m_width >= 0 &&
-        Application::cursorXPos / Application::m_width <= 0.173 &&
-        Application::cursorYPos / Application::m_height >= 0.116 &&
-        Application::cursorYPos / Application::m_height <= 0.172
-        )
-    {
-        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 15.f, 3.5f, 3.5f, 7.5f, 51.f, 0.f, 0.f, 0.f, false);
-
-        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
-        {
-        }
-    }
-    else
-        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 15.f, 3.5f, 3.5f, 7.5f, 51.f, 0.f, 0.f, 0.f, false);
-
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Save Game", Color(0.95, 0.95, 0), 2.5f, 1.f, 50.f);
-
-
-    // Button 2: Options
     if (Application::cursorXPos / Application::m_width >= 0 &&
         Application::cursorXPos / Application::m_width <= 0.173 &&
         Application::cursorYPos / Application::m_height >= 0.286 &&
@@ -2298,15 +2355,17 @@ void SceneZoo::RenderMenuInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+            // save game here
         }
     }
     else
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 15.f, 3.5f, 3.5f, 7.5f, 41.f, 0.f, 0.f, 0.f, false);
 
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Options", Color(0.95, 0.95, 0), 2.5f, 1.f, 40.f);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Save Game", Color(0.95, 0.95, 0), 2.5f, 1.f, 40.f);
 
 
-    // Button 3: Exit to Main Menu
+    // Button 2: Options
     if (Application::cursorXPos / Application::m_width >= 0 &&
         Application::cursorXPos / Application::m_width <= 0.173 &&
         Application::cursorYPos / Application::m_height >= 0.456 &&
@@ -2317,15 +2376,38 @@ void SceneZoo::RenderMenuInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
-            SharedData::GetInstance()->sceneManager->ChangeScene(Math::RandIntMinMax(1, 4));
-            SharedData::GetInstance()->sceneManager->SetMainMenuState();
-            return;
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+            // transit to options here
+            currentState = STATE_OPTIONS;
         }
     }
     else
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 15.f, 3.5f, 3.5f, 7.5f, 31.f, 0.f, 0.f, 0.f, false);
 
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Go Main Menu", Color(0.95, 0.95, 0), 2.f, 1.f, 30.f);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Options", Color(0.95, 0.95, 0), 2.5f, 1.f, 30.f);
+
+
+    // Button 3: Exit to Main Menu
+    if (Application::cursorXPos / Application::m_width >= 0 &&
+        Application::cursorXPos / Application::m_width <= 0.173 &&
+        Application::cursorYPos / Application::m_height >= 0.626 &&
+        Application::cursorYPos / Application::m_height <= 0.682
+        )
+    {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 15.f, 3.5f, 3.5f, 7.5f, 21.f, 0.f, 0.f, 0.f, false);
+
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+            SharedData::GetInstance()->sceneManager->SetMainMenuState();
+            SharedData::GetInstance()->sceneManager->ChangeScene(Math::RandIntMinMax(1, 4));
+            return;
+        }
+    }
+    else
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 15.f, 3.5f, 3.5f, 7.5f, 21.f, 0.f, 0.f, 0.f, false);
+
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "To Main Menu", Color(0.95, 0.95, 0), 2.f, 1.f, 20.f);
 
 
     //Back button
@@ -2339,6 +2421,7 @@ void SceneZoo::RenderMenuInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             currentArea = AREA_OVERVIEW;
             currentState = STATE_ZOO;
             zooCamera.Reset();
@@ -2352,10 +2435,133 @@ void SceneZoo::RenderMenuInterface()
 
 }
 
+void SceneZoo::RenderOptionsInterface()
+{
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), 30.f, 7.5f, 0.f, 40.f, 52.5f, 0.f, 0.f, 0.f, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Options", Color(0.95, 0.95, 0), 5.f, 32.5f, 50.5f);
+
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), 70.f, 35.f, 0.f, 40.f, 30.f, 0.f, 0.f, 0.f, false);
+
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Music", Color(0, 0, 0), 3, 12, 35);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Sound", Color(0, 0, 0), 3, 12, 25);
+
+    //music on button
+    if (SharedData::GetInstance()->sound->b_playMusic) {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "On", Color(1, 1, 1), 3, 30, 35);
+    }
+    else if (Application::cursorXPos / Application::m_width >= 0.372 &&
+        Application::cursorXPos / Application::m_width <= 0.410 &&
+        Application::cursorYPos / Application::m_height >= 0.362 &&
+        Application::cursorYPos / Application::m_height <= 0.401)
+    {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "On", Color(1, 0, 1), 3, 30, 35);
+
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+            SharedData::GetInstance()->sound->b_playMusic = true;
+            SharedData::GetInstance()->sound->PlayBGM();
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+        }
+    }
+
+    else {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "On", Color(0, 0, 0), 3, 30, 35);
+    }
+
+    //music off button
+    if (!SharedData::GetInstance()->sound->b_playMusic) {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Off", Color(1, 1, 1), 3, 39, 35);
+    }
+    else if (Application::cursorXPos / Application::m_width >= 0.486 &&
+        Application::cursorXPos / Application::m_width <= 0.529 &&
+        Application::cursorYPos / Application::m_height >= 0.362 &&
+        Application::cursorYPos / Application::m_height <= 0.401)
+    {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Off", Color(1, 0, 1), 3, 39, 35);
+
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+            SharedData::GetInstance()->sound->b_playMusic = false;
+            SharedData::GetInstance()->sound->StopMusic("");
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+        }
+    }
+
+    else {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Off", Color(0, 0, 0), 3, 39, 35);
+    }
+
+
+    //sound on button
+    if (SharedData::GetInstance()->sound->b_playSound) {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "On", Color(1, 1, 1), 3, 30, 25);
+    }
+    else if (Application::cursorXPos / Application::m_width >= 0.372 &&
+        Application::cursorXPos / Application::m_width <= 0.410 &&
+        Application::cursorYPos / Application::m_height >= 0.525 &&
+        Application::cursorYPos / Application::m_height <= 0.562)
+    {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "On", Color(1, 0, 1), 3, 30, 25);
+
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+            SharedData::GetInstance()->sound->b_playSound = true;
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+        }
+    }
+
+    else {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "On", Color(0, 0, 0), 3, 30, 25);
+    }
+
+    //sound off button
+    if (!SharedData::GetInstance()->sound->b_playSound) {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Off", Color(1, 1, 1), 3, 39, 25);
+    }
+    else if (Application::cursorXPos / Application::m_width >= 0.486 &&
+        Application::cursorXPos / Application::m_width <= 0.529 &&
+        Application::cursorYPos / Application::m_height >= 0.525 &&
+        Application::cursorYPos / Application::m_height <= 0.562)
+    {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Off", Color(1, 0, 1), 3, 39, 25);
+
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+            SharedData::GetInstance()->sound->b_playSound = false;
+        }
+    }
+
+    else {
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Off", Color(0, 0, 0), 3, 39, 25);
+    }
+
+
+
+    //Back button
+    if (Application::cursorXPos / Application::m_width >= 0.853646 &&
+        Application::cursorXPos / Application::m_width <= 0.958838 &&
+        Application::cursorYPos / Application::m_height >= 0.833333 &&
+        Application::cursorYPos / Application::m_height <= 0.923333
+        )
+    {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 8.5f, 3.5f, 3.5f, 73.f, 6.5f, 0.f, 0.f, 0.f, false);
+
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+            currentState = STATE_MENU;
+        }
+    }
+    else
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 8.5f, 3.5f, 3.5f, 73.f, 6.5f, 0.f, 0.f, 0.f, false);
+
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Back", Color(0.95, 0.95, 0), 3.f, 70.f, 5.f);
+}
+
 void SceneZoo::RenderQuestInterface()
 {
     RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), 30.f, 7.5f, 0.f, 40.f, 52.5f, 0.f, 0.f, 0.f, false);
-    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_QUEST_HL), 24.f, 6.f, 0.f, 40.f, 52.5f, 0.f, 0.f, 0.f, false);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Quest", Color(0.95, 0.95, 0), 5.f, 34.f, 50.5f);
 
     RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), 70.f, 35.f, 0.f, 40.f, 30.f, 0.f, 0.f, 0.f, false);
 
@@ -2371,17 +2577,61 @@ void SceneZoo::RenderQuestInterface()
             ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetSerialNumber() << ". ";
             RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 12, 37);
 
-            ss.str("");
-            ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() << ":  ";
-            RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 15, 30);
+
+            int monsterCount = 0;
+            for (unsigned i = 0; i < SharedData::GetInstance()->player->monsterList.size(); ++i)
+            {
+                if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() == SharedData::GetInstance()->player->monsterList[i])
+                {
+                    ++monsterCount;
+                }
+            }
 
             ss.str("");
-            ss << "0" << " / " << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredQuantity();
-            RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 25, 30);
+            ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() << ":  " << monsterCount << " / " << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredQuantity();
+            RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 15, 30);
 
             ss.str("");
             ss << "Location: " << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetZone();
             RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 15, 20);
+
+            // Monster appearance
+            if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() == "Rabbit") {
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_RABBIT), 2, 50.f, 25.f, 0, f_RotateMonster, 0, false);
+            }
+            else if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() == "Bird") {
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_BIRD), 2, 50.f, 25.f, 0, f_RotateMonster, 0, false);
+            }
+            else if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() == "Fairy") {
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_FAIRY), 2, 50.f, 25.f, 0, f_RotateMonster, 0, false);
+            }
+            else if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() == "Grimejam") {
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_GRIMEJAM), 2, 50.f, 25.f, 0, f_RotateMonster, 0, false);
+            }
+            else if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() == "SeaMonster") {
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_SEAMONSTER), 2, 50.f, 25.f, 0, f_RotateMonster, 0, false);
+            }
+            else if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() == "MukBoss") {
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_MUKBOSS), 2, 50.f, 25.f, 0, f_RotateMonster, 0, false);
+            }
+            else if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() == "Golem") {
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_GOLEM), 2, 50.f, 25.f, 0, f_RotateMonster, 0, false);
+            }
+            else if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() == "Fossil") {
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_FOSSIL), 2, 50.f, 25.f, 0, f_RotateMonster, 0, false);
+            }
+            else if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() == "RockSnake") {
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_ROCKSNAKE), 2, 50.f, 25.f, 0, f_RotateMonster, 0, false);
+            }
+            else if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() == "FireBug") {
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_FIREBUG), 2, 50.f, 25.f, 0, f_RotateMonster, 0, false);
+            }
+            else if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() == "Magma") {
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTER_MAGMA), 2, 50.f, 25.f, 0, f_RotateMonster, 0, false);
+            }
+            else if (SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() == "MagmaBerzeker") {
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_MAGMA_BERZEKER), 2, 50.f, 25.f, 0, f_RotateMonster, 0, false);
+            }
 
             //Complete quest button
             if (SharedData::GetInstance()->questManager->IsCurrentQuestCompletable())
@@ -2396,6 +2646,7 @@ void SceneZoo::RenderQuestInterface()
 
                     if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
                     {
+                        SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
                         // complete quest
                         SharedData::GetInstance()->questManager->CompleteCurrentQuest();
                     }
@@ -2427,8 +2678,10 @@ void SceneZoo::RenderQuestInterface()
 
                 if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
                 {
+                    SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
                     // start quest
                     SharedData::GetInstance()->questManager->SetQuestActive();
+                    f_RotateMonster = -30.f;
                 }
             }
             else
@@ -2454,6 +2707,7 @@ void SceneZoo::RenderQuestInterface()
 
         if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
         {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
             currentArea = AREA_OVERVIEW;
             currentState = STATE_ZOO;
             zooCamera.Reset();

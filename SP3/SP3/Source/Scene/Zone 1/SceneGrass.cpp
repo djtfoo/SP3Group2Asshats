@@ -37,6 +37,7 @@ void SceneGrass::Init()
     memset(&grass, 0, sizeof(grass));
 
     // Load map
+    //SharedData::GetInstance()->sound->PlayMusic("Sound//GrassZone//GrassScene.wav");
     Scene::LoadLevelMap("GameData/GrassScene.csv");
     for (int rows = 0; rows < Scene::m_rows; ++rows)
     {
@@ -141,12 +142,12 @@ void SceneGrass::Update(double dt)
 
 	fps = (float)(1.f / dt);
 
-    // for buffer time between projectile launches
+    // for buffer time
     SharedData::GetInstance()->particleManager->d_timeCounter += dt;
-    ItemProjectile::d_rockCounter += dt;
-    ItemProjectile::d_netCounter += dt;
-    ItemProjectile::d_baitCounter += dt;
-    ItemProjectile::d_trapCounter += dt;
+    //ItemProjectile::d_rockCounter += dt;
+    //ItemProjectile::d_netCounter += dt;
+    //ItemProjectile::d_baitCounter += dt;
+    //ItemProjectile::d_trapCounter += dt;
 
 
     //===============================================================================================================================//
@@ -216,7 +217,7 @@ void SceneGrass::Update(double dt)
 	//===============================================================================================================================//
 
     // Update Player Inventory
-    UpdateInventory();
+    UpdateInventory(dt);
 	f_RotateMonster += dt * 50;
 
 	if (b_Rocks)

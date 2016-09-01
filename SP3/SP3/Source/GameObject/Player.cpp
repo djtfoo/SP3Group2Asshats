@@ -505,6 +505,11 @@ void Player::TakeDamage(const int damage)
         if (m_health == 0.f)
         {
             b_dead = true;
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//PlayerFainted.wav");
+        }
+        else
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//PlayerDamaged.wav");
         }
 
         d_damageTimer = 0.0;

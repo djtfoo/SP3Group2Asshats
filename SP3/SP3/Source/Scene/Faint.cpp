@@ -32,7 +32,7 @@ void Faint::Update(double dt)
 
 	if (!b_DeathSound)
 	{
-		SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//NPC.wav",
+		SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//MouseClick.wav",
 			irrklang::vec3df(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z),
 			irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
 			irrklang::vec3df(SharedData::GetInstance()->player->GetPositionVector().x, SharedData::GetInstance()->player->GetPositionVector().y, SharedData::GetInstance()->player->GetPositionVector().z));

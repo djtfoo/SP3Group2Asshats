@@ -33,6 +33,8 @@ public:
 	float m_worldHeight;
 	float m_worldWidth;
 
+    float f_RotateMonster;
+
 	bool b_playOnes[P_TOTAL];
 
 	PAUSE_STATE P_STATE;
@@ -45,6 +47,7 @@ public:
 	void RenderQuestState();
 	void RenderOptionState();
 
+    void OptionButton();
 	void PauseMenuButton();
 	void BackButton();
 

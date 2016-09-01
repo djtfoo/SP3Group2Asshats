@@ -40,32 +40,40 @@ void MainMenu::Update(double dt)
 		case M_MAIN:
 		{
 			MainMenuButton();
+            break;
 		}
 		case M_INSTRUCTION:
 		{
 			BackButton();
 			NextButton();
+            break;
 		}
 		case M_STORY:
 		{
 			BackButton();
+            break;
 		}
 		case M_OPTION:
 		{
+            OptionButton();
 			BackButton();
+            break;
 		}
 		case M_CREDITS:
 		{
 			BackButton();
+            break;
 		}
 		case M_INSTRUCTION2:
 		{
 			BackButton();
 			NextButtonMonstersPage();
+            break;
 		}
 		case M_INSTRUCTION3:
 		{
 			BackButton();
+            break;
 		}
 
 	}
@@ -98,9 +106,8 @@ void MainMenu::Render()
 			RenderInstructionState2();
 			break;
 		case M_INSTRUCTION3:
-		{
 			RenderInstructionState3();
-		}
+            break;
 	}
 	scene->SetHUD(false);
 }
@@ -125,7 +132,7 @@ void MainMenu::RenderMainMenuState()
 		b_playOnes[0] = false;
 	}
 
-	if (button_highlighted[1])
+	if (button_highlighted[1])  // Load game
 	{
 		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_LOADGAME_HL), false, 26.f, 6.5f, -55, 35);
 		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_LOADGAME_ICON), false, 26.f, 6.5f, -29, 35);
@@ -435,6 +442,56 @@ void MainMenu::RenderOptionState()
 {
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_OPTIONS_HL), false, 48.f, 12.f, 0, 45);
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 60.f, 15.f, 0, 45);
+
+    scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 140.f, 70.f, 0, 0);
+
+    scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Music", Color(0, 0, 0), 3, 12, 35);
+    scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Sound", Color(0, 0, 0), 3, 12, 25);
+
+    //music on button
+    if (SharedData::GetInstance()->sound->b_playMusic) {
+        scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "On", Color(1, 1, 1), 3, 30, 35);
+    }
+    else if (button_highlighted[0]) {
+        scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "On", Color(1, 0, 1), 3, 30, 35);
+    }
+    else {
+        scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "On", Color(0, 0, 0), 3, 30, 35);
+    }
+
+    //music off button
+    if (!SharedData::GetInstance()->sound->b_playMusic) {
+        scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Off", Color(1, 1, 1), 3, 39, 35);
+    }
+    else if (button_highlighted[1]) {
+        scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Off", Color(1, 0, 1), 3, 39, 35);
+    }
+    else {
+        scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Off", Color(0, 0, 0), 3, 39, 35);
+    }
+
+    //sound on button
+    if (SharedData::GetInstance()->sound->b_playSound) {
+        scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "On", Color(1, 1, 1), 3, 30, 25);
+    }
+    else if (button_highlighted[2]) {
+        scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "On", Color(1, 0, 1), 3, 30, 25);
+    }
+    else {
+        scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "On", Color(0, 0, 0), 3, 30, 25);
+    }
+
+    //sound off button
+    if (!SharedData::GetInstance()->sound->b_playSound) {
+        scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Off", Color(1, 1, 1), 3, 39, 25);
+    }
+    else if (button_highlighted[3]) {
+        scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Off", Color(1, 0, 1), 3, 39, 25);
+    }
+    else {
+        scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Off", Color(0, 0, 0), 3, 39, 25);
+    }
+
 	RenderBackButton();
 }
 
@@ -472,7 +529,8 @@ void MainMenu::MainMenuButton()
 		}
 	}
 
-	if (x > 192 && x < 525 && y > 183 && y < 253)
+    // Load game
+	if (x > 192 && x < 525 && y > 183 && y < 253 && SharedData::GetInstance()->saveData->b_saveGameExists)
 	{
 		button_highlighted[1] = true;
 	}
@@ -689,10 +747,139 @@ void MainMenu::RenderButtonMonstersPage()
 
 }
 
+void MainMenu::OptionButton()
+{
+    double x, y;
+    Application::GetCursorPos(&x, &y);
+
+    // music on button
+    if (x > 715 && x < 790 && y > 390 && y < 435 && !SharedData::GetInstance()->sound->b_playMusic)
+    {
+        button_highlighted[0] = true;
+        if (!b_playOnes[0])
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseHover.wav");
+            b_playOnes[0] = true;
+        }
+    }
+    else
+    {
+        button_highlighted[0] = false;
+        b_playOnes[0] = false;
+    }
+
+    if (button_highlighted[0])
+    {
+        if (!b_mouseClick && Application::IsMousePressed(0))
+        {
+            b_mouseClick = true;
+        }
+        else if (b_mouseClick && !Application::IsMousePressed(0))
+        {
+            b_mouseClick = false;
+            SharedData::GetInstance()->sound->b_playMusic = true;
+            SharedData::GetInstance()->sound->PlayBGM();
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+        }
+    }
+
+
+    // music off button
+    if (x > 930 && x < 1015 && y > 390 && y < 435 && SharedData::GetInstance()->sound->b_playMusic)
+    {
+        button_highlighted[1] = true;
+        if (!b_playOnes[1])
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseHover.wav");
+            b_playOnes[1] = true;
+        }
+    }
+    else
+    {
+        button_highlighted[1] = false;
+        b_playOnes[1] = false;
+    }
+
+    if (button_highlighted[1])
+    {
+        if (!b_mouseClick && Application::IsMousePressed(0))
+        {
+            b_mouseClick = true;
+        }
+        else if (b_mouseClick && !Application::IsMousePressed(0))
+        {
+            b_mouseClick = false;
+            SharedData::GetInstance()->sound->b_playMusic = false;
+            SharedData::GetInstance()->sound->StopMusic("");
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+        }
+    }
+
+
+    // sound on button
+    if (x > 715 && x < 790 && y > 565 && y < 610 && !SharedData::GetInstance()->sound->b_playSound)
+    {
+        button_highlighted[2] = true;
+        if (!b_playOnes[2])
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseHover.wav");
+            b_playOnes[2] = true;
+        }
+    }
+    else
+    {
+        button_highlighted[2] = false;
+        b_playOnes[2] = false;
+    }
+
+    if (button_highlighted[2])
+    {
+        if (!b_mouseClick && Application::IsMousePressed(0))
+        {
+            b_mouseClick = true;
+        }
+        else if (b_mouseClick && !Application::IsMousePressed(0))
+        {
+            b_mouseClick = false;
+            SharedData::GetInstance()->sound->b_playSound = true;
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseClick.wav");
+        }
+    }
+
+
+    // sound off button
+    if (x > 930 && x < 1015 && y > 565 && y < 610 && SharedData::GetInstance()->sound->b_playSound)
+    {
+        button_highlighted[3] = true;
+        if (!b_playOnes[3])
+        {
+            SharedData::GetInstance()->sound->PlaySoundEffect("Sound//MouseHover.wav");
+            b_playOnes[3] = true;
+        }
+    }
+    else
+    {
+        button_highlighted[3] = false;
+        b_playOnes[3] = false;
+    }
+
+    if (button_highlighted[3])
+    {
+        if (!b_mouseClick && Application::IsMousePressed(0))
+        {
+            b_mouseClick = true;
+        }
+        else if (b_mouseClick && !Application::IsMousePressed(0))
+        {
+            b_mouseClick = false;
+            SharedData::GetInstance()->sound->b_playSound = false;
+        }
+    }
+
+}
+
 void MainMenu::BackButton()
 {
-	bool b_StartBtnHL;
-	bool b_BackBtnHL;
 	double x, y;
 	Application::GetCursorPos(&x, &y);
 	if (x > 1390 && x < 1725 && y > 888 && y < 960)
@@ -721,8 +908,6 @@ void MainMenu::BackButton()
 
 void MainMenu::NextButton()
 {
-	bool b_StartBtnHL;
-	bool b_BackBtnHL;
 	double x, y;
 	Application::GetCursorPos(&x, &y);
 
@@ -752,8 +937,6 @@ void MainMenu::NextButton()
 
 void MainMenu::NextButtonMonstersPage()
 {
-	bool b_StartBtnHL;
-	bool b_BackBtnHL;
 	double x, y;
 	Application::GetCursorPos(&x, &y);
 

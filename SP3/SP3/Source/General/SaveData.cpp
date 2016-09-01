@@ -7,7 +7,8 @@
 #include <sstream>
 
 SaveData::SaveData()
-: questCount(0)
+: b_saveGameExists(false)
+, questCount(0)
 , questActivated(false)
 , playerCurrency(0)
 , rockUpgradeLevel(0)
@@ -23,13 +24,20 @@ SaveData::~SaveData()
 
 void SaveData::Init(const char* file_path)
 {
-    LoadFile(file_path, FILE_SAVEDATA);
+    b_saveGameExists = LoadFile(file_path, FILE_SAVEDATA);
 }
 
 bool SaveData::SaveGame()
 {
     saveGameData();
-    return writeToSaveFile("GameData//SaveFile.csv");
+    b_saveGameExists = writeToSaveFile("GameData//SaveFile.csv");
+
+    return b_saveGameExists;
+}
+
+void SaveData::LoadGame()
+{
+
 }
 
 void SaveData::saveGameData()

@@ -38,7 +38,7 @@ void SceneLava::Init()
 	memset(&lava, 0, sizeof(lava));
 
 	// Load map
-	SharedData::GetInstance()->sound->PlayMusic("Sound//LavaZone//LavaScene.mp3",0.1);
+	//SharedData::GetInstance()->sound->PlayMusic("Sound//LavaZone//LavaScene.mp3",0.1);
 	Scene::LoadLevelMap("GameData/LavaScene.csv");
 	for (int rows = 0; rows < Scene::m_rows; ++rows)
 	{
@@ -164,12 +164,12 @@ void SceneLava::Update(double dt)
 {
 	fps = (float)(1.f / dt);
 
-    // for buffer time between projectile launches
+    // for buffer time
     SharedData::GetInstance()->particleManager->d_timeCounter += dt;
-    ItemProjectile::d_rockCounter += dt;
-    ItemProjectile::d_netCounter += dt;
-    ItemProjectile::d_baitCounter += dt;
-    ItemProjectile::d_trapCounter += dt;
+    //ItemProjectile::d_rockCounter += dt;
+    //ItemProjectile::d_netCounter += dt;
+    //ItemProjectile::d_baitCounter += dt;
+    //ItemProjectile::d_trapCounter += dt;
 
     //===============================================================================================================================//
     //                                                             Pause                                                             //
@@ -240,7 +240,7 @@ void SceneLava::Update(double dt)
 
 
     // Update Player Inventory
-    UpdateInventory();
+    UpdateInventory(dt);
 	f_RotateMonster += dt * 50;
     if (b_Rocks)
     {

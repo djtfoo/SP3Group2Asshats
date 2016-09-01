@@ -98,7 +98,14 @@ void SceneManager::ChangeScene(short id)
 		m_faint->scene = m_scene;
 	}
 
+    if (m_gamestate == GAMESTATE_MAINMENU)
+    {
+        Application::SetNormalCursor();
+    }
+
     SharedData::GetInstance()->player->ResetPlayer();
+
+    SharedData::GetInstance()->sound->PlayBGM();
 }
 
 SceneManager::GAME_STATE SceneManager::GetGameState()

@@ -69,6 +69,7 @@ public:
 
         STATE_MENU,
         STATE_QUEST,
+        STATE_OPTIONS,
 
         NUM_STATE
     };
@@ -111,6 +112,8 @@ public:
     GameObject targetedMonster;
     GameObject cycleIter;
 
+    float f_rotateMonster;  // for viewing of quest
+
     void RenderOverviewInterface();
 
     void DisplayMonsterInterface(Monster* monster);
@@ -128,6 +131,7 @@ public:
 
     void RenderMenuInterface();
     void RenderQuestInterface();
+    void RenderOptionsInterface();
 
     void RenderUpgradeInterface(Item::TYPE item);
 
