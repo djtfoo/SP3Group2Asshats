@@ -492,6 +492,8 @@ void SceneLava::Exit()
 	}
 
     SharedData::GetInstance()->particleManager->ClearParticles();
+
+    SharedData::GetInstance()->player->ClearCapturedMonsters();
 }
 
 bool SceneLava::CheckInteractMoneyTree(World *world, GameObject GO)

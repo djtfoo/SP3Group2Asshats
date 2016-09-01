@@ -89,6 +89,8 @@ void SceneManager::ChangeScene(short id)
         m_mainMenu->scene = m_scene;
         m_pause->scene = m_scene;
 	}
+
+    SharedData::GetInstance()->player->ResetPlayer();
 }
 
 SceneManager::GAME_STATE SceneManager::GetGameState()
@@ -138,6 +140,11 @@ void SceneManager::Update(double dt)
     case GAMESTATE_PAUSE:
         m_pause->Update(dt);
         break;
+    }
+
+    if (SharedData::GetInstance()->player->IsDead())
+    {
+        ChangeScene(5);
     }
 }
 

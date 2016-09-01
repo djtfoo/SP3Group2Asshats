@@ -46,6 +46,9 @@ public:
     Item inventory[Item::NUM_TYPE];
 
     std::vector<std::string> monsterList;
+    std::vector<std::string> capturedMonstersList;
+
+    void ClearCapturedMonsters();
 
 private:
     Vector3 m_position;
@@ -62,6 +65,10 @@ private:
     float m_jumpHeight;
 
     float m_health;
+    bool b_dead;
+
+    double d_damageTimer;
+    const double d_invulnerabilityTime;
 
     MOVEMENT_STATE m_movementState;
     HEIGHT_STATE m_heightState;
@@ -83,6 +90,8 @@ public:
 	Player();
 	~Player();
 
+    void ResetPlayer();
+
     Vector3 GetPositionVector();
     Vector3 GetViewVector();
     Vector3 GetUpVector();
@@ -92,6 +101,7 @@ public:
     bool m_bHiding;
 
     void Move(const double dt);
+    void UpdatePlayerHeight(const double dt);
     void UpdateNoiseFactor();
 
     float GetNoiseFactor();
@@ -100,6 +110,8 @@ public:
     bool IsJumping();
     void SetMudSlow();
 	void SetLavaDamage();
+
+    bool IsDead();
 
     void Update(double dt);
 	AABB PlayerHitBox;

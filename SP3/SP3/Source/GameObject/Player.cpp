@@ -12,7 +12,7 @@ Player class that stores the game's player variables
 #include "../General/Application.h"
 #include "../General/SharedData.h"
 
-Player::Player()
+Player::Player() : d_invulnerabilityTime(0.2)
 {
     m_position.Set(Scene::tileSize, 0.f, Scene::tileSize);
     m_velocity.SetZero();
@@ -29,6 +29,7 @@ Player::Player()
     m_bHiding = false;
 
     m_health = 100.f;
+    b_dead = false;
 
     PlayerHitBox.m_origin = m_position;
     PlayerHitBox.m_scale = Vector3(10, 5, 10);
@@ -63,11 +64,41 @@ Player::Player()
         }
     }
 
+    d_damageTimer = 0.0;
+
     m_currency = 1000000;
 }
 
 Player::~Player()
 {
+}
+
+void Player::ResetPlayer()
+{
+    m_position.Set(Scene::tileSize, 0.f, Scene::tileSize);
+    m_velocity.SetZero();
+    m_view.Set(1, 0, 0);
+    m_up.Set(0, 1, 0);
+
+    m_eyeLevel = 5.f;
+    m_speed = 0.f;
+    m_jumpSpeed = 0.f;
+    m_gravity = -100.f;
+    m_jumpHeight = 0.f;
+
+    m_noiseFactor = 0.5f;
+    m_bHiding = false;
+
+    m_health = 100.f;
+    b_dead = false;
+
+    PlayerHitBox.m_origin = m_position;
+    PlayerHitBox.m_scale = Vector3(10, 5, 10);
+
+    m_movementState = MOVEMENT_STATE_IDLE;
+    m_heightState = HEIGHT_STATE_STANDING;
+
+    d_damageTimer = 0.0;
 }
 
 Vector3 Player::GetPositionVector()
@@ -94,6 +125,9 @@ static const float CAMERA_SPEED = 5.0f;
 
 void Player::Update(double dt)
 {
+    // timer
+    d_damageTimer += dt;
+
     //m_bHiding = false;
     m_movementState = MOVEMENT_STATE_IDLE;
     m_velocity.SetZero();
@@ -295,6 +329,10 @@ void Player::Move(const double dt)
     m_position += m_velocity * m_speed * (float)dt;
     //std::cout << m_movementState << " | " << m_heightState  << " | " << m_speed << std::endl;
     //std::cout << m_position << std::endl;
+}
+
+void Player::UpdatePlayerHeight(const double dt)
+{
     switch (m_heightState)
     {
     case HEIGHT_STATE_STANDING:
@@ -459,5 +497,40 @@ float Player::GetHealth()
 
 void Player::TakeDamage(const int damage)
 {
-    this->m_health -= damage;
+    if (d_damageTimer >= d_invulnerabilityTime)
+    {
+        this->m_health -= damage;
+        Math::Max(0.f, m_health);
+
+        if (m_health == 0.f)
+        {
+            b_dead = true;
+        }
+
+        d_damageTimer = 0.0;
+    }
+}
+
+void Player::ClearCapturedMonsters()
+{
+    if (!capturedMonstersList.empty())
+    {
+        if (SharedData::GetInstance()->sceneManager->GetGameState() == SceneManager::GAMESTATE_GAMEPLAY && m_health > 0.f)
+        {   //player is alive & exiting to town
+            for (unsigned i = 0; i < capturedMonstersList.size(); ++i)
+            {
+                monsterList.push_back(capturedMonstersList[i]);
+            }
+        }
+
+        capturedMonstersList.clear();
+    }
+}
+
+bool Player::IsDead()
+{
+    if (b_dead)
+        return true;
+
+    return false;
 }

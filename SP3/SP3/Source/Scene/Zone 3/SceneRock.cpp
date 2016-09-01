@@ -419,6 +419,8 @@ void SceneRock::Exit()
     }
 
     SharedData::GetInstance()->particleManager->ClearParticles();
+
+    SharedData::GetInstance()->player->ClearCapturedMonsters();
 }
 
 bool SceneRock::CheckInteractMoneyTree(World *world, GameObject GO)

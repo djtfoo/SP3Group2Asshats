@@ -412,6 +412,8 @@ void SceneGrass::Exit()
 	}
 
     SharedData::GetInstance()->particleManager->ClearParticles();
+
+    SharedData::GetInstance()->player->ClearCapturedMonsters();
 }
 
 void SceneGrass::SpawnSceneParticles()

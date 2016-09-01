@@ -446,6 +446,8 @@ void SceneSwamp::Exit()
     }
 
     SharedData::GetInstance()->particleManager->ClearParticles();
+
+    SharedData::GetInstance()->player->ClearCapturedMonsters();
 }
 
 //========================

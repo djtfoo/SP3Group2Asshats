@@ -652,6 +652,7 @@ void Scene::UpdatePlayer(double dt, World *world)
     if (!collision) {
         SharedData::GetInstance()->player->Move(dt);
     }
+    SharedData::GetInstance()->player->UpdatePlayerHeight(dt);
     SharedData::GetInstance()->player->UpdateNoiseFactor();
 }
 
@@ -1181,7 +1182,7 @@ bool Scene::CheckPickUpCaughtMonster(World *world, GameObject GO)
         if (ViewCheckPosition(world->position[ai], 45.f) == true)
         {
             std::cout << "CAUGHT THE MONSTER" << std::endl;
-            SharedData::GetInstance()->player->monsterList.push_back(world->monster[ai]->GetName());
+            SharedData::GetInstance()->player->capturedMonstersList.push_back(world->monster[ai]->GetName());
             SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//Captured.mp3",
                 irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
                 irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
@@ -1227,6 +1228,8 @@ bool Scene::CheckPickUpCoin(World *world, GameObject GO)
                 irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
                 irrklang::vec3df(world->position[GO].x, world->position[GO].y, world->position[GO].z));
             destroyGO(world, GO);
+
+            SharedData::GetInstance()->player->m_currency += 50;
 
             return true;
         }
