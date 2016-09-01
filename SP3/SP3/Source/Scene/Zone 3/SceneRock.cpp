@@ -476,16 +476,7 @@ bool SceneRock::CheckInteractMoneyTree(World *world, GameObject GO)
 
 void SceneRock::SpawnSceneParticles()
 {
-	if (f_ParticleSpawnTimer >= 0.5f)
-	{
-		SharedData::GetInstance()->particleManager->SpawnParticle(Vector3(Math::RandFloatMinMax(-100, 100), 50, Math::RandFloatMinMax(-100, 100)), ParticleObject::P_ROCK);
-		f_ParticleSpawnTimer = 0.f;
-	}
-	else
-	{
-		f_ParticleSpawnTimer++;
-	}
-
+	SharedData::GetInstance()->particleManager->SpawnParticle(Vector3(Math::RandFloatMinMax(-100, 100), 50, Math::RandFloatMinMax(-100, 100)), ParticleObject::P_ROCK);
 }
 
 void SceneRock::SceneEnvironmentEffect()

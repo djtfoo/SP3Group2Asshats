@@ -454,7 +454,7 @@ void SceneSwamp::Exit()
 
 void SceneSwamp::SpawnSceneParticles()
 {
-		SharedData::GetInstance()->particleManager->SpawnParticle(Vector3(Math::RandFloatMinMax(-100, 100), 5, Math::RandFloatMinMax(-100, 100)), ParticleObject::P_MUDBUBBLE);
+		SharedData::GetInstance()->particleManager->SpawnParticle(Vector3(Math::RandFloatMinMax(-100, 100), 3, Math::RandFloatMinMax(-100, 100)), ParticleObject::P_MUDBUBBLE);
 }
 
 void SceneSwamp::SceneEnvironmentEffect()

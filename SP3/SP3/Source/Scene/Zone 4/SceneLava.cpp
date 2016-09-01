@@ -548,5 +548,5 @@ void SceneLava::SpawnSceneParticles()
 
 void SceneLava::SceneEnvironmentEffect()
 {
-
+	SharedData::GetInstance()->player->SetLavaDamage();
 }

@@ -70,14 +70,20 @@ void ParticleObject::UpdateParticle(double dt)
 	case P_DUST:
 		this->vel.y += 10.f * (float)dt;
 		this->pos.y += this->vel.y * float(dt);
+		this->scale.x -= 0.5f * (float)dt;
+		this->scale.y -= 0.5f * (float)dt;
+		this->scale.z -= 0.5f * (float)dt;
 		this->rotation += Math::RandIntMinMax(-this->rotationSpeed, this->rotationSpeed) * (float)dt * 10.0f;
-		if (this->pos.y > 1.5f)
+		if (this->pos.y > 2.5f ||
+			this->scale.x <= 0.5f ||
+			this->scale.y <= 0.5f ||
+			this->scale.z <= 0.5f)
 		{
 			b_toDelete = true;
 		}
 		break;
 	case P_MUDBUBBLE:
-		this->vel.y += 0.25f * (float)dt;
+		this->vel.y += 1.f * (float)dt;
 		this->pos.y += this->vel.y * float(dt);
 		this->scale.x += 0.5f * (float)dt;
 		this->scale.y += 0.5f * (float)dt;

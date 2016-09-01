@@ -447,6 +447,11 @@ void Player::SetMudSlow()
     m_speed /= 2.f;
 }
 
+void Player::SetLavaDamage()
+{
+	TakeDamage(1);
+}
+
 float Player::GetHealth()
 {
     return this->m_health;

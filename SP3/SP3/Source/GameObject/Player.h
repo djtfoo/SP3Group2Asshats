@@ -99,6 +99,7 @@ public:
 
     bool IsJumping();
     void SetMudSlow();
+	void SetLavaDamage();
 
     void Update(double dt);
 	AABB PlayerHitBox;

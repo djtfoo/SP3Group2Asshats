@@ -629,7 +629,7 @@ void Scene::UpdatePlayer(double dt, World *world)
     }
     else if (m_sceneName == "Lava")
     {
-        if (30.f * ReadHeightMap(SharedData::GetInstance()->graphicsLoader->m_heightMapSwamp, (playerPos.x - 100.f) / 300.f, (playerPos.z - 100.f) / 300.f) < 5.f && !SharedData::GetInstance()->player->IsJumping()) {
+        if (30.f * ReadHeightMap(SharedData::GetInstance()->graphicsLoader->m_heightMapLava, (playerPos.x - 100.f) / 300.f, (playerPos.z - 100.f) / 300.f) < 5.f && !SharedData::GetInstance()->player->IsJumping()) {
             std::cout << "ON LAVA!! ";
             SceneEnvironmentEffect();
         }
