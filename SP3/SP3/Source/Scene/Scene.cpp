@@ -17,6 +17,8 @@ Abstract class for scenes in gameplay
 #include "../GameObject/AI_Strategy.h"
 #include "../GameObject/ItemProjectiles.h"
 
+#include "../General/WorldValues.h"
+
 #include <sstream>
 
 LevelGenerationMap Scene::m_levelGenerationData = {};
@@ -453,9 +455,24 @@ void Scene::RenderGameObjects(World* world)
 				if (world->velocity[GO].LengthSquared() > Math::EPSILON)
 					modelStack.Rotate(Math::RadianToDegree(atan2(world->velocity[GO].x, world->velocity[GO].z)), 0, 1, 0);
 
+                if ((world->mask[GO] & COMPONENT_BOULDER) == COMPONENT_BOULDER)
+                {
+                    modelStack.Rotate(180, 1, 0, 0);
+                }
+
 				RenderMesh(world->appearance[GO].mesh, true);
 			}
-			modelStack.PopMatrix();
+            modelStack.PopMatrix();
+
+
+            if ((world->mask[GO] & COMPONENT_BOULDER) == COMPONENT_BOULDER)
+            {
+                modelStack.PushMatrix();
+                modelStack.Translate(world->position[GO].x, 0.f, world->position[GO].z);
+                modelStack.Scale(3.f * world->appearance[GO].scale.x, 0.5f * world->appearance[GO].scale.y, 3.f * world->appearance[GO].scale.z);
+                RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+                modelStack.PopMatrix();
+            }
         }
 
         if (m_sceneName != "Zoo" && SharedData::GetInstance()->sceneManager->GetGameState() == SceneManager::GAMESTATE_GAMEPLAY && world->monster[GO])
@@ -526,6 +543,16 @@ void Scene::RenderGameObjects(World* world)
 				RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTERSTATE_RAMPAGE), false);
 				modelStack.PopMatrix();
 				break;
+
+            case AI_Strategy::STATE_TRAPPED:
+
+                modelStack.PushMatrix();
+                modelStack.Translate(pos.x, pos.y + 5.f + 2.f * world->appearance[GO].scale.y, pos.z);
+                modelStack.Scale(2, 2, 2);
+                modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - pos.x, camera.position.z - pos.z)), 0, 1, 0);
+                RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MONSTERSTATE_TRAPPED), false);
+                modelStack.PopMatrix();
+                break;
             }
         }
     }
@@ -541,6 +568,13 @@ void Scene::UpdateGameObjects(World* world, double dt)
 
         Vector3 *vel;
         vel = &(world->velocity[GO]);
+
+        // Falling boulders - increase velocity
+        if ((world->mask[GO] & COMPONENT_BOULDER) == COMPONENT_BOULDER)
+        {
+            // Update velocity
+            world->velocity[GO].y += (WV_GRAVITY / 10.f) * (float)(dt);
+        }
 
         if ((world->mask[GO] & MOVEMENT_MASK) == MOVEMENT_MASK)
         {
@@ -1001,6 +1035,7 @@ void Scene::CheckMonsterAttack(World *world)
             //    0.25f * (SharedData::GetInstance()->player->PlayerHitBox.m_scale.x + grass.hitbox[ai].m_scale.x) * (SharedData::GetInstance()->player->PlayerHitBox.m_scale.z + grass.hitbox[ai].m_scale.z))
             if (world->hitbox[ai].CheckCollision(SharedData::GetInstance()->player->PlayerHitBox))
             {
+                std::cout << world->hitbox[ai].m_origin << world->position[ai] << std::endl;
                 std::cout << "Distance:" << (world->hitbox[ai].m_origin - SharedData::GetInstance()->player->PlayerHitBox.m_origin).Length() << std::endl;
                 std::cout << std::endl;
 
@@ -1423,23 +1458,22 @@ void Scene::RenderHUD(World *world)
     ss << "PLAYER HEALTH:" << SharedData::GetInstance()->player->GetHealth();
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 9);
 
+    ss.str("");
+    ss << "Player pos:" << SharedData::GetInstance()->player->GetPositionVector();
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 12);
 
-	if (m_sceneName == "Swamp")
-	{
-		if (30.f * ReadHeightMap(SharedData::GetInstance()->graphicsLoader->m_heightMapSwamp, (playerPos.x - 100.f) / 300.f, (playerPos.z - 100.f) / 300.f) < 5.f && !SharedData::GetInstance()->player->IsJumping()) {
-			//std::cout << "ON MUD!! ";
-			SceneEnvironmentEffect();
-			ss.str("");
-			ss << "PLAYER POSITION:" << SharedData::GetInstance()->player->GetPositionVector();
-			RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 12);
-			RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "ON MUD", Color(1, 1, 0), 3, 0, 15);
-		}
-	}
+    ss.str("");
+    ss << "Player hitbox:" << SharedData::GetInstance()->player->PlayerHitBox.m_origin;
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 0, 15);
+
 
     RenderPressEText(world);
 	
 	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HP_UI), false, 13.f, 62.f, 72, -22);
-	RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HP), false, 3.f, SharedData::GetInstance()->player->GetHealth() / 2, 72.2, -43 + 0.5 * (SharedData::GetInstance()->player->GetHealth()/2));
+    if (!SharedData::GetInstance()->player->IsInvulnerable() || Math::RandIntMinMax(0, 1))
+    {
+        RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HP), false, 3.f, SharedData::GetInstance()->player->GetHealth() / 2, 72.2, -43 + 0.5 * (SharedData::GetInstance()->player->GetHealth() / 2));
+    }
 
     std::stringstream ss1, ss2, ss3, ss4, ss5;
     ss1 << "Rocks: " << SharedData::GetInstance()->player->inventory[Item::TYPE_ROCK].GetCount();
@@ -1512,15 +1546,16 @@ void Scene::RenderHUD(World *world)
 		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_FAIRY), 2, 68.f, 45.f, 0, f_RotateMonster * 2, 0, false);
 
 		ss.str("");
-		ss << "X " << "0";
+        ss << "X " << SharedData::GetInstance()->player->GetCapturedQuantity("Rabbit");
 		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3,72.f, 55.f);
 
+
 		ss.str("");
-		ss << "X " << "0";
+        ss << "X " << SharedData::GetInstance()->player->GetCapturedQuantity("Bird");
 		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 50.f);
 
 		ss.str("");
-		ss << "X " << "0";
+        ss << "X " << SharedData::GetInstance()->player->GetCapturedQuantity("Fairy");
 		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 45.f);
 	}
 
@@ -1532,15 +1567,15 @@ void Scene::RenderHUD(World *world)
 		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_MUKBOSS), 2, 68.f, 45.f, 0, f_RotateMonster* 2, 0, false);
 
 		ss.str("");
-		ss << "X " << "0";
+        ss << "X " << SharedData::GetInstance()->player->GetCapturedQuantity("SeaMonster");
 		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 55.f);
 
 		ss.str("");
-		ss << "X " << "0";
+        ss << "X " << SharedData::GetInstance()->player->GetCapturedQuantity("Grimejam");
 		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 50.f);
 
 		ss.str("");
-		ss << "X " << "0";
+        ss << "X " << SharedData::GetInstance()->player->GetCapturedQuantity("MukBoss");
 		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 45.f);
 	}
 
@@ -1552,15 +1587,15 @@ void Scene::RenderHUD(World *world)
 		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_ROCKSNAKE), 2, 68.f, 45.f, 0, f_RotateMonster* 2, 0, false);
 
 		ss.str("");
-		ss << "X " << "0";
+        ss << "X " << SharedData::GetInstance()->player->GetCapturedQuantity("Fossil");
 		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 55.f);
 
 		ss.str("");
-		ss << "X " << "0";
+        ss << "X " << SharedData::GetInstance()->player->GetCapturedQuantity("Golem");
 		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 50.f);
 
 		ss.str("");
-		ss << "X " << "0";
+        ss << "X " << SharedData::GetInstance()->player->GetCapturedQuantity("RockSnake");
 		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 45.f);
 	}
 
@@ -1572,15 +1607,15 @@ void Scene::RenderHUD(World *world)
 		RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOSS_MAGMA_BERZEKER), 2, 68.f, 45.f, 0, f_RotateMonster* 2, 0, false);
 
 		ss.str("");
-		ss << "X " << "0";
+        ss << "X " << SharedData::GetInstance()->player->GetCapturedQuantity("Magma");
 		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 55.f);
 
 		ss.str("");
-		ss << "X " << "0";
+        ss << "X " << SharedData::GetInstance()->player->GetCapturedQuantity("FireBug");
 		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 50.f);
 
 		ss.str("");
-		ss << "X " << "0";
+        ss << "X " << SharedData::GetInstance()->player->GetCapturedQuantity("MagmaBerzeker");
 		RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 0), 3, 72.f, 45.f);
 	}
 

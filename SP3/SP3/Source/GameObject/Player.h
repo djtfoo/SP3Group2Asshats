@@ -111,6 +111,7 @@ public:
     void SetMudSlow();
 	void SetLavaDamage();
 
+    bool IsInvulnerable();
     bool IsDead();
 
     void Update(double dt);
@@ -120,7 +121,9 @@ public:
     float GetHealth();
     void TakeDamage(const int damage);
 
+    // possessions
     int m_currency;
+    int GetCapturedQuantity(std::string name);
 };
 
 #endif

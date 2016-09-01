@@ -116,7 +116,7 @@ void GraphicsLoader::Init()
 		m_meshList[i] = NULL;
 	}
 	m_meshList[GEO_AXES] = MeshBuilder::GenerateAxes("axes", 1000, 1000, 1000);
-    m_meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", Color(0, 1, 0), 1.0f);
+    m_meshList[GEO_CUBE] = MeshBuilder::GenerateCube("Cube", Color(1, 0, 0), 1.0f);
     m_meshList[GEO_PLAYERBOX] = MeshBuilder::GenerateCube("Cube", Color(1, 0, 0), 1.0f);
 
     // HUD
@@ -415,6 +415,9 @@ void GraphicsLoader::Init()
 
 	m_meshList[GEO_MONSTERSTATE_RAMPAGE] = MeshBuilder::GenerateQuad("Rampage State", Color(0, 1, 0), 1.f);
 	m_meshList[GEO_MONSTERSTATE_RAMPAGE]->textureArray[0] = LoadTGA("Image//monster_rampage.tga");
+
+    m_meshList[GEO_MONSTERSTATE_TRAPPED] = MeshBuilder::GenerateQuad("Trapped State", Color(0, 1, 0), 1.f);
+    m_meshList[GEO_MONSTERSTATE_TRAPPED]->textureArray[0] = LoadTGA("Image//monster_trapped.tga");
 
     // Zoo
     m_meshList[GEO_ZOO_GRASS_GROUND] = MeshBuilder::GenerateQuad("Grass Ground", Color(0, 1, 0), 1.f, 10);

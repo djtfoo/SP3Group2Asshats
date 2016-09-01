@@ -502,7 +502,6 @@ bool SceneLava::CheckInteractMoneyTree(World *world, GameObject GO)
     {
         if (ViewCheckPosition(lava.position[GO], 45.f) == true)
         {
-            //std::cout << "MoneyTree Found" << std::endl;
             lava.appearance[GO].scale.y -= 1;
             if (lava.appearance[GO].scale.y <= 0)
             {
@@ -525,6 +524,10 @@ bool SceneLava::CheckInteractMoneyTree(World *world, GameObject GO)
                 }
                 case 2:
                     // Nothing
+                    SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//DropNothing.wav",
+                        irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                        irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                        irrklang::vec3df(world->position[GO].x, world->position[GO].y, world->position[GO].z));
                     destroyGO(&lava, GO);
                     break;
                 }

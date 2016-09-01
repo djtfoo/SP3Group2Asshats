@@ -446,9 +446,7 @@ void SceneSwamp::Exit()
 
 void SceneSwamp::SpawnSceneParticles()
 {
-
 	//SharedData::GetInstance()->particleManager->SpawnParticle(Vector3(Math::RandFloatMinMax(-100, 100), 3, Math::RandFloatMinMax(-100, 100)), ParticleObject::P_MUDBUBBLE);
-
 
 	unsigned int spawnCount = Math::RandIntMinMax(0, 20);
 	bool spawn = false;
@@ -458,9 +456,7 @@ void SceneSwamp::SpawnSceneParticles()
 	for (unsigned i = 0; i < spawnCount; ++i)
 	{
 		int runCount = 0;
-		//while (!spawn)
-		//{
-		for (unsigned run = 0; run < 3; ++run)
+		for (unsigned run = 0; run < 5; ++run)
 		{
 			randRow = (float)(Math::RandIntMinMax(0, 200));
 			randCol = (float)(Math::RandIntMinMax(0, 200));
@@ -475,10 +471,6 @@ void SceneSwamp::SpawnSceneParticles()
 			}
 		}
 		
-		//}
-
-		//Vector3 position(randCol, 0.f, randRow);
-		//SharedData::GetInstance()->particleManager->SpawnParticle(position, ParticleObject::P_MUDBUBBLE);
 		spawn = false;
 	}
 }

@@ -32,7 +32,7 @@ Player::Player() : d_invulnerabilityTime(0.2)
     b_dead = false;
 
     PlayerHitBox.m_origin = m_position;
-    PlayerHitBox.m_scale = Vector3(10, 5, 10);
+    PlayerHitBox.m_scale = Vector3(5, 5, 5);
 
     m_movementState = MOVEMENT_STATE_IDLE;
     m_heightState = HEIGHT_STATE_STANDING;
@@ -527,10 +527,30 @@ void Player::ClearCapturedMonsters()
     }
 }
 
+bool Player::IsInvulnerable()
+{
+    if (d_damageTimer < d_invulnerabilityTime)
+        return true;
+    
+    return false;
+}
+
 bool Player::IsDead()
 {
     if (b_dead)
         return true;
 
     return false;
+}
+
+int Player::GetCapturedQuantity(std::string name)
+{
+    int count = 0;
+    for (unsigned i = 0; i < capturedMonstersList.size(); ++i)
+    {
+        if (capturedMonstersList[i] == name)
+            ++count;
+    }
+
+    return count;
 }

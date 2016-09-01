@@ -8,7 +8,6 @@
 #include "../../General/SharedData.h"
 #include "../../GameObject/MonsterFactory.h"
 #include "../../GameObject/AI_Strategy.h"
-#include "../../General/WorldValues.h"
 
 #include <sstream>
 
@@ -150,6 +149,10 @@ void SceneRock::Init()
     //captureCounter = 0;
 
     camera.Update();
+
+    // for spawning rocks
+    d_spawnRocksTimer = 0.0;
+    d_spawnRocksCooldown = 5.0;
 }
 
 void SceneRock::Update(double dt)
@@ -163,6 +166,7 @@ void SceneRock::Update(double dt)
     ItemProjectile::d_netCounter += dt;
     ItemProjectile::d_baitCounter += dt;
     ItemProjectile::d_trapCounter += dt;
+    d_spawnRocksTimer += dt;
 
     //===============================================================================================================================//
     //                                                             Pause                                                             //
@@ -302,6 +306,15 @@ void SceneRock::Update(double dt)
 
     }
 
+    // Environmental effect: rocks fall from the sky
+    UpdateFallingRocks(dt);
+    // spawn them
+    if (d_spawnRocksTimer >= d_spawnRocksCooldown)
+    {
+        SceneEnvironmentEffect();
+        d_spawnRocksTimer = 0.0;
+    }
+
     // TEMPORARY DEBUG: check of inventory
     if (SharedData::GetInstance()->inputManager->keyState[InputManager::KEY_C].isPressed)
     {
@@ -370,19 +383,19 @@ void SceneRock::Render()
     // Render particles
     RenderParticles();
 
-    //for (GameObject tallGrass = 0; tallGrass < rockWorld.GAMEOBJECT_COUNT; ++tallGrass)
-    //{
-    //    if ((rockWorld.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
-    //    {
-    //        modelStack.PushMatrix();
-    //        modelStack.Translate(rockWorld.hitbox[tallGrass].m_origin.x, rockWorld.hitbox[tallGrass].m_origin.y, rockWorld.hitbox[tallGrass].m_origin.z);
-    //        modelStack.Scale(rockWorld.hitbox[tallGrass].m_scale.x, rockWorld.hitbox[tallGrass].m_scale.y, rockWorld.hitbox[tallGrass].m_scale.z);
-    //        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    //        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
-    //        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //        modelStack.PopMatrix();
-    //    }
-    //}
+    for (GameObject tallGrass = 0; tallGrass < rockWorld.GAMEOBJECT_COUNT; ++tallGrass)
+    {
+        if ((rockWorld.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
+        {
+            modelStack.PushMatrix();
+            modelStack.Translate(rockWorld.hitbox[tallGrass].m_origin.x, rockWorld.hitbox[tallGrass].m_origin.y, rockWorld.hitbox[tallGrass].m_origin.z);
+            modelStack.Scale(rockWorld.hitbox[tallGrass].m_scale.x, rockWorld.hitbox[tallGrass].m_scale.y, rockWorld.hitbox[tallGrass].m_scale.z);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            modelStack.PopMatrix();
+        }
+    }
     
     // HUD THINGS
     if (SharedData::GetInstance()->sceneManager->GetGameState() == SceneManager::GAMESTATE_GAMEPLAY)
@@ -405,6 +418,14 @@ void SceneRock::RenderRockScene()
     modelStack.Translate(500, 2500, -500);
     //modelStack.Rotate(0, 0,0,0);
     RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCK_SKYPLANE), false);
+    modelStack.PopMatrix();
+
+    modelStack.PushMatrix();
+    modelStack.Translate(SharedData::GetInstance()->player->PlayerHitBox.m_origin.x, SharedData::GetInstance()->player->PlayerHitBox.m_origin.y, SharedData::GetInstance()->player->PlayerHitBox.m_origin.z);
+    modelStack.Scale(SharedData::GetInstance()->player->PlayerHitBox.m_scale.x, SharedData::GetInstance()->player->PlayerHitBox.m_scale.y, SharedData::GetInstance()->player->PlayerHitBox.m_scale.z);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     modelStack.PopMatrix();
 
     RenderGameObjects(&rockWorld);
@@ -465,6 +486,10 @@ bool SceneRock::CheckInteractMoneyTree(World *world, GameObject GO)
             }
             case 3:
                 // Nothing
+                SharedData::GetInstance()->sound->PlaySoundEffect3D("Sound//DropNothing.wav",
+                    irrklang::vec3df(camera.position.x, camera.position.y, camera.position.z),
+                    irrklang::vec3df(SharedData::GetInstance()->player->GetViewVector().x, SharedData::GetInstance()->player->GetViewVector().y, SharedData::GetInstance()->player->GetViewVector().z),
+                    irrklang::vec3df(world->position[GO].x, world->position[GO].y, world->position[GO].z));
                 destroyGO(&rockWorld, GO);
                 break;
             }
@@ -478,10 +503,70 @@ bool SceneRock::CheckInteractMoneyTree(World *world, GameObject GO)
 
 void SceneRock::SpawnSceneParticles()
 {
-	SharedData::GetInstance()->particleManager->SpawnParticle(Vector3(Math::RandFloatMinMax(-100, 100), 50, Math::RandFloatMinMax(-100, 100)), ParticleObject::P_ROCK);
+	//SharedData::GetInstance()->particleManager->SpawnParticle(Vector3(Math::RandFloatMinMax(-100, 100), 50, Math::RandFloatMinMax(-100, 100)), ParticleObject::P_ROCK);
 }
 
 void SceneRock::SceneEnvironmentEffect()
 {
+    unsigned int spawnCount = Math::RandIntMinMax(0, 8);   // number of rocks that will spawn this time round
+    bool spawn = false;
+    int randRow;
+    int randCol;
 
+    for (unsigned i = 0; i < spawnCount; ++i)
+    {
+        int runCount = 0;
+        for (unsigned run = 0; run < 5; ++run) {
+            randRow = Math::RandIntMinMax(0, 39);
+            randCol = Math::RandIntMinMax(0, 39);
+
+            char tile = m_levelMap[randRow][randCol];
+
+            if (tile == '0')
+            {
+                spawn = true;
+                break;
+            }
+        }
+        if (spawn) {
+            Vector3 position(randCol * Scene::tileSize, 0.f, randRow * Scene::tileSize);
+            //SharedData::GetInstance()->particleManager->SpawnParticle(position, ParticleObject::P_FALLINGLEAF);
+            //createGO with a boulder component and the position damn damn high
+            // when rendering game objects, if component_boulder, render a marked red circle on the ground
+
+            GameObject go = createGO(&rockWorld);
+            rockWorld.mask[go] = COMPONENT_DISPLACEMENT | COMPONENT_VELOCITY | COMPONENT_APPEARANCE | COMPONENT_HITBOX | COMPONENT_BOULDER;
+            rockWorld.velocity[go].Set(0, -1.f, 0);
+            rockWorld.position[go].Set(randCol * tileSize + Math::RandFloatMinMax(-1.f, 1.f), 40.f, randRow * tileSize + Math::RandFloatMinMax(-1.f, 1.f));
+            rockWorld.hitbox[go].m_origin = rockWorld.position[go] - Vector3(0, 3, 0);
+            rockWorld.hitbox[go].m_scale.Set(2.5f, 10.f, 2.5f);
+            rockWorld.appearance[go].mesh = SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCK_PILLAR);
+            rockWorld.appearance[go].scale.Set(1.f, 2.f, 1.f);
+            rockWorld.appearance[go].billboard = false;
+
+            spawn = false;
+        }
+    }
+}
+
+void SceneRock::UpdateFallingRocks(double dt)
+{
+    for (GameObject GO = 0; GO < rockWorld.GAMEOBJECT_COUNT; ++GO)
+    {
+        if ((rockWorld.mask[GO] & COMPONENT_BOULDER) == COMPONENT_BOULDER)
+        {
+            // Check collision with player
+            if (rockWorld.hitbox[GO].CheckCollision(SharedData::GetInstance()->player->PlayerHitBox))
+            {
+                std::cout << SharedData::GetInstance()->player->PlayerHitBox.m_origin << SharedData::GetInstance()->player->GetPositionVector() << std::endl;
+                SharedData::GetInstance()->player->TakeDamage(10);
+                destroyGO(&rockWorld, GO);
+            }
+
+            else if (rockWorld.position[GO].y < -5.f * rockWorld.appearance[GO].scale.y)
+            {
+                destroyGO(&rockWorld, GO);
+            }
+        }
+    }
 }

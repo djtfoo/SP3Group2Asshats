@@ -38,6 +38,10 @@ public:
     //bool b_captured = false;
     //int captureCounter = 0;
 
+    double d_spawnRocksTimer;
+    double d_spawnRocksCooldown;
+    void UpdateFallingRocks(double dt);
+
     std::vector<Vector3> placedTraps;
 
     //AABB HITBOX;

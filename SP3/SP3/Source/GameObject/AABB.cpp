@@ -75,11 +75,11 @@ bool AABB::CheckCollision(const AABB& rhsBox)
 	Vector3 RhsMin = rhsBox.m_origin - rhsBox.m_scale * 0.5;
 
 	//Check if lhsBox's max is greater than rhsBox's min and lhsBox's min is less than rhsBox's max
-	if (LhsMax.x > LhsMin.x &&
+	if (LhsMax.x > RhsMin.x &&
 		LhsMin.x < RhsMax.x &&
-		LhsMax.y > LhsMin.y &&
+		LhsMax.y > RhsMin.y &&
 		LhsMin.y < RhsMax.y &&
-		LhsMax.z > LhsMin.z &&
+		LhsMax.z > RhsMin.z &&
 		LhsMin.z < RhsMax.z)
 		return true;
 	//If not, then return false

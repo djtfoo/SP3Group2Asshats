@@ -8,7 +8,6 @@
 #include "../../General/SharedData.h"
 #include "../../GameObject/MonsterFactory.h"
 #include "../../GameObject/AI_Strategy.h"
-#include "../../General/WorldValues.h"
 
 SceneGrass::SceneGrass(std::string name) : Scene(name)
 {
@@ -396,6 +395,14 @@ void SceneGrass::RenderGrassScene()
 	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_SKYPLANE), false);
 	modelStack.PopMatrix();
 
+    modelStack.PushMatrix();
+    modelStack.Translate(SharedData::GetInstance()->player->PlayerHitBox.m_origin.x, SharedData::GetInstance()->player->PlayerHitBox.m_origin.y, SharedData::GetInstance()->player->PlayerHitBox.m_origin.z);
+    modelStack.Scale(SharedData::GetInstance()->player->PlayerHitBox.m_scale.x, SharedData::GetInstance()->player->PlayerHitBox.m_scale.y, SharedData::GetInstance()->player->PlayerHitBox.m_scale.z);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    modelStack.PopMatrix();
+
     RenderGameObjects(&grass);
 }
 
@@ -442,34 +449,34 @@ void SceneGrass::SpawnSceneParticles()
         //        }
         //    }
         //}
+    //}
 
-        unsigned int spawnCount = Math::RandIntMinMax(0, 50);
-        bool spawn = false;
-        int randRow;
-        int randCol;
+    unsigned int spawnCount = Math::RandIntMinMax(0, 50);   // number of particles that will spawn this time round
+    bool spawn = false;
+    int randRow;
+    int randCol;
 
-        for (unsigned i = 0; i < spawnCount; ++i)
-        {
-            int runCount = 0;
-            while (!spawn)
+    for (unsigned i = 0; i < spawnCount; ++i)
+    {
+        int runCount = 0;
+        for (unsigned run = 0; run < 5; ++run) {
+            randRow = Math::RandIntMinMax(0, 39);
+            randCol = Math::RandIntMinMax(0, 39);
+
+            char tile = m_levelMap[randRow][randCol];
+
+            if (tile == 'C' || tile == 'D')
             {
-                randRow = Math::RandIntMinMax(0, 39);
-                randCol = Math::RandIntMinMax(0, 39);
-
-                char tile = m_levelMap[randRow][randCol];
-
-                //if (tile == 'C' || tile == 'D')
-                //{
-                    spawn = true;
-                //}
+                spawn = true;
+                break;
             }
-
+        }
+        if (spawn) {
             Vector3 position(randCol * Scene::tileSize, 0.f, randRow * Scene::tileSize);
             SharedData::GetInstance()->particleManager->SpawnParticle(position, ParticleObject::P_FALLINGLEAF);
             spawn = false;
         }
-
-    //}
+    }
 }
 
 void SceneGrass::SceneEnvironmentEffect()
