@@ -11,6 +11,7 @@ class SceneRock : public Scene
 
     // Clicking
     bool bLButtonState;
+	float f_ParticleSpawnTimer;
 
 public:
     SceneRock(std::string name);

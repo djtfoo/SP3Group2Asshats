@@ -247,7 +247,7 @@ void SceneSwamp::Update(double dt)
     //////////////////////////////////////////////
     ////////PARTICLES ////////////////////////////
     //////////////////////////////////////////////
-
+	SpawnSceneParticles();
     UpdateParticles(&swamp, dt);
 
     //===============================================================================================================================//
@@ -454,15 +454,7 @@ void SceneSwamp::Exit()
 
 void SceneSwamp::SpawnSceneParticles()
 {
-	for (GameObject GO = 0; GO < swamp.GAMEOBJECT_COUNT; ++GO)
-	{
-		if ((swamp.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
-		{
-			//SharedData::GetInstance()->particleManager->SpawnParticle(world->position[GO], ParticleObject::P_HIDDENBONUS);
-			//SharedData::GetInstance()->particleManager->SpawnParticle(swamp.position[GO], ParticleObject::P_VOLCANOSPARK);
-		}
-	}
-
+		SharedData::GetInstance()->particleManager->SpawnParticle(Vector3(Math::RandFloatMinMax(-100, 100), 5, Math::RandFloatMinMax(-100, 100)), ParticleObject::P_MUDBUBBLE);
 }
 
 void SceneSwamp::SceneEnvironmentEffect()

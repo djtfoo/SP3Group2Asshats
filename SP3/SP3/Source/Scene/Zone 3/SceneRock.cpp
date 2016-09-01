@@ -223,7 +223,7 @@ void SceneRock::Update(double dt)
     //////////////////////////////////////////////
     ////////PARTICLES ////////////////////////////
     //////////////////////////////////////////////
-
+	SpawnSceneParticles();
     UpdateParticles(&rockWorld, dt);
 
     //===============================================================================================================================//
@@ -476,12 +476,14 @@ bool SceneRock::CheckInteractMoneyTree(World *world, GameObject GO)
 
 void SceneRock::SpawnSceneParticles()
 {
-	for (GameObject GO = 0; GO < rockWorld.GAMEOBJECT_COUNT; ++GO)
+	if (f_ParticleSpawnTimer >= 0.5f)
 	{
-		if ((rockWorld.mask[GO] & COMPONENT_MONEYTREE) == COMPONENT_MONEYTREE)
-		{
-			//SharedData::GetInstance()->particleManager->SpawnParticle(rockWorld.position[GO], ParticleObject::P_VOLCANOSPARK);
-		}
+		SharedData::GetInstance()->particleManager->SpawnParticle(Vector3(Math::RandFloatMinMax(-100, 100), 50, Math::RandFloatMinMax(-100, 100)), ParticleObject::P_ROCK);
+		f_ParticleSpawnTimer = 0.f;
+	}
+	else
+	{
+		f_ParticleSpawnTimer++;
 	}
 
 }

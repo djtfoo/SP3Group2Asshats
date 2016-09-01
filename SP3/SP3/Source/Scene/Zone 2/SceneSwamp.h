@@ -15,6 +15,7 @@ class SceneSwamp : public Scene
 
     // Clicking
     bool bLButtonState;
+	float f_ParticleSpawnTimer;
 
 public:
     SceneSwamp(std::string name);

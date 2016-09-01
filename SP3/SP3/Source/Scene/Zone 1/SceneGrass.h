@@ -11,6 +11,7 @@ class SceneGrass : public Scene
 
 	// Clicking
 	bool bLButtonState;
+	float f_ParticleSpawnTimer;
 
 public:
     SceneGrass(std::string name);

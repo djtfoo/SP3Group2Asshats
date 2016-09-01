@@ -440,7 +440,7 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_FALLINGLEAF_PARTICLE]->textureArray[0] = LoadTGA("Image//Particles/LeafParticle.tga");
 
 	m_meshList[GEO_DUST_PARTICLE] = MeshBuilder::GenerateQuad("Dust", Color(0, 1, 0), 1.f);
-	m_meshList[GEO_DUST_PARTICLE]->textureArray[0] = LoadTGA("Image//Particles/DustParticle.tga");
+	m_meshList[GEO_DUST_PARTICLE]->textureArray[0] = LoadTGA("Image//Particles/NewDustParticle.tga");
 
 	m_meshList[GEO_FALLINGROCK_PARTICLE] = MeshBuilder::GenerateQuad("Falling Rocks", Color(0, 1, 0), 1.f);
 	m_meshList[GEO_FALLINGROCK_PARTICLE]->textureArray[0] = LoadTGA("Image//Particles/RockParticle.tga");
