@@ -20,6 +20,10 @@ public:
     Quest* GetCurrentQuest();
     void AddToQueue(Quest* newQuest);
     void CompleteCurrentQuest();
+
+    bool IsQuestActive();
+    bool IsCurrentQuestCompletable();
+    void SetQuestActive();
 };
 
 #endif

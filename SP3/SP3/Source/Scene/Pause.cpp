@@ -187,11 +187,11 @@ void Pause::RenderQuestState()
 
 	std::stringstream ss;
 	ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetQuestName();
-	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1,1), 6, 20, 37);
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1,1), 6, 17, 37);
 
 	ss.str("");
 	ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetSerialNumber() << ". ";
-	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 15, 37);
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 12, 37);
 
 	ss.str("");
 	ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() << ":  ";

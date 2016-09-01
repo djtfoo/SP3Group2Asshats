@@ -121,6 +121,8 @@ void Application::Init()
 	//m_height = 1080;
     GetMonitorResolution();
 	m_window = glfwCreateWindow(m_width, m_height, "Mon'Colle", NULL, NULL);
+    //m_window = glfwCreateWindow(1280, 768, "Mon'Colle", glfwGetPrimaryMonitor(), NULL);
+    //1280, 768
 
 	//If the window couldn't be created
 	if (!m_window)

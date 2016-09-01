@@ -2354,35 +2354,94 @@ void SceneZoo::RenderMenuInterface()
 
 void SceneZoo::RenderQuestInterface()
 {
-    //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_QUEST_HL), false, 48.f, 12.f, 0, 45);
-    //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 60.f, 15.f, 0, 45);
-    //
-    //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 140.f, 70.f, 0, 0);
-
     RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), 30.f, 7.5f, 0.f, 40.f, 52.5f, 0.f, 0.f, 0.f, false);
     RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_QUEST_HL), 24.f, 6.f, 0.f, 40.f, 52.5f, 0.f, 0.f, 0.f, false);
 
     RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), 70.f, 35.f, 0.f, 40.f, 30.f, 0.f, 0.f, 0.f, false);
 
-    std::stringstream ss;
-    ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetQuestName();
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 20, 37);
+    if (SharedData::GetInstance()->questManager->GetCurrentQuest())     // there is a quest available to complete
+    {
+        if (SharedData::GetInstance()->questManager->IsQuestActive())   // quest is active
+        {
+            std::stringstream ss;
+            ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetQuestName();
+            RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 17, 37);
 
-    ss.str("");
-    ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetSerialNumber() << ". ";
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 15, 37);
+            ss.str("");
+            ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetSerialNumber() << ". ";
+            RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 12, 37);
 
-    ss.str("");
-    ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() << ":  ";
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 15, 30);
+            ss.str("");
+            ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() << ":  ";
+            RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 15, 30);
 
-    ss.str("");
-    ss << "0" << " / " << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredQuantity();
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 25, 30);
+            ss.str("");
+            ss << "0" << " / " << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredQuantity();
+            RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 25, 30);
 
-    ss.str("");
-    ss << "Location: " << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetZone();
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 15, 20);
+            ss.str("");
+            ss << "Location: " << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetZone();
+            RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 15, 20);
+
+            //Complete quest button
+            if (SharedData::GetInstance()->questManager->IsCurrentQuestCompletable())
+            {
+                if (Application::cursorXPos / Application::m_width >= 0.405 &&
+                    Application::cursorXPos / Application::m_width <= 0.590 &&
+                    Application::cursorYPos / Application::m_height >= 0.833333 &&
+                    Application::cursorYPos / Application::m_height <= 0.923333
+                    )
+                {
+                    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 15.f, 5.f, 3.5f, 40.f, 6.5f, 0.f, 0.f, 0.f, false);
+
+                    if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+                    {
+                        // complete quest
+                        SharedData::GetInstance()->questManager->CompleteCurrentQuest();
+                    }
+                }
+                else
+                    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 15.f, 5.f, 3.5f, 40.f, 6.5f, 0.f, 0.f, 0.f, false);
+
+                RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Complete", Color(0.95, 0.95, 0), 3.f, 34.f, 5.f);
+            }
+        }
+        else
+        {       // quest is inactive
+            std::stringstream ss;
+            ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetQuestName();
+            RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 17, 37);
+
+            ss.str("");
+            ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetSerialNumber() << ". ";
+            RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 12, 37);
+
+            //Start next quest button
+            if (Application::cursorXPos / Application::m_width >= 0.405 &&
+                Application::cursorXPos / Application::m_width <= 0.590 &&
+                Application::cursorYPos / Application::m_height >= 0.833333 &&
+                Application::cursorYPos / Application::m_height <= 0.923333
+                )
+            {
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 15.f, 5.f, 3.5f, 40.f, 6.5f, 0.f, 0.f, 0.f, false);
+
+                if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+                {
+                    // start quest
+                    SharedData::GetInstance()->questManager->SetQuestActive();
+                }
+            }
+            else
+                RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 15.f, 5.f, 3.5f, 40.f, 6.5f, 0.f, 0.f, 0.f, false);
+
+            RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Start Quest", Color(0.95, 0.95, 0), 2.5f, 34.f, 5.f);
+        }
+    }
+    else
+    {
+        // completed all quests
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Completed all quests!", Color(1, 1, 1), 6, 13, 30);
+    }
 
     //Back button
     if (Application::cursorXPos / Application::m_width >= 0.853646 &&
@@ -2405,7 +2464,6 @@ void SceneZoo::RenderQuestInterface()
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 8.5f, 3.5f, 3.5f, 73.f, 6.5f, 0.f, 0.f, 0.f, false);
 
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Back", Color(0.95, 0.95, 0), 3.f, 70.f, 5.f);
-
 }
 
 //Mouse picking stuff//

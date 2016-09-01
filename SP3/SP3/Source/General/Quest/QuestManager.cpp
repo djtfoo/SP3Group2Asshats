@@ -1,5 +1,6 @@
 #include "QuestManager.h"
 #include "../LoadFile.h"
+#include "../SharedData.h"
 
 QuestManager::QuestManager()
 {
@@ -27,6 +28,9 @@ void QuestManager::Exit()
 
 Quest* QuestManager::GetCurrentQuest()
 {
+    if (m_questList.empty())
+        return 0;
+    
     return m_questList.front();
 }
 
@@ -40,4 +44,36 @@ void QuestManager::CompleteCurrentQuest()
     Quest* quest = m_questList.front();
     m_questList.pop();
     delete quest;
+
+    b_questActive = false;
+}
+
+bool QuestManager::IsQuestActive()
+{
+    return b_questActive;
+}
+
+bool QuestManager::IsCurrentQuestCompletable()
+{
+    if (GetCurrentQuest())  // there is a quest
+    {
+        int monsterCount = 0;
+        for (unsigned i = 0; i < SharedData::GetInstance()->player->monsterList.size(); ++i)
+        {
+            if (GetCurrentQuest()->GetRequiredMonster() == SharedData::GetInstance()->player->monsterList[i])
+            {
+                ++monsterCount;
+            }
+        }
+
+        if (monsterCount >= GetCurrentQuest()->GetRequiredQuantity())
+            return true;
+    }
+    
+    return false;
+}
+
+void QuestManager::SetQuestActive()
+{
+    b_questActive = true;
 }

@@ -171,7 +171,7 @@ void LoadQuestData(std::ifstream& fileStream)
         int tempMonsterQuantity = std::stoi(data);
 
         // fifth content is the zone the quest is at
-        std::getline(dataStream, data, ',');
+        std::getline(dataStream, data);
         std::string tempZone = data;
 
         // push into queue
