@@ -362,27 +362,39 @@ void MainMenu::RenderStoryState()
 
 	ss.str("");
 	ss << "Ever since Grandad died 5 years ago, the Mon'Colle zoo has been empty.";
-	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.2,10, 40);
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.8,10, 40);
 
 	ss.str("");
-	ss << "And with no one to cull and keep the monsters under control, there has been an influx of monsters appearing near the city.  ";
-	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.2, 10, 37.5);
+	ss << "With no one to cull and keep the monsters under control,";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.8, 10, 37.5);
 
 	ss.str("");
-	ss << "As the only grandchild left in the family line that is fit to go hunting, it's up to you to capture  ";
-	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.2, 10, 35);
+	ss << "There has been an influx of monsters appearing near the city.";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.8, 10, 35);
 
 	ss.str("");
-	ss << "the monsters and keep the town safe from the havoc that will reign if the monsters get out of control!  ";
-	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.2, 10, 32.5);
+	ss << "As the only grandchild left in the family line that is fit to go hunting,";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.8, 10, 32.5);
 
 	ss.str("");
-	ss << "Trust your instincts as you dive into the trecherous areas against the inhospitable climates. ";
-	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.2, 10, 30);
+	ss << "It's up to you to capture the monsters and keep the town safe ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.8, 10, 27.5);
+
+	ss.str("");
+	ss << "from the havoc that will reign if the monsters get out of control!  ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.8, 10, 25);
+
+	ss.str("");
+	ss << "Trust your instincts as you dive into the trecherous areas ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.8, 10, 22.5);
+
+	ss.str("");
+	ss << "against the inhospitable climates. ";
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.8, 10, 20);
 
 	ss.str("");
 	ss << "Manage your coins to upgrade your items and capture all the monsters!";
-	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.2, 10, 27.5);
+	scene->RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0, 0, 0), 1.8, 10, 17.5);
 
 	RenderBackButton();
 }
@@ -619,7 +631,7 @@ void MainMenu::RenderBackButton()
 	else
 	{
 		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACK), false, 24.f, 6.f, 45, -45);
-		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_INSTRUCTIONS_ICON), false, 12.f, 4.f, 66, -45);
+		scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BACK_ICON), false, 12.f, 4.f, 66, -45);
 		b_playOnes[7] = false;
 	}
 	scene->RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GREENBUTTON), false, 30.f, 10.f, 45, -45);
