@@ -65,6 +65,7 @@
     <ClCompile Include="Source\General\MousePicker.cpp" />
     <ClCompile Include="Source\General\Quest\Quest.cpp" />
     <ClCompile Include="Source\General\Quest\QuestManager.cpp" />
+    <ClCompile Include="Source\General\SaveData.cpp" />
     <ClCompile Include="Source\General\SceneManager.cpp" />
     <ClCompile Include="Source\General\SharedData.cpp" />
     <ClCompile Include="Source\General\ZooCamera.cpp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="Source\General\MousePicker.h" />
     <ClInclude Include="Source\General\Quest\Quest.h" />
     <ClInclude Include="Source\General\Quest\QuestManager.h" />
+    <ClInclude Include="Source\General\SaveData.h" />
     <ClInclude Include="Source\General\SceneManager.h" />
     <ClInclude Include="Source\General\SharedData.h" />
     <ClInclude Include="Source\General\ZooCamera.h" />

@@ -39,8 +39,8 @@ Player::Player() : d_invulnerabilityTime(0.2)
 
     Item tempInventory[Item::NUM_TYPE] =
     {
-        Item("Net", Item::TYPE_NET, 10, 100, 10),
-        Item("Bait", Item::TYPE_BAIT, 10, 100, 10),
+        Item("Net", Item::TYPE_NET, 10, 100, 0),
+        Item("Bait", Item::TYPE_BAIT, 1, 100, 0),
         Item("Meat", Item::TYPE_MEAT, 10, 100, 10),
         Item("Trap", Item::TYPE_TRAP, 10, 100, 10),
         Item("Rock", Item::TYPE_ROCK, 10, 100, 10)
@@ -64,7 +64,7 @@ Player::Player() : d_invulnerabilityTime(0.2)
         }
     }
 
-    d_damageTimer = 0.0;
+    d_damageTimer = d_invulnerabilityTime;
 
     m_currency = 1000000;
 }
@@ -98,7 +98,7 @@ void Player::ResetPlayer()
     m_movementState = MOVEMENT_STATE_IDLE;
     m_heightState = HEIGHT_STATE_STANDING;
 
-    d_damageTimer = 0.0;
+    d_damageTimer = d_invulnerabilityTime;
 }
 
 Vector3 Player::GetPositionVector()

@@ -290,5 +290,92 @@ void LoadLevelMapData(std::ifstream& fileStream)
 
 void LoadSaveData(std::ifstream& fileStream)
 {
+    std::string line;
+    std::string data;
 
+    // first content is name of the data - ignore
+    // second content onwards is the data
+
+    //==========================
+    // FIRST LINE - QUEST COUNT
+    //==========================
+    std::getline(fileStream, line);
+    std::stringstream dataStream(line);
+    std::getline(dataStream, data, ',');
+    std::getline(dataStream, data);
+    int tempQuestCount = std::stoi(data);
+    SharedData::GetInstance()->saveData->questCount = tempQuestCount;
+
+    //====================================
+    // SECOND LINE - QUEST ACTIVATED BOOL
+    //====================================
+    std::getline(fileStream, line);
+    std::stringstream dataStream2(line);
+    std::getline(dataStream2, data, ',');
+    std::getline(dataStream2, data);
+    bool tempQuestActivated = std::stoi(data);
+    SharedData::GetInstance()->saveData->questActivated = tempQuestActivated;
+
+    //=======================
+    // THIRD LINE - CURRENCY
+    //=======================
+    std::getline(fileStream, line);
+    std::stringstream dataStream3(line);
+    std::getline(dataStream3, data, ',');
+    std::getline(dataStream3, data);
+    int tempCurrency = std::stoi(data);
+    SharedData::GetInstance()->saveData->playerCurrency = tempCurrency;
+
+    //==========================
+    // FOURTH LINE - ROCK LEVEL
+    //==========================
+    std::getline(fileStream, line);
+    std::stringstream dataStream4(line);
+    std::getline(dataStream4, data, ',');
+    std::getline(dataStream4, data);
+    int tempRockLevel = std::stoi(data);
+    SharedData::GetInstance()->saveData->rockUpgradeLevel = tempRockLevel;
+
+    //=========================
+    // FIFTH LINE - NET LEVEL
+    //=========================
+    std::getline(fileStream, line);
+    std::stringstream dataStream5(line);
+    std::getline(dataStream5, data, ',');
+    std::getline(dataStream5, data);
+    int tempNetLevel = std::stoi(data);
+    SharedData::GetInstance()->saveData->netUpgradeLevel = tempNetLevel;
+
+    //==========================
+    // SIXTH LINE - BAIT LEVEL
+    //==========================
+    std::getline(fileStream, line);
+    std::stringstream dataStream6(line);
+    std::getline(dataStream6, data, ',');
+    std::getline(dataStream6, data);
+    int tempBaitLevel = std::stoi(data);
+    SharedData::GetInstance()->saveData->baitUpgradeLevel = tempBaitLevel;
+
+    //===========================
+    // SEVENTH LINE - TRAP LEVEL
+    //===========================
+    std::getline(fileStream, line);
+    std::stringstream dataStream7(line);
+    std::getline(dataStream7, data, ',');
+    std::getline(dataStream7, data);
+    int tempTrapLevel = std::stoi(data);
+    SharedData::GetInstance()->saveData->trapUpgradeLevel = tempTrapLevel;
+
+    //===============================
+    // EIGHTH LINE - MONSTERS CAUGHT
+    //===============================
+    std::getline(fileStream, line);
+    std::stringstream dataStream8(line);
+    std::getline(dataStream8, data, ',');
+    std::getline(dataStream8, data, ',');
+    for (; data != "end"; std::getline(dataStream8, data, ','))
+    {
+        std::cout << "Line: " << data << std::endl;
+        SharedData::GetInstance()->saveData->monsterList.push_back(data);
+    }
 }

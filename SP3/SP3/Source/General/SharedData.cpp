@@ -22,6 +22,9 @@ void SharedData::Init()
     questManager = new QuestManager();
     questManager->Init();
 
+    saveData = new SaveData();
+    saveData->Init("GameData//SaveFile.csv");
+
     MonsterFactory::LoadMonsterData("GameData/MonstersData.csv");
     Scene::LoadLevelGenerationData("GameData/LevelGenerationData.csv");
 }
@@ -53,5 +56,10 @@ void SharedData::Exit()
     {
         particleManager->Exit();
         delete particleManager;
+    }
+
+    if (saveData)
+    {
+        delete saveData;
     }
 }

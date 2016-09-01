@@ -164,6 +164,8 @@ public:
 		// Bars above monsters
 		GEO_HPBAR,
 		GEO_CAPTUREBAR,
+        GEO_CAPTUREBAR_HIGH,
+        GEO_CAPTUREBAR_MAX,
 
 		// Menu stuffs
 		GEO_STARTGAME,

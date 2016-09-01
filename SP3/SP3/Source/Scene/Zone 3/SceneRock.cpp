@@ -371,31 +371,26 @@ void SceneRock::Render()
     //Trap placing
     if (b_Traps)
     {
-        double x, y;
-        Application::GetCursorPos(&x, &y);
-        modelStack.PushMatrix();
-        modelStack.Translate(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0.5, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
-        modelStack.Scale(1, 1, 1);
-        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
-        modelStack.PopMatrix();
+        RenderTrap();
     }
 
     // Render particles
     RenderParticles();
 
-    for (GameObject tallGrass = 0; tallGrass < rockWorld.GAMEOBJECT_COUNT; ++tallGrass)
-    {
-        if ((rockWorld.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
-        {
-            modelStack.PushMatrix();
-            modelStack.Translate(rockWorld.hitbox[tallGrass].m_origin.x, rockWorld.hitbox[tallGrass].m_origin.y, rockWorld.hitbox[tallGrass].m_origin.z);
-            modelStack.Scale(rockWorld.hitbox[tallGrass].m_scale.x, rockWorld.hitbox[tallGrass].m_scale.y, rockWorld.hitbox[tallGrass].m_scale.z);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            modelStack.PopMatrix();
-        }
-    }
+    // for rendering hitboxes
+    //for (GameObject tallGrass = 0; tallGrass < rockWorld.GAMEOBJECT_COUNT; ++tallGrass)
+    //{
+    //    if ((rockWorld.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
+    //    {
+    //        modelStack.PushMatrix();
+    //        modelStack.Translate(rockWorld.hitbox[tallGrass].m_origin.x, rockWorld.hitbox[tallGrass].m_origin.y, rockWorld.hitbox[tallGrass].m_origin.z);
+    //        modelStack.Scale(rockWorld.hitbox[tallGrass].m_scale.x, rockWorld.hitbox[tallGrass].m_scale.y, rockWorld.hitbox[tallGrass].m_scale.z);
+    //        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    //        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //        modelStack.PopMatrix();
+    //    }
+    //}
     
     // HUD THINGS
     if (SharedData::GetInstance()->sceneManager->GetGameState() == SceneManager::GAMESTATE_GAMEPLAY)
@@ -420,13 +415,14 @@ void SceneRock::RenderRockScene()
     RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCK_SKYPLANE), false);
     modelStack.PopMatrix();
 
-    modelStack.PushMatrix();
-    modelStack.Translate(SharedData::GetInstance()->player->PlayerHitBox.m_origin.x, SharedData::GetInstance()->player->PlayerHitBox.m_origin.y, SharedData::GetInstance()->player->PlayerHitBox.m_origin.z);
-    modelStack.Scale(SharedData::GetInstance()->player->PlayerHitBox.m_scale.x, SharedData::GetInstance()->player->PlayerHitBox.m_scale.y, SharedData::GetInstance()->player->PlayerHitBox.m_scale.z);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    modelStack.PopMatrix();
+    // player hitbox
+    //modelStack.PushMatrix();
+    //modelStack.Translate(SharedData::GetInstance()->player->PlayerHitBox.m_origin.x, SharedData::GetInstance()->player->PlayerHitBox.m_origin.y, SharedData::GetInstance()->player->PlayerHitBox.m_origin.z);
+    //modelStack.Scale(SharedData::GetInstance()->player->PlayerHitBox.m_scale.x, SharedData::GetInstance()->player->PlayerHitBox.m_scale.y, SharedData::GetInstance()->player->PlayerHitBox.m_scale.z);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //modelStack.PopMatrix();
 
     RenderGameObjects(&rockWorld);
 }

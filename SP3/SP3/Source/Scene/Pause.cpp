@@ -342,7 +342,6 @@ void Pause::PauseMenuButton()
 			b_mouseClick = false;
             SharedData::GetInstance()->sceneManager->ChangeScene(Math::RandIntMinMax(1, 4));
             SharedData::GetInstance()->sceneManager->SetMainMenuState();
-            //SharedData::GetInstance()->sceneManager->SetToExit();
 		}
 	}
 }
@@ -375,8 +374,6 @@ void Pause::RenderBackButton()
 
 void Pause::BackButton()
 {
-	bool b_StartBtnHL;
-	bool b_BackBtnHL;
 	double x, y;
 	Application::GetCursorPos(&x, &y);
 	if (x > 1390 && x < 1725 && y > 888 && y < 960)

@@ -838,8 +838,11 @@ void SceneZoo::DisplayMonsterInterface(Monster* monster)
     else
         RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 14.5f, 5.5f, 1.f, 72.f, 6.f, 0.f, 0.f, 0.f, false);
 
-    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN), 8, 75.0f, 25.f, 0, rotateEnclosureIcon1, 0, false);
-    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT), 2, 75.0f, 35.f, 90, 45.f, rotateEnclosureIcon2, false);
+    //RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN), 8, 75.0f, 25.f, 0, rotateEnclosureIcon1, 0, false);
+    //RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT), 2, 75.0f, 35.f, 90, 45.f, rotateEnclosureIcon2, false);
+
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_COIN), 8, 75.0f, 24.5f, 0, 0, 0, false);
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MEAT), 2, 75.0f, 36.f, 90, 45.f, 0, false);
 
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Back", Color(0.95, 0.95, 0), 2, 70.0f, 5.f);
     RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Sell", Color(0.95, 0.95, 0), 2, 65.0f, 25.f);
@@ -1011,42 +1014,47 @@ void SceneZoo::RenderShopkeeperText()
     switch (shopKeeperTextChoice)
     {
     case TEXT_TIP_1:
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "All monsters have", Color(0.95, 0.95, 0), 2.f, 40.f, 16.f);
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "different behaviours!", Color(0.95, 0.95, 0), 2.f, 40.f, 13.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "All monsters have", Color(0.95, 0.5, 0), 2.f, 40.f, 16.f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "different behaviours!", Color(0.95, 0.5, 0), 2.f, 40.f, 13.5f);
         break;
 
     case TEXT_TIP_2:
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Remember to interact with", Color(0.95, 0.95, 0), 2.f, 40.f, 16.f);
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "the scene for extra coins!", Color(0.95, 0.95, 0), 2.f, 40.f, 13.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Remember to interact with", Color(0.95, 0.5, 0), 2.f, 40.f, 16.f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "the scene for extra coins!", Color(0.95, 0.5, 0), 2.f, 40.f, 13.5f);
         break;
 
     case TEXT_TIP_3:
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Upgrading your items", Color(0.95, 0.95, 0), 2.f, 40.f, 16.f);
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "increase the effectiveness!", Color(0.95, 0.95, 0), 2.f, 40.f, 13.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Upgrading your items", Color(0.95, 0.5, 0), 2.f, 40.f, 16.f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "increase the effectiveness!", Color(0.95, 0.5, 0), 2.f, 40.f, 13.5f);
         break;
 
     case TEXT_TIP_4:
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Bait can only be crafted", Color(0.95, 0.95, 0), 2.f, 40.f, 16.f);
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "with Meat!", Color(0.95, 0.95, 0), 2.f, 40.f, 13.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Bait can only be crafted", Color(0.95, 0.5, 0), 2.f, 40.f, 16.f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "with Meat!", Color(0.95, 0.5, 0), 2.f, 40.f, 13.5f);
         break;
 
     case TEXT_TIP_5:
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Lower health means", Color(0.95, 0.95, 0), 2.f, 40.f, 16.f);
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "easier captures!", Color(0.95, 0.95, 0), 2.f, 40.f, 13.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Lower health means", Color(0.95, 0.5, 0), 2.f, 40.f, 16.f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "easier captures!", Color(0.95, 0.5, 0), 2.f, 40.f, 13.5f);
         break;
 
     case TEXT_THANK:
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Thank you!", Color(0.95, 0.95, 0), 3.f, 45.f, 10.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Thank you!", Color(0.95, 0.5, 0), 3.f, 45.f, 10.5f);
         break;
 
     case TEXT_INSUFFICIENT_COINS:
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "You don't have", Color(0.95, 0.95, 0), 3.f, 42.5f, 12.5f);
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "enough Coins!", Color(0.95, 0.95, 0), 3.f, 42.7f, 10.f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "You don't have", Color(0.95, 0.5, 0), 3.f, 42.5f, 12.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "enough Coins!", Color(0.95, 0.5, 0), 3.f, 42.7f, 10.f);
+        break;
+
+    case TEXT_INSUFFICIENT_MEAT:
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "You don't have", Color(0.95, 0.5, 0), 3.f, 42.5f, 12.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "enough Meat!", Color(0.95, 0.5, 0), 3.f, 42.7f, 10.f);
         break;
 
     case TEXT_AT_MAX_UPGRADE:
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "I can't updgrade this Item", Color(0.95, 0.95, 0), 2.f, 40.5f, 12.5f);
-        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "any further!", Color(0.95, 0.95, 0), 2.f, 47.f, 10.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "I can't updgrade this Item", Color(0.95, 0.5, 0), 2.f, 40.5f, 12.5f);
+        RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "any further!", Color(0.95, 0.5, 0), 2.f, 47.f, 10.5f);
         break;
 
     default:
@@ -1623,14 +1631,22 @@ void SceneZoo::RenderTransactionInterface()
 
                 if (currentItem == Item::TYPE_BAIT)
                 {
-                    for (unsigned i = 0; i < transactionCounter; ++i)
-                        SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].Use();
+                    if (transactionCounter >= SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].GetCount())
+                    {
+                        shopKeeperTextChoice = TEXT_INSUFFICIENT_MEAT;
+                    }
+                    else
+                    {
+                        for (unsigned i = 0; i < transactionCounter; ++i)
+                        {
+                            SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].Use();
+                        }
+                        SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].Add(transactionCounter);
+                        isInTransaction = false;
+                        shopKeeperTextChoice = TEXT_THANK;
+                        transactionCounter = 1;
+                    }
 
-                    SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].Add(transactionCounter);
-
-                    isInTransaction = false;
-                    shopKeeperTextChoice = TEXT_THANK;
-                    transactionCounter = 1;
                 }
                 else
                 {
@@ -1684,7 +1700,7 @@ void SceneZoo::RenderUpgradeInterface(Item::TYPE item)
 {
     std::stringstream ss;
     ss << "Level: " << SharedData::GetInstance()->player->inventory[item].GetCurrentUpgradeLevel() << " / " << MAX_UPGRADE_LEVEL;
-    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0.95, 0.95, 0), 3.f, 45.f, 15.f);
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(0.95, 0.5, 0), 3.f, 45.f, 15.f);
 }
 
 void SceneZoo::RenderHUD()
@@ -1696,10 +1712,10 @@ void SceneZoo::RenderHUD()
     ss4 << "Traps: " << SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].GetCount();
     ss5 << "Meat: " << SharedData::GetInstance()->player->inventory[Item::TYPE_MEAT].GetCount();
 
-    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 80.f, 12.f, 0, -48);
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HUD), false, 80.f, 12.f, 0, -48);
 
     // Background
-    RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 80.f, 12.f, 0, -48);
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_BOX_TRANSLUCENT), false, 80.f, 12.f, 0, -48);
 
     // 1: Rock
     RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_ROCKS1), 2, 25.0f, 5.5f, f_Rotate, f_Rotate, 0, false);
@@ -2252,6 +2268,66 @@ void SceneZoo::RenderOverviewInterface()
 
 void SceneZoo::RenderMenuInterface()
 {
+    // Button 1: Save Game
+    if (Application::cursorXPos / Application::m_width >= 0 &&
+        Application::cursorXPos / Application::m_width <= 0.173 &&
+        Application::cursorYPos / Application::m_height >= 0.116 &&
+        Application::cursorYPos / Application::m_height <= 0.172
+        )
+    {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 15.f, 3.5f, 3.5f, 7.5f, 51.f, 0.f, 0.f, 0.f, false);
+
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+        }
+    }
+    else
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 15.f, 3.5f, 3.5f, 7.5f, 51.f, 0.f, 0.f, 0.f, false);
+
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Save Game", Color(0.95, 0.95, 0), 2.5f, 1.f, 50.f);
+
+
+    // Button 2: Options
+    if (Application::cursorXPos / Application::m_width >= 0 &&
+        Application::cursorXPos / Application::m_width <= 0.173 &&
+        Application::cursorYPos / Application::m_height >= 0.286 &&
+        Application::cursorYPos / Application::m_height <= 0.342
+        )
+    {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 15.f, 3.5f, 3.5f, 7.5f, 41.f, 0.f, 0.f, 0.f, false);
+
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+        }
+    }
+    else
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 15.f, 3.5f, 3.5f, 7.5f, 41.f, 0.f, 0.f, 0.f, false);
+
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Options", Color(0.95, 0.95, 0), 2.5f, 1.f, 40.f);
+
+
+    // Button 3: Exit to Main Menu
+    if (Application::cursorXPos / Application::m_width >= 0 &&
+        Application::cursorXPos / Application::m_width <= 0.173 &&
+        Application::cursorYPos / Application::m_height >= 0.456 &&
+        Application::cursorYPos / Application::m_height <= 0.512
+        )
+    {
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION_ALT), 15.f, 3.5f, 3.5f, 7.5f, 31.f, 0.f, 0.f, 0.f, false);
+
+        if (SharedData::GetInstance()->inputManager->keyState[InputManager::MOUSE_L].isPressed)
+        {
+            SharedData::GetInstance()->sceneManager->ChangeScene(Math::RandIntMinMax(1, 4));
+            SharedData::GetInstance()->sceneManager->SetMainMenuState();
+            return;
+        }
+    }
+    else
+        RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_SHOP_SELECTION), 15.f, 3.5f, 3.5f, 7.5f, 31.f, 0.f, 0.f, 0.f, false);
+
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), "Go Main Menu", Color(0.95, 0.95, 0), 2.f, 1.f, 30.f);
+
+
     //Back button
     if (Application::cursorXPos / Application::m_width >= 0.853646 &&
         Application::cursorXPos / Application::m_width <= 0.958838 &&
@@ -2278,6 +2354,36 @@ void SceneZoo::RenderMenuInterface()
 
 void SceneZoo::RenderQuestInterface()
 {
+    //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_QUEST_HL), false, 48.f, 12.f, 0, 45);
+    //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 60.f, 15.f, 0, 45);
+    //
+    //RenderMeshIn2D(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), false, 140.f, 70.f, 0, 0);
+
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), 30.f, 7.5f, 0.f, 40.f, 52.5f, 0.f, 0.f, 0.f, false);
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_QUEST_HL), 24.f, 6.f, 0.f, 40.f, 52.5f, 0.f, 0.f, 0.f, false);
+
+    RenderUI(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_MENUBOARD), 70.f, 35.f, 0.f, 40.f, 30.f, 0.f, 0.f, 0.f, false);
+
+    std::stringstream ss;
+    ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetQuestName();
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 20, 37);
+
+    ss.str("");
+    ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetSerialNumber() << ". ";
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 6, 15, 37);
+
+    ss.str("");
+    ss << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredMonster() << ":  ";
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 15, 30);
+
+    ss.str("");
+    ss << "0" << " / " << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetRequiredQuantity();
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 25, 30);
+
+    ss.str("");
+    ss << "Location: " << SharedData::GetInstance()->questManager->GetCurrentQuest()->GetZone();
+    RenderTextOnScreen(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TEXT_IMPACT), ss.str(), Color(1, 1, 1), 3, 15, 20);
+
     //Back button
     if (Application::cursorXPos / Application::m_width >= 0.853646 &&
         Application::cursorXPos / Application::m_width <= 0.958838 &&

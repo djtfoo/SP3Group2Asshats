@@ -277,6 +277,8 @@ void GraphicsLoader::Init()
 	m_meshList[GEO_HPBAR] = MeshBuilder::GenerateQuad("HP BAR", Color(1, 0, 0), 1.f);
 	//m_meshList[GEO_CAPTUREBAR] = MeshBuilder::GenerateSphere("CAPTURE BAR", Color(0.5f, 0, 0.5f), 18, 36, 1.f);
     m_meshList[GEO_CAPTUREBAR] = MeshBuilder::GenerateRing("CAPTURE BAR", Color(0.5f, 0, 1.f), 36);
+    m_meshList[GEO_CAPTUREBAR_HIGH] = MeshBuilder::GenerateRing("CAPTURE BAR", Color(0.8f, 0.8f, 1.f), 36);
+    m_meshList[GEO_CAPTUREBAR_MAX] = MeshBuilder::GenerateRing("CAPTURE BAR", Color(1.f, 1.f, 1.f), 36, 1.f, 0.9f);
 
 	// Menu stuffs
 	m_meshList[GEO_STARTGAME] = MeshBuilder::GenerateQuad("NewGame", Color(1, 0, 0), 1.f);
@@ -308,6 +310,7 @@ void GraphicsLoader::Init()
 
 	m_meshList[GEO_QUEST_HL] = MeshBuilder::GenerateQuad("QuestHL", Color(1, 0, 0), 1.f);
 	m_meshList[GEO_QUEST_HL]->textureID = LoadTGA("Image//MenuText//QuestHL.tga");
+    m_meshList[GEO_QUEST_HL]->textureArray[0] = LoadTGA("Image//MenuText//QuestHL.tga");
 
 	m_meshList[GEO_BACKTOTOWN] = MeshBuilder::GenerateQuad("Backtotown", Color(1, 0, 0), 1.f);
 	m_meshList[GEO_BACKTOTOWN]->textureID = LoadTGA("Image//MenuText//Backtotown.tga");
@@ -347,6 +350,7 @@ void GraphicsLoader::Init()
 
 	m_meshList[GEO_MENUBOARD] = MeshBuilder::GenerateQuad("MenuBoard", Color(1, 0, 0), 1.f);
 	m_meshList[GEO_MENUBOARD]->textureID = LoadTGA("Image//MenuText//MenuBoard.tga");
+    m_meshList[GEO_MENUBOARD]->textureArray[0] = LoadTGA("Image//MenuText//MenuBoard.tga");
 
 	m_meshList[GEO_GREENBUTTON] = MeshBuilder::GenerateQuad("GreenBoard", Color(1, 0, 0), 1.f);
 	m_meshList[GEO_GREENBUTTON]->textureID = LoadTGA("Image//MenuText//GreenButton.tga");

@@ -19,6 +19,8 @@ Abstract class for scenes in gameplay
 
 #include "../General/WorldValues.h"
 
+#include "../General/Application.h"
+
 #include <sstream>
 
 LevelGenerationMap Scene::m_levelGenerationData = {};
@@ -481,10 +483,11 @@ void Scene::RenderGameObjects(World* world)
 
             pos = (world->position[GO]);
 
-            // Render HP and capture rate
 			float hpBar = world->monster[GO]->GetHealthStat() / 80.f;
-			float captureBar = world->monster[GO]->GetCaptureRateStat() / 100.f;
+			float captureBar = world->monster[GO]->GetCaptureRateStat() / 150.f;
+            float maxCaptureBar = 100.f / 150.f;
 
+            // HP bar
 			modelStack.PushMatrix();
 			modelStack.Translate(pos.x, pos.y + 1.5f + 2.f * world->appearance[GO].scale.y, pos.z);
 			modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - pos.x, camera.position.z - pos.z)), 0, 1, 0);
@@ -493,13 +496,29 @@ void Scene::RenderGameObjects(World* world)
 			RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_HPBAR), false);
 			modelStack.PopMatrix();
 
+            // Capture rate sign
 			modelStack.PushMatrix();
 			modelStack.Translate(pos.x, pos.y + 2.5f + 2.f * world->appearance[GO].scale.y, pos.z);
 			modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - pos.x, camera.position.z - pos.z)), 0, 1, 0);
-			//modelStack.Translate(0.5f * hpBar, 0.f, 0.f);
+
+            // value
+            modelStack.PushMatrix();
 			modelStack.Scale(captureBar, captureBar, captureBar);
-			RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CAPTUREBAR), false);
-			modelStack.PopMatrix();
+            if (world->monster[GO]->GetCaptureRateStat() > 50.f) {
+                RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CAPTUREBAR_HIGH), false);
+            }
+            else {
+                RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CAPTUREBAR), false);
+            }
+            modelStack.PopMatrix();
+
+            // max
+            modelStack.PushMatrix();
+            modelStack.Scale(maxCaptureBar, maxCaptureBar, maxCaptureBar);
+            RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CAPTUREBAR_MAX), false);
+            modelStack.PopMatrix();
+
+            modelStack.PopMatrix();
 
             switch (world->monster[GO]->GetStrategyState())
             {
@@ -796,8 +815,7 @@ void Scene::UpdateNetProjectiles(World *world)
                     if (world->capture[net].capturingMonster == true)
                     {
                         world->position[net] = world->position[ai];
-                        int v1 = rand() % 100;
-                        std::cout << v1 << std::endl;
+                        int v1 = (rand() % 100) - SharedData::GetInstance()->player->inventory[i].GetEffectiveness();
                         if (v1 < world->monster[ai]->GetCaptureRateStat())
                         {
                             world->capture[net].capturedMonster = true;//Captured!
@@ -875,7 +893,7 @@ void Scene::UpdateBaitProjectiles(World *world)
                 world->bait[bait].foundRadius = 5;
                 world->bait[bait].eattingBait = false;
                 world->bait[bait].foundBait = false;
-                world->bait[bait].timeEatting = 3.0f;
+                world->bait[bait].timeEatting = 3.f + 0.5f * SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].GetEffectiveness();
                 world->bait[bait].b_PlayBaitSoundOnes = false;
             }
         }
@@ -921,7 +939,7 @@ void Scene::UpdateBait(World *world, double dt)
                     {
                         world->bait[bait].timeEatting -= (float)(dt);
                         if (world->bait[bait].timeEatting > 0.1f) {
-                            float scale = world->bait[bait].timeEatting / 3.f;
+                            float scale = world->bait[bait].timeEatting / (3.f + 0.5f * SharedData::GetInstance()->player->inventory[Item::TYPE_BAIT].GetEffectiveness());
                             world->appearance[bait].scale.Set(scale, scale, scale);
                         }
                         if (!world->bait[bait].b_PlayBaitSoundOnes)
@@ -1133,7 +1151,7 @@ void Scene::PlaceTrap(World *world)
             world->appearance[trap].scale.Set(3, 3, 3);
             world->appearance[trap].angle = 0.f;
 
-            world->trap[trap].triggerDuration = 3.0f;
+            world->trap[trap].triggerDuration = 3.0f + 0.5f * SharedData::GetInstance()->player->inventory[Item::TYPE_TRAP].GetEffectiveness();
             world->trap[trap].triggerTimer = 0.f;
             world->trap[trap].radius = 2.5f;
             world->trap[trap].activated = false;
@@ -1693,4 +1711,15 @@ void Scene::RenderParticle(ParticleObject* particle)
     default:
         break;
     }
+}
+
+void Scene::RenderTrap()
+{
+    double x, y;
+    Application::GetCursorPos(&x, &y);
+    modelStack.PushMatrix();
+    modelStack.Translate(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0.5, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
+    modelStack.Scale(3, 3, 3);
+    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
+    modelStack.PopMatrix();
 }

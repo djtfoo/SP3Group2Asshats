@@ -422,13 +422,7 @@ void SceneLava::Render()
     //Trap placing
     if (b_Traps)
     {
-        double x, y;
-        Application::GetCursorPos(&x, &y);
-        modelStack.PushMatrix();
-        modelStack.Translate(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0.5, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
-        modelStack.Scale(1, 1, 1);
-        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
-        modelStack.PopMatrix();
+        RenderTrap();
     }
 
     glUniform1i(SharedData::GetInstance()->graphicsLoader->GetParameters(GraphicsLoader::U_FOG_ENABLED), false);
@@ -436,6 +430,7 @@ void SceneLava::Render()
     // Render particles
     RenderParticles();
 
+    // for rendering hitboxes
 	//for (GameObject tallGrass = 0; tallGrass < lava.GAMEOBJECT_COUNT; ++tallGrass)
 	//{
 	//    if ((lava.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)

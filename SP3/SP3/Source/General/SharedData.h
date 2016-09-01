@@ -17,6 +17,7 @@ Singleton class that contains variables and objects needed by different files
 #include "../Audio/Sound.h"
 #include "../Graphics/Particle/ParticleManager.h"
 #include "Quest/QuestManager.h"
+#include "SaveData.h"
 
 /******************************************************************************/
 /*!
@@ -47,6 +48,8 @@ public:
 
     SceneManager* sceneManager;
     QuestManager* questManager;
+
+    SaveData* saveData;     //store's last save, in case player wishes to load game
 };
 
 #endif

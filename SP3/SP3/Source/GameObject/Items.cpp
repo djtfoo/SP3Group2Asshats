@@ -1,4 +1,5 @@
 #include "Items.h"
+#include "ItemProjectiles.h"
 #include "../General/SharedData.h"
 
 Item::Item() : 
@@ -34,18 +35,19 @@ bool Item::Upgrade()
         switch (this->m_type)
         {
             case TYPE_NET:
-                this->m_effectiveness += 5;
+                this->m_effectiveness++;
+                ItemProjectile::d_netCooldown -= 0.2;
                 this->m_currentUpgradeLevel++;
                 return true;
             case TYPE_BAIT:
-                this->m_effectiveness += 5;
+                this->m_effectiveness++;
                 this->m_currentUpgradeLevel++;
                 return true;
             case TYPE_MEAT:
                 //You cannot upgrade meat
                 return false;
             case TYPE_TRAP:
-                this->m_effectiveness += 200;
+                this->m_effectiveness++;
                 this->m_currentUpgradeLevel++;
                 return true;
             case TYPE_ROCK:

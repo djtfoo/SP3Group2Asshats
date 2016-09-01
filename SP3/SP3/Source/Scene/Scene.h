@@ -96,6 +96,7 @@ public:
     void RenderProjectiles();
     void RenderPressEText(World *world);
     void RenderHUD(World *world);
+    void RenderTrap();
 
     void RenderParticles();
     void RenderParticle(ParticleObject *particle);

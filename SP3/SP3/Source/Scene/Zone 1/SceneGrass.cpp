@@ -346,18 +346,13 @@ void SceneGrass::Render()
     //Trap placing
     if (b_Traps)
     {
-        double x, y;
-        Application::GetCursorPos(&x, &y);
-        modelStack.PushMatrix();
-        modelStack.Translate(SharedData::GetInstance()->player->GetPositionVector().x + SharedData::GetInstance()->player->GetViewVector().x * 20, 0.5, SharedData::GetInstance()->player->GetPositionVector().z + SharedData::GetInstance()->player->GetViewVector().z * 20);
-        modelStack.Scale(1, 1, 1);
-        RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_TRAP), false);
-        modelStack.PopMatrix();
+        RenderTrap();
     }
 
     // Render particles
     RenderParticles();
 
+    // for rendering hitboxes
     //for (GameObject tallGrass = 0; tallGrass < grass.GAMEOBJECT_COUNT; ++tallGrass)
     //{
     //    if ((grass.mask[tallGrass] & COMPONENT_HITBOX) == COMPONENT_HITBOX)
@@ -395,13 +390,13 @@ void SceneGrass::RenderGrassScene()
 	RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_GRASS_SKYPLANE), false);
 	modelStack.PopMatrix();
 
-    modelStack.PushMatrix();
-    modelStack.Translate(SharedData::GetInstance()->player->PlayerHitBox.m_origin.x, SharedData::GetInstance()->player->PlayerHitBox.m_origin.y, SharedData::GetInstance()->player->PlayerHitBox.m_origin.z);
-    modelStack.Scale(SharedData::GetInstance()->player->PlayerHitBox.m_scale.x, SharedData::GetInstance()->player->PlayerHitBox.m_scale.y, SharedData::GetInstance()->player->PlayerHitBox.m_scale.z);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    modelStack.PopMatrix();
+    //modelStack.PushMatrix();
+    //modelStack.Translate(SharedData::GetInstance()->player->PlayerHitBox.m_origin.x, SharedData::GetInstance()->player->PlayerHitBox.m_origin.y, SharedData::GetInstance()->player->PlayerHitBox.m_origin.z);
+    //modelStack.Scale(SharedData::GetInstance()->player->PlayerHitBox.m_scale.x, SharedData::GetInstance()->player->PlayerHitBox.m_scale.y, SharedData::GetInstance()->player->PlayerHitBox.m_scale.z);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //RenderMesh(SharedData::GetInstance()->graphicsLoader->GetMesh(GraphicsLoader::GEO_CUBE), false);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //modelStack.PopMatrix();
 
     RenderGameObjects(&grass);
 }

@@ -155,8 +155,15 @@ bool CheckHitbox(int row, int col)
     }
     if ((componentCheck & COMPONENT_HITBOX) == COMPONENT_HITBOX)
         return true;
-    else
-        return false;
+    
+    // find grid the player is at
+    int playerCol = (int)(SharedData::GetInstance()->player->GetPositionVector().x / Scene::tileSize);
+    int playerRow = (int)(SharedData::GetInstance()->player->GetPositionVector().z / Scene::tileSize);
+
+    if (playerRow == row && col == playerCol)
+        return true;
+
+    return false;
 }
 
 void AI_Strategy::SetIdleStateDestination()
@@ -189,7 +196,7 @@ void AI_Strategy::SetIdleStateDestination()
         randRow = rows + /*Math::RandIntMinMax(3, 5) **/ Math::RandIntMinMax(-2, 2);
 
         if ((randCol > 0 && randCol < 40) && (randRow > 0 && randRow < 40)) {
-            if (Scene::m_levelMap[randRow][randCol] >= '0' && Scene::m_levelMap[randRow][randCol] <= '9') {
+            if (Scene::m_levelMap[randRow][randCol] >= '0' && Scene::m_levelMap[randRow][randCol] <= '9') {     // an empty tile; cause it's monster generation point
                 run = false;
             }
             else if (!CheckHitbox(randRow, randCol)) {
